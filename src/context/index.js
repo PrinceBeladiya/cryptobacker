@@ -33,7 +33,6 @@ export async function createCampaign(form) {
         form.image,
       );
       console.log("data: ", data);
-      getCampaigns
     } catch (error) {
       console.log("Error: ", error);
     }
