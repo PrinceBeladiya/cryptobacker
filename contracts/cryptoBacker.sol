@@ -5,6 +5,11 @@ pragma abicoder v2;
 import '@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol';
 import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
 
+interface IWETH {
+    function deposit() external payable;
+    function withdraw(uint256) external;
+}
+
 contract CryptoBacker {
     struct Campaign {
         string name;
@@ -20,7 +25,7 @@ contract CryptoBacker {
         uint256[] donation;
     }
 
-    ISwapRouter public immutable swapRouter = ISwapRouter(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+    ISwapRouter public immutable swapRouter = ISwapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
     address public constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address public constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     uint24 public constant feeTier = 3000;
@@ -34,22 +39,40 @@ contract CryptoBacker {
 
     fallback() external payable {}
 
-    function swapExactInputSingle(address token0, address token1, uint256 amountIn, uint24 poolFee) private returns (uint256 amountout) {
-            
-            TransferHelper.safeApprove(token0, address(swapRouter), amountIn);
+    function getContractBalance() public view returns (uint256) { //view amount of ETH the contract contains
+        return address(this).balance;
+    }
 
-            ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
-            tokenIn: token0,
-            tokenOut: token1,
-            fee: poolFee,
+    function getContractUSDCBalance() public view returns (uint256) {
+        return IERC20(USDC).balanceOf(address(this));
+    }
+
+    function swapExactInputSingle(uint256 amountIn) private returns (uint256 amountout) {
+        // Convert ETH to WETH
+        IWETH(WETH).deposit{value: amountIn}();
+
+        // Approve the swapRouter to spend WETH
+        TransferHelper.safeApprove(WETH, address(swapRouter), amountIn);
+
+        // Define the swap parameters
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
+            tokenIn: address(WETH),
+            tokenOut: USDC,
+            fee: feeTier,
             recipient: address(this),
-            deadline: block.timestamp,
+            deadline: block.timestamp + 600,
             amountIn: amountIn,
             amountOutMinimum: 0,
             sqrtPriceLimitX96: 0
         });
 
-        amountout = swapRouter.exactInputSingle(params);
+        // Perform the swap
+        uint256 amountOut = swapRouter.exactInputSingle(params);
+
+        // Reset the approval
+        TransferHelper.safeApprove(WETH, address(swapRouter), 0);
+
+        return amountOut;
     }
 
     // create new campaign for raise the fund
@@ -74,7 +97,7 @@ contract CryptoBacker {
     }
 
     // to donate the crypto to the campaign
-    function donateToCampaign(uint256 _id) public payable {
+    function donateToCampaign(uint256 _id) public payable returns(uint256) {
         require(numberOfCampaign != 0, "There is not any campaign to donate");
         require(msg.value > 0, "Donation amount must be greater than zero");
 
@@ -84,9 +107,11 @@ contract CryptoBacker {
         DonateCamapign.donators.push(msg.sender);
         DonateCamapign.donation.push(amount);
 
-        swapExactInputSingle(WETH, USDC, amount, feeTier);
+        uint256 amounts = swapExactInputSingle(amount);
 
         DonateCamapign.amountCollected += amount;
+
+        return amounts;
         // The sent amount is automatically deposited to the contract
     }
 
