@@ -7,6 +7,7 @@ import '@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol';
 
 contract CryptoBacker {
     struct Campaign {
+        string name;
         address owner;
         string title;
         string description;
@@ -52,12 +53,13 @@ contract CryptoBacker {
     }
 
     // create new campaign for raise the fund
-    function createCampaign(address _owner, string memory _title, string memory _description, uint256 _target, uint256 _deadline, string memory _image) public returns(uint256){
+    function createCampaign(string memory _name, address _owner, string memory _title, string memory _description, uint256 _target, uint256 _deadline, string memory _image) public returns(uint256){
         Campaign storage newCampaign = campaigns[numberOfCampaign];
 
         require(_deadline > block.timestamp, "Deadline cannot be less that current time.");
 
         newCampaign.owner = _owner;
+        newCampaign.name = _name;
         newCampaign.title = _title;
         newCampaign.description = _description;
         newCampaign.target = _target;
@@ -95,6 +97,7 @@ contract CryptoBacker {
 
     // get all the campaign details
     function getCompaigns() view public returns(Campaign[] memory) {
+        require(numberOfCampaign != 0, "There is not any campaign to donate");
         Campaign[] memory allCampaigns = new Campaign[](numberOfCampaign);
 
         for(uint i = 0; i < numberOfCampaign; i++) {

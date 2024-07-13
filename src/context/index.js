@@ -12,16 +12,19 @@ export async function createCampaign(form) {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    
+    await provider.send("eth_requestAccounts", []); // Request user's MetaMask account
+    const signer = provider.getSigner();
+
     const contract = new ethers.Contract(
       CryptoBackerContractAddress, // contrat address
       CryptoBacker.abi, // abi
-      provider
+      signer
     );
-
-    const signer = provider.getSigner();
 
     try {
       const data = await contract.createCampaign(
+        form.name,
         signer.getAddress(), // owner
         form.title, // title
         form.description, // description
@@ -38,8 +41,7 @@ export async function createCampaign(form) {
   }
 }
 
-export async function getCampaigns(e) {
-  e.preventDefault();
+export async function getCampaigns() {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -49,8 +51,10 @@ export async function getCampaigns(e) {
       provider
     );
 
+    const signer = provider.getSigner();
+
     try {
-      const data = await contract.getCompaigns();
+      const data = await contract.connect(signer).getCompaigns();
       console.log("data: ", data);
     } catch (error) {
       console.log("Error: ", error);
