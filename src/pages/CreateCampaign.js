@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
+import { createCampaign, getCampaigns, donateToCampaign } from '../context';
 
 // import { useStateContext } from '../context';
 import { money } from '../assets';
@@ -64,6 +65,10 @@ const CreateCampaign = () => {
       setForm2({ ...form2, [fieldName]: file });
     }
   };
+
+  const handleCreateCampaign = () => {
+    // 
+  }
 
   return (
     <div className="bg-[#1c1c24] flex justify-center items-center flex-col rounded-[10px] sm:p-10 p-4">
@@ -175,6 +180,7 @@ const CreateCampaign = () => {
               btnType="submit"
               title="Submit new campaign"
               styles="bg-[#1dc071]"
+              handleClick={() => handleCreateCampaign()}
             />
           </div>
         </form>
