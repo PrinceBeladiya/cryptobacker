@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { createCampaign, getCampaigns, donateToCampaign } from '../context';
+import { createCampaign } from '../context';
 
 // import { useStateContext } from '../context';
 import { money } from '../assets';
@@ -14,12 +14,12 @@ const CreateCampaign = () => {
   const [form1, setForm1] = useState({
     name: '',
     title: '',
-    description: ''
-  });
-  const [form2, setForm2] = useState({
+    description: '',
     target: '',
     deadline: '',
     image: '',
+  });
+  const [form2, setForm2] = useState({
     idNumber: '',
     idPhoto: null, // Will store file object for ID photo
     ideaReport: null // Will store file object for idea report (PDF)
@@ -34,8 +34,17 @@ const CreateCampaign = () => {
     }
   };
 
-  const handleSubmitForm1 = (e) => {
+  const handleSubmitForm1 = async (e) => {
     e.preventDefault();
+    checkIfImage(form1.image, async (exists) => {
+      if(exists) {
+        setIsLoading(true);
+        await createCampaign({ ...form1, target: ethers.utils.parseUnits(form1.target, 18)});
+        setIsLoading(false);
+      } else {
+        console.log("Please Provide Proper Image URL");
+      }
+    })
     setCurrentForm(2);
   };
 
@@ -114,14 +123,14 @@ const CreateCampaign = () => {
               labelName="Goal *"
               placeholder="ETH 0.50"
               inputType="text"
-              value={form2.target}
+              value={form1.target}
               handleChange={(e) => handleFormFieldChange('target', e.target.value)}
             />
             <FormField
               labelName="End Date *"
               placeholder="End Date"
               inputType="date"
-              value={form2.deadline}
+              value={form1.deadline}
               handleChange={(e) => handleFormFieldChange('deadline', e.target.value)}
             />
           </div>
@@ -130,7 +139,7 @@ const CreateCampaign = () => {
             labelName="Campaign image *"
             placeholder="Place image URL of your campaign"
             inputType="url"
-            value={form2.image}
+            value={form1.image}
             handleChange={(e) => handleFormFieldChange('image', e.target.value)}
           />
 
@@ -140,6 +149,7 @@ const CreateCampaign = () => {
               styles="bg-[#1dc071]"
               handleClick={handleNext}
             />
+            <button type="submit" className='w-40 h-13 bg-white text-black rounded-md mx-2'>Create Campaign</button>
           </div>
         </form>
       )}
