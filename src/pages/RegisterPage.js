@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { CustomButton, FormField } from '../componets';
 import {thirdweb} from '../assets/index'
 
-const SigninPage = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({
+    name:'',
     email: '',
-    password: ''
+    password: '',
+    mobile: ''
   });
 
   const handleFormFieldChange = (fieldName, value) => {
@@ -89,4 +91,4 @@ const SigninPage = () => {
   );
 };
 
-export default SigninPage;
+export default RegisterPage;
