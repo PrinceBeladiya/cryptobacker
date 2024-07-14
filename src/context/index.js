@@ -33,8 +33,11 @@ export async function createCampaign(form) {
           maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
         }
       );
-      console.log("data: ", data);
+      // console.log("data: ", data);
+      return data;
+      // getCampaigns();
     } catch (error) {
+      return null;
       console.log("Error: ", error);
     }
   } else {

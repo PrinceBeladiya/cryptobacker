@@ -1,5 +1,5 @@
 import React from 'react'
-import { CreateCampaign, HomePage, Layout, SigninPage, WithDrawPage } from './pages'
+import { CreateCampaign, HomePage, Layout, SigninPage, WithDrawPage, RegisterPage, CampaignDetails } from './pages'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 const App = () => {
@@ -23,6 +23,14 @@ const App = () => {
         {
           path:'/sign-in',
           element:<SigninPage/>
+        },
+        {
+          path:'/register',
+          element:<RegisterPage/>
+        },
+        {
+          path:'/campaign-details/:address',
+          element:<CampaignDetails/>
         }
       ]
     }
