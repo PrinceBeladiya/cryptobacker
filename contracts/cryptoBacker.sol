@@ -16,6 +16,7 @@ contract CryptoBacker {
         address owner;
         string title;
         string description;
+        uint256 campaignCode;
         uint256 target;
         uint256 deadline;
         uint256 amountCollected;
@@ -90,6 +91,7 @@ contract CryptoBacker {
         newCampaign.amountCollected = 0;
         newCampaign.image = _image;
         newCampaign.status = 0;
+        newCampaign.campaignCode = numberOfCampaign;
 
         numberOfCampaign++;
 
