@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import DisplayCampaigns from '../componets/DisplayCampaigns'
 import Navbar from '../componets/Navbar';
-import { donateToCampaign, getCampaigns, getContractBalance, getContractUSDCBalance, getTotalOfCampaigns } from '../context';
+import { donateToCampaign, getCampaigns, getContractBalance, getContractUSDCBalance, getSpecificCampaign, getTotalOfCampaigns } from '../context';
 import { ethers } from 'ethers';
 
 const HomePage = () => {
@@ -38,6 +38,7 @@ const HomePage = () => {
     <button className='w-40 h-10 rounded-md bg-white text-black mx-2 my-2' onClick={() => getContractBalance()}>get Contract Balance</button>
     <button className='w-[200px] h-10 rounded-md bg-white text-black mx-2 my-2' onClick={() => getContractUSDCBalance()}>get Contract USDC Balance</button>
     <button className='w-[200px] h-10 rounded-md bg-white text-black mx-2 my-2' onClick={(e) => donateToCampaign(e, 0)}>Donate to Campaign 0</button>
+    <button className='w-[200px] h-10 rounded-md bg-white text-black mx-2 my-2' onClick={() => getSpecificCampaign(0)}>Get Specific Campaign 0</button>
 
     {/* <DisplayCampaigns 
       title="All Campaigns"

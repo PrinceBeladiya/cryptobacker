@@ -134,6 +134,25 @@ export async function getCampaigns() {
   }
 }
 
+export async function getSpecificCampaign(campaignCode) {
+  // If MetaMask exists
+  if (typeof window.ethereum !== "undefined") {
+    try {
+      const allCampaigns = await getCampaigns();
+      const filteredCampaigns = allCampaigns.filter((campaign) => campaign.campaignCode.toNumber() === campaignCode)
+      console.log(filteredCampaigns);
+    
+      return filteredCampaigns;
+    } catch(err) {
+      console.log("Error : ", err);
+      return [];
+    }
+  } else {
+    console.log("Please install metamsk wallet");
+    return [];
+  }
+}
+
 export async function getContractBalance() {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
