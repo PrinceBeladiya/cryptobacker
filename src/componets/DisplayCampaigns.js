@@ -9,7 +9,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
   const navigate = useNavigate();
 
   const handleNavigate = (campaign) => {
-    navigate(`/campaign-details/${campaign[1]}`)
+    navigate(`/campaign-details/${campaign.campaignCode}`)
   }
   
   return (

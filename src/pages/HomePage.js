@@ -18,10 +18,7 @@ const HomePage = () => {
 
     useEffect(() => {
       getalldata()
-    },[])
-  
-    getCampaignDonation(0);
-    donateToCampaign(0);
+    },[])   
     return (
       <>
       <Navbar/>
