@@ -75,11 +75,10 @@ export async function getCampaignDonation(campaignCode) {
   }
 }
 
-export async function getCampaigns() {
+export async function getTotalOfCampaigns() {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const feeData = await provider.getFeeData();
 
     const contract = new ethers.Contract(
       CryptoBackerContractAddress, // contrat address
@@ -90,11 +89,10 @@ export async function getCampaigns() {
     const signer = provider.getSigner();
 
     try {
-      const data = await contract.connect(signer).getCompaigns({
-        maxFeePerGas: feeData.maxFeePerGas.mul(2),  // Adjust as needed
-        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
-      });
-      console.log("data: ", data);
+      const data = await contract.connect(signer).numberOfCampaign();
+      console.log("data: ", ethers.utils.formatEther(data._hex, 18));
+
+      return ethers.utils.formatEther(data._hex, 18);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -103,11 +101,43 @@ export async function getCampaigns() {
   }
 }
 
+export async function getCampaigns() {
+  const totalCampaigns = await getTotalOfCampaigns();
+
+  if(totalCampaigns.toString() !== ("0.0")) {
+    // If MetaMask exists
+    if (typeof window.ethereum !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+      const contract = new ethers.Contract(
+        CryptoBackerContractAddress, // contrat address
+        CryptoBacker.abi, // abi
+        provider
+      );
+
+      const signer = provider.getSigner();
+
+      try {
+        const data = await contract.connect(signer).getCompaigns();
+        console.log("data: ", data);
+
+        return data;
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+    } else {
+      console.log("Please install metamsk first.")
+    } 
+  } else {
+    console.log("There is nothing to show");
+    return [];
+  }
+}
+
 export async function getContractBalance() {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const feeData = await provider.getFeeData();
 
     const contract = new ethers.Contract(
       CryptoBackerContractAddress, // contrat address
@@ -118,10 +148,7 @@ export async function getContractBalance() {
     const signer = provider.getSigner();
 
     try {
-      const data = await contract.connect(signer).getContractBalance({
-        maxFeePerGas: feeData.maxFeePerGas.mul(2),  // Adjust as needed
-      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
-      });
+      const data = await contract.connect(signer).getContractBalance();
       console.log("data: ", ethers.utils.formatEther(data._hex, 18));
 
       return ethers.utils.formatEther(data._hex, 18);
@@ -137,7 +164,6 @@ export async function getContractUSDCBalance() {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const feeData = await provider.getFeeData();
 
     const contract = new ethers.Contract(
       CryptoBackerContractAddress, // contrat address
@@ -148,10 +174,7 @@ export async function getContractUSDCBalance() {
     const signer = provider.getSigner();
 
     try {
-      const data = await contract.connect(signer).getContractUSDCBalance({
-        maxFeePerGas: feeData.maxFeePerGas.mul(2),  // Adjust as needed
-        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
-      });
+      const data = await contract.connect(signer).getContractUSDCBalance();
       const usdcBalance = ethers.utils.formatUnits(data, 6);
       console.log("USDC Balance:", usdcBalance);
 
@@ -184,34 +207,44 @@ export async function getUserCampaigns() {
 }
 
 export async function donateToCampaign(e, compaignCode) {
-  // If MetaMask exists
-  if (typeof window.ethereum !== "undefined") {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const feeData = await provider.getFeeData();
 
-    await provider.send("eth_requestAccounts", []); // Request user's MetaMask account
-    const signer = provider.getSigner();
+  const totalCampaigns = await getTotalOfCampaigns();
 
-    const contract = new ethers.Contract(
-      CryptoBackerContractAddress, // contrat address
-      CryptoBacker.abi, // abi
-      signer
-    );
+  if(totalCampaigns.toString() !== ("0.0")) {
+    // If MetaMask exists
+    if (typeof window.ethereum !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const feeData = await provider.getFeeData();
 
-    try {
-      const data = await contract.donateToCampaign(
-        0,
-        { 
-          value: ethers.utils.parseEther("1.0"),
-          maxFeePerGas: feeData.maxFeePerGas.mul(2),  // Adjust as needed
-          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
-        }
+      await provider.send("eth_requestAccounts", []); // Request user's MetaMask account
+      const signer = provider.getSigner();
+
+      const contract = new ethers.Contract(
+        CryptoBackerContractAddress, // contrat address
+        CryptoBacker.abi, // abi
+        signer
       );
-      console.log("data: ", data);
-    } catch (error) {
-      console.log("Error: ", error);
+
+      try {
+        const data = await contract.donateToCampaign(
+          0,
+          { 
+            value: ethers.utils.parseEther("1.0"),
+            maxFeePerGas: feeData.maxFeePerGas.mul(2),  // Adjust as needed
+            maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
+          }
+        );
+        console.log("data: ", data);
+
+        return data;
+      } catch (error) {
+        console.log("Error: ", error);
+      }
+    } else {
+        console.log("Please install metamsk first.")
     }
   } else {
-      console.log("Please install metamsk first.")
+    console.log("There is no campaigns to donate.");
+    return null;
   }
 }
