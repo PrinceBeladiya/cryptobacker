@@ -1,52 +1,65 @@
 import React, { useEffect,useState } from 'react'
 import DisplayCampaigns from '../componets/DisplayCampaigns'
 import Navbar from '../componets/Navbar';
-import { donateToCampaign, getCampaignDonation, getCampaigns, getContractBalance, getContractUSDCBalance, getTotalOfCampaigns } from '../context';
-import { ethers } from 'ethers';
+import { getCampaigns } from '../context';
 
 const HomePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [campaigns, setCampaigns] = useState([]);
-    const [address, setAddress] = useState('');
 
-    async function getalldata(){
-      setIsLoading(true);
-      if(typeof window.ethereum !== "undefined") {
-        try {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []); 
-          const signer = provider.getSigner();
-
-          if(typeof signer !== 'undefined') {
-              const data = await getCampaigns();
-              setCampaigns(data);
-            } else {
-              await window.ethereum.enable();
-            }
-            // const signer = provider.getSigner();
-            // setAddress(signer.getAddress());
-          } catch(err) {
-            console.log("There is an Error.");
-            console.log("Error - ", err);
+    async function isConnected() {
+      if (typeof window.ethereum !== 'undefined') {
+        const isLocked = !(await window.ethereum._metamask.isUnlocked())
+        if (!isLocked) {
+          console.log("MetaMask is unlocked")
+          return true
+        } else {
+          console.log("MetaMask is locked")
+          try {
+            // Request account access if MetaMask is locked
+            await window.ethereum.request({ method: 'eth_requestAccounts' })
+            return true
+          } catch (err) {
+            console.log("User denied account access")
+            return false
           }
-        }
-    
-      // console.log(data);
-      setIsLoading(false);
+        }
+      } else {
+        console.log("MetaMask is not installed")
+        return false
+      }
     }
-
+  
+    async function getalldata() {
+      setIsLoading(true)
+      if (await isConnected()) {
+        try {
+          const data = await getCampaigns()
+          setCampaigns(data)
+        } catch (err) {
+          console.log("There is an error.")
+          console.log("Error - ", err)
+        }
+      }
+      setIsLoading(false)
+    }
+  
     useEffect(() => {
       getalldata()
-    },[])
+    }, [])
 
     return (
       <>
-      <Navbar/>
-      <DisplayCampaigns 
-        title="All Campaigns"
-        isLoading={isLoading}
-        campaigns={campaigns}
-      />
+      {campaigns && campaigns.length > 0 && (
+          <>
+            <Navbar/>
+            <DisplayCampaigns 
+              title="All Campaigns"
+              isLoading={isLoading}
+              campaigns={campaigns}
+            />
+          </>
+      )}
       </>
     )
 }

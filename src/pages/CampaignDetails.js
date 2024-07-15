@@ -73,13 +73,13 @@ const CampaignDetails = () => {
         <div className="flex-1 flex-col">
           <img src={campaign.image} alt="campaign" className="w-full h-[410px] object-cover rounded-xl" />
           <div className="relative w-full h-[5px] bg-[#3a3a43] mt-2">
-            <div className="absolute h-full bg-[#4acd8d]" style={{ width: `${calculateBarPercentage(formatBigNumber(campaign.amountCollected), formatBigNumber(campaign.target))}%` }} />
+            <div className="absolute h-full bg-[#4acd8d]" style={{ width: `${calculateBarPercentage((Math.round(formatBigNumber(campaign.target) * 100) / 100).toFixed(2), (Math.round(formatBigNumber(campaign.amountCollected) * 100) / 100).toFixed(2))}%` }} />
           </div>
         </div>
 
         <div className="flex md:w-[150px] w-full flex-wrap justify-between gap-[30px]">
           <CountBox title="Days Left" value={daysLeft(campaign.deadline?.toNumber())} />
-          <CountBox title={`Raised of ${formatBigNumber(campaign.target)} ETH`} value={`${formatBigNumber(campaign.amountCollected)} ETH`} />
+          <CountBox title={`Raised of ${formatBigNumber(campaign.target)} ETH`} value={`${(Math.round(formatBigNumber(campaign.amountCollected) * 100) / 100).toFixed(2)} ETH`} />
           <CountBox title="Total Backers" value={campaign.donators?.length} />
         </div>
       </div>

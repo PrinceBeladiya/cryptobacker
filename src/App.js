@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CreateCampaign, HomePage, Layout, SigninPage, WithDrawPage, RegisterPage, CampaignDetails } from './pages'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 

@@ -20,6 +20,7 @@ contract CryptoBacker {
         uint256 target;
         uint256 deadline;
         uint256 amountCollected;
+        uint256 amountCollectedInUSDC;
         string image;
         uint256 status;
         address[] donators;
@@ -112,6 +113,7 @@ contract CryptoBacker {
         uint256 amounts = swapExactInputSingle(amount);
 
         DonateCamapign.amountCollected += amount;
+        DonateCamapign.amountCollectedInUSDC += amounts;
 
         return amounts;
         // The sent amount is automatically deposited to the contract
