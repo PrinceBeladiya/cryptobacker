@@ -143,7 +143,7 @@ export async function getSpecificCampaign(campaignCode) {
     try {
       const allCampaigns = await getCampaigns();
       const filteredCampaigns = allCampaigns.filter((campaign) => campaign.campaignCode.toNumber() === campaignCode)
-      console.log(filteredCampaigns);
+      console.log("Filtered :- ",filteredCampaigns);
     
       return filteredCampaigns;
     } catch(err) {
@@ -228,7 +228,7 @@ export async function getUserCampaigns() {
   }
 }
 
-export async function donateToCampaign(e, compaignCode) {
+export async function donateToCampaign(Amount, compaignCode) {
 
   const totalCampaigns = await getTotalOfCampaigns();
 
@@ -249,17 +249,17 @@ export async function donateToCampaign(e, compaignCode) {
 
       try {
         const data = await contract.donateToCampaign(
-          0,
+          compaignCode,
           { 
-            value: ethers.utils.parseEther("1.0"),
+            value: ethers.utils.parseEther(Amount.toString()),
             maxFeePerGas: feeData.maxFeePerGas.mul(2),  // Adjust as needed
             maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
           }
         );
         console.log("data: ", data);
-
         return data;
       } catch (error) {
+        return null;
         console.log("Error: ", error);
       }
     } else {
