@@ -4,6 +4,17 @@ const ethers = require("ethers")
 
 const CryptoBackerContractAddress = process.env.REACT_APP_CryptoBackerContractAddress;
 
+export async function enableEthereum() {
+  if(typeof window.ethereum !== "undefined") {
+    try {
+      window.ethereum.enable();
+    } catch(err) {
+      console.log("There is an Error.");
+      console.log("Error - ", err);
+    }
+  }
+}
+
 export async function createCampaign(form) {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
@@ -37,8 +48,8 @@ export async function createCampaign(form) {
       return data;
       // getCampaigns();
     } catch (error) {
-      return null;
       console.log("Error: ", error);
+      return null;
     }
   } else {
     console.log("Please install metamsk first.")
@@ -259,8 +270,8 @@ export async function donateToCampaign(Amount, compaignCode) {
         console.log("data: ", data);
         return data;
       } catch (error) {
-        return null;
         console.log("Error: ", error);
+        return null;
       }
     } else {
         console.log("Please install metamsk first.")

@@ -41,12 +41,16 @@ const HomePage = () => {
 
     return (
       <>
-      <Navbar/>
-      <DisplayCampaigns 
-        title="All Campaigns"
-        isLoading={isLoading}
-        campaigns={campaigns}
-      />
+      {address.length > 0 && (
+          <>
+            <Navbar/>
+            <DisplayCampaigns 
+              title="All Campaigns"
+              isLoading={isLoading}
+              campaigns={campaigns}
+            />
+          </>
+      )}
       </>
     )
 }
