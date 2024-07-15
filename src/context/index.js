@@ -239,7 +239,7 @@ export async function getUserCampaigns() {
   }
 }
 
-export async function donateToCampaign(Amount, compaignCode) {
+export async function donateToCampaign(compaignCode, Amount) {
 
   const totalCampaigns = await getTotalOfCampaigns();
 
