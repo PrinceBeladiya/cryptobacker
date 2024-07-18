@@ -27,6 +27,7 @@ const Navbar = () => {
           handleClick={() => {
             
           }}
+          disable={false}
         />
 
         <Link to="/profile">

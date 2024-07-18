@@ -225,6 +225,7 @@ const CreateCampaign = () => {
                   title="Next"
                   styles="bg-[#1dc071]"
                   handleClick={handleNext}
+                  disable={false}
                 />
               </div>
             </form>
@@ -259,6 +260,7 @@ const CreateCampaign = () => {
                   title="Back"
                   styles="bg-[#f55d5d]"
                   handleClick={handleBack}
+                  disable={false}
                 />
                 <CustomButton
                   btnType="submit"
