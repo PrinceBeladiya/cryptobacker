@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { CreateCampaign, HomePage, Layout, SigninPage, WithDrawPage, RegisterPage, CampaignDetails } from './pages'
+import { CreateCampaign, HomePage, Layout, SigninPage, WithDrawPage, RegisterPage, CampaignDetails, WithDrawDetails } from './pages'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 const App = () => {
@@ -18,7 +18,11 @@ const App = () => {
         },
         {
           path:"/withdraw",
-          element:<WithDrawPage/>
+          element:<WithDrawPage/>,
+        },
+        {
+          path:'withdraw-details/:address',
+          element:<WithDrawDetails/>
         },
         {
           path:'/sign-in',
@@ -31,7 +35,7 @@ const App = () => {
         {
           path:'/campaign-details/:address',
           element:<CampaignDetails/>
-        }
+        },
       ]
     }
   ])

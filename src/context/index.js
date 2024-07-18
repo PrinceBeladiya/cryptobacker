@@ -228,15 +228,17 @@ export async function getUserCampaigns() {
 
     try {
       const allCampaigns = await getCampaigns();
-      const filteredCampaigns = allCampaigns.filter((campaign) => campaign.owner === signer.getAddress());
+      
+      let add = await signer.getAddress();
+      const filteredCampaigns = allCampaigns.filter((campaign) => add === campaign.owner);
 
       return filteredCampaigns;
     } catch (error) {
       console.log("Error: ", error);
     }
   } else {
-    console.log("Please install metamsk first.")
-  }
+    console.log("Please install metamsk first.")
+  }
 }
 
 export async function donateToCampaign(compaignCode, Amount) {

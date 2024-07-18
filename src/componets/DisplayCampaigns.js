@@ -6,11 +6,18 @@ import { loader } from '../assets';
 import { ethers } from 'ethers';
 import { daysLeft } from '../utils';
 
-const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
+const DisplayCampaigns = ({ title, isLoading, campaigns, context }) => {
   const navigate = useNavigate();
 
   const handleNavigate = (campaign) => {
-    navigate(`/campaign-details/${campaign.campaignCode}`);
+    if(context == 'donation')
+      {
+        navigate(`/campaign-details/${campaign.campaignCode}`);
+      }
+      else
+      {
+        navigate(`/withdraw-details/${campaign.campaignCode}`);
+      }
   };
 
   return (
@@ -33,6 +40,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
               <FundCard 
                 key={uuidv4()}
                 owner={data[0]}
+                title={data.title}
                 description={data.description}
                 target={ethers.utils.formatEther(data.target._hex) + " ETH"}
                 deadline={daysLeft(data.deadline?.toNumber())}

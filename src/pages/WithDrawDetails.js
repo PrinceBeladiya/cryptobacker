@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { donateToCampaign, getSpecificCampaign } from '../context';
-import { CountBox, CustomButton, Loader, SoftAlert } from '../componets';
+import { CountBox, CustomButton, FormField, Loader, SoftAlert } from '../componets';
 import { calculateBarPercentage, daysLeft } from '../utils';
 import { thirdweb } from '../assets';
 import { ethers } from 'ethers';
-import ReportIcon from '@mui/icons-material/Report';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ReportIcon from '@mui/icons-material/Report'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'; 
 
-const CampaignDetails = () => {
+const WithDrawDetails = () => {
   const { address } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
   const [campaign, setCampaign] = useState({});
   const [alerts, setAlerts] = useState([]);
+
+  const [form,setForm] = useState({
+    amount: '',
+    purpose: '',
+    pdf: null
+})
+
+const percentage = campaign.target ? (campaign.amountCollected / campaign.target) * 100 : 0;
+
+const handleFormFieldChange = (fieldName, value) => {
+      setForm({ ...form, [fieldName]: value });
+  };
 
   const getData = async () => {
     setIsLoading(true);
@@ -28,40 +40,43 @@ const CampaignDetails = () => {
   };
 
   const handleDonate = async () => {
-    if (amount < remainamount()) {
-      setIsLoading(true);
-      try {
-        const data = await donateToCampaign(address, amount);
-        setAlerts([
-          {
-            title: 'Success',
-            color: 'success',
-            icon: <CheckCircleIcon />,
-            message: 'Successfully Donated',
-          },
-          ...alerts,
-        ]);
-      } catch (error) {
-        setAlerts([
-          {
-            title: 'Error',
-            color: 'danger',
-            icon: <ReportIcon />,
-            message: 'Transaction Failed! Something Went Wrong!',
-          },
-          ...alerts,
-        ]);
-        console.error("Error donating to campaign:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
+    if(amount < remainamount())
+    {
+        setIsLoading(true);
+        try {
+          const data = await donateToCampaign(address,amount);
+            setAlerts([
+              {
+                title: 'Success',
+                color: 'success',
+                icon: <CheckCircleIcon />,
+                message: 'Successfully Donated',
+              },
+              ...alerts,
+            ]);
+        } catch (error) {
+          setAlerts([
+            {
+              title: 'Error',
+              color: 'danger',
+              icon: <ReportIcon />,
+              message: 'Transaction Falied Something Went Wrong!',
+            },
+            ...alerts,
+          ]);
+          console.error("Error donating to campaign:", error);
+        } finally {
+          setIsLoading(false);
+        }
+    }
+    else
+    {
       setAlerts([
         {
           title: 'Error',
           color: 'danger',
           icon: <ReportIcon />,
-          message: `You Can Donate Up to ${remainamount()} For This Campaign`,
+          message: `You Can Donate Upto ${remainamount()} For This Campaign`,
         },
         ...alerts,
       ]);
@@ -74,7 +89,7 @@ const CampaignDetails = () => {
 
   useEffect(() => {
     getData();
-  }, [address, alerts]);
+  }, [address,alerts]);
 
   const formatBigNumber = (value, decimals = 18) => {
     if (!value) return '0';
@@ -88,14 +103,7 @@ const CampaignDetails = () => {
     return required - collection;
   }
 
-  const iscollected = () => {
-    const required = formatBigNumber(campaign.target);
-    const collection = formatBigNumber(campaign.amountCollected);
-
-    return required === collection;
-  }
-
-  const percentage = campaign.target ? (campaign.amountCollected / campaign.target) * 100 : 0;
+  const collected = (Math.round(formatBigNumber(campaign.amountCollected) * 100) / 100).toFixed(2);
 
   return (
     <div>
@@ -108,8 +116,8 @@ const CampaignDetails = () => {
       )}
 
       <div className="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
-        <div className="flex-1 flex-col">
-          <img src={campaign.image} alt="campaign" className="w-full h-[410px] object-fill rounded-xl" />
+      <div className="flex-1 flex-col">
+          <img src={campaign.image} alt="campaign" className="w-full h-[410px] transition-all duration-700 ease-in-out object-fill rounded-xl" />
           <div className="relative w-full h-[5px] bg-[#3a3a43] mt-2 transition-all duration-600 ease-in-out overflow-hidden group hover:h-5">
             <div
               className="absolute h-full bg-[#4acd8d] transition-all duration-2000 ease-in-out group-hover:h-10"
@@ -158,27 +166,38 @@ const CampaignDetails = () => {
           <h4 className="font-epilogue font-semibold text-[18px] text-white uppercase">Fund</h4>   
           <div className="mt-[20px] flex flex-col p-4 bg-[#1c1c24] rounded-[10px]">
             <p className="font-epilogue font-medium text-[20px] leading-[30px] text-center text-[#808191]">
-              Fund the campaign
+              Requset For Fund
             </p>
             <div className="mt-[30px]">
-              <input 
-                type="number"
-                placeholder="ETH 0.1"
-                step="0.01"
-                className="w-full py-[10px] sm:px-[20px] px-[15px] outline-none border-[1px] border-[#3a3a43] bg-transparent font-epilogue text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+            <FormField
+                  labelName="Enter Amount"
+                  placeholder="ETH 0.50"
+                  inputType="text"
+                  value={form.amount}
+                  handleChange={(e) => handleFormFieldChange('amount', e.target.value)}
+                />
+              <div className='mt-3'></div>
+              <FormField
+                labelName="Enter Purpose"
+                placeholder="Purpose For Withdraw"
+                inputType="text"
+                value={form.amount}
+                handleChange={(e) => handleFormFieldChange('purpose',e.target.value)}
               />
-              <div className="my-[20px] p-4 bg-[#13131a] rounded-[10px]">
-                <h4 className="font-epilogue font-semibold text-[14px] leading-[22px] text-white">Back it because you believe in it.</h4>
-                <p className="mt-[20px] font-epilogue font-normal leading-[22px] text-[#808191]">Support the project for no reward, just because it speaks to you.</p>
-              </div>
+              <div className='mt-3'></div>
+              <FormField
+                labelName="Upload Report"
+                placeholder="Upload Purpose Report"
+                inputType="file"
+                value={form.amount}
+                handleChange={(e) => handleFormFieldChange('purpose',e.target.value)}
+              />
               <CustomButton 
                 btnType="button"
-                title={daysLeft > 0 ? "Campaign Ended" : iscollected() ? "Fund Collected" :"Fund Campaign" }
-                styles={daysLeft > 0 && iscollected() ? "w-full bg-[#c6b6fe]" : "w-full bg-[#8c6dfd]"}
+                title={collected > 0 ? "Send Requset" : "No Amount To Withdraw"}
+                styles={collected > 0 ? "w-full bg-[#8c6dfd] mt-4" : "w-full bg-[#c6b6fe] mt-4"}
                 handleClick={handleDonate}
-                disable={daysLeft > 0 && iscollected() ? true : false}
+                disable={collected > 0 ? false : true}
               />
             </div>
           </div>
@@ -188,4 +207,5 @@ const CampaignDetails = () => {
   );
 };
 
-export default CampaignDetails;
+export default WithDrawDetails;
+

@@ -12,7 +12,7 @@ export default function SoftAlert({ items, onClose }) {
     if (items.length > 0) {
       const timer = setTimeout(() => {
         onClose(items[0].title);
-      }, 2000);
+      }, 5000);
       
       return () => clearTimeout(timer); 
     }

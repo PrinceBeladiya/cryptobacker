@@ -5,7 +5,7 @@ import FormField from './FormField'
 import DisplayCampaigns from "./DisplayCampaigns";  
 import Loader from "./Loader";  
 import SoftAlert from "./SoftAlert";
-import CountBox from './CountBox'
+import CountBox from './CountBox';
 export  {
     Sidebar,
     Navbar,

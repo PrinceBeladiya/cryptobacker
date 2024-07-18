@@ -5,6 +5,7 @@ import WithDrawPage from "./WithDrawPage";
 import SigninPage from "./SignInPage";
 import RegisterPage from "./RegisterPage";  
 import CampaignDetails from "./CampaignDetails";    
+import WithDrawDetails from "./WithDrawDetails";
 export  {
     Layout,
     CreateCampaign,
@@ -12,5 +13,6 @@ export  {
     WithDrawPage,
     SigninPage,
     RegisterPage,
-    CampaignDetails
+    CampaignDetails,
+    WithDrawDetails
 }

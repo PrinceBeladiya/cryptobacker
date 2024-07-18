@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { CustomButton, FormField } from '../componets';
 import {thirdweb} from '../assets/index'
 
@@ -76,13 +76,14 @@ const SigninPage = () => {
         <CustomButton
         type="submit" 
         styles="bg-green-500 text-black h-10 px-8 py-2 mt-4"
-        title={'Sign in'}/>
+        title={'Sign in'}
+        disable={false}/>
       </div>
     </form>
 
     <p class="mt-10 text-center text-sm text-gray-500">
       Not a member? 
-      <a href="#" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"> Register Here</a>
+      <Link to={'/register'} class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"> Register Here</Link>
     </p>
   </div>
 </div>
