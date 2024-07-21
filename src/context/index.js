@@ -1,8 +1,10 @@
 // import the contract for interaction
 import CryptoBacker from '../artifacts/contracts/cryptoBacker.sol/CryptoBacker.json';
+import UserAuth from '../artifacts/contracts/userAuthentication.sol/UserAuthentication.json';
 const ethers = require("ethers")
 
 const CryptoBackerContractAddress = process.env.REACT_APP_CryptoBackerContractAddress;
+const UserAuthContractAddress = process.env.REACT_APP_UserAuthContractAddress;
 
 export async function enableEthereum() {
   if(typeof window.ethereum !== "undefined") {
@@ -281,5 +283,94 @@ export async function donateToCampaign(compaignCode, Amount) {
   } else {
     console.log("There is no campaigns to donate.");
     return null;
+  }
+}
+
+export async function signUp(form) {
+  // If MetaMask exists
+  if (typeof window.ethereum !== "undefined") {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const feeData = await provider.getFeeData();
+    const signer = provider.getSigner();
+
+    await provider.send("eth_requestAccounts", []); // Request user's MetaMask account
+    const contract = new ethers.Contract(
+      UserAuthContractAddress, // contrat address
+      UserAuth.abi, // abi
+      signer
+    );
+
+    try {
+      const data = await contract.register(
+        form.name,
+        form.email,
+        form.mobile,
+        form.password,
+        {
+          maxFeePerGas: feeData.maxFeePerGas.mul(2),  // Adjust as needed
+          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas.add(ethers.utils.parseUnits('1', 'gwei'))  // Adjust as needed
+        }
+      );
+      console.log("data: ", data);
+      return data;
+    } catch (error) {
+      console.log("Error: ", error);
+      return null;
+    }
+  } else {
+      console.log("Please install metamsk first.")
+  }
+}
+
+export async function getUserInfo() {
+  // If MetaMask exists
+  if (typeof window.ethereum !== "undefined") {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      UserAuthContractAddress, // contrat address
+      UserAuth.abi, // abi
+      signer
+    );
+
+    try {
+      const data = await contract.getUserInfo();
+      console.log("data: ", data);
+      return data;
+    } catch (error) {
+      console.log("Error: ", error);
+      return null;
+    }
+  } else {
+      console.log("Please install metamsk first.")
+  }
+}
+
+export async function loginWithEmail(form) {
+  // If MetaMask exists
+  if (typeof window.ethereum !== "undefined") {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      UserAuthContractAddress, // contrat address
+      UserAuth.abi, // abi
+      signer
+    );
+
+    try {
+      const data = await contract.loginWithEmail(
+        form.email,
+        form.password
+      );
+      console.log("data: ", data);
+      return data;
+    } catch (error) {
+      console.log("Error: ", error);
+      return false;
+    }
+  } else {
+      console.log("Please install metamsk first.")
   }
 }
