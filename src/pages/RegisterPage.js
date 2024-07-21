@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CustomButton, FormField } from '../componets';
 import {thirdweb} from '../assets/index'
+import { getUserInfo, signUp } from '../context';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const RegisterPage = () => {
     setForm({ ...form, [fieldName]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.email || !form.password) {
@@ -27,12 +28,21 @@ const RegisterPage = () => {
 
     setIsLoading(true);
 
-    // Simulate API request (replace with actual API call)
-    setTimeout(() => {
-      setIsLoading(false);
-      alert('Sign-in successful!');
+    try {
+      await signUp(form);
+      alert('Sign-up successful!');
       navigate('/');
-    }, 2000); // Simulating a 2-second delay for demonstration
+    } catch(err) {
+      console.log("error : ", err)
+    }
+    
+    setIsLoading(false);
+
+    // Simulate API request (replace with actual API call)
+    // setTimeout(() => {
+      
+    //   
+    // }, 2000); // Simulating a 2-second delay for demonstration
   };
 
   const handleMetaMaskSignIn = () => {
@@ -48,7 +58,7 @@ const RegisterPage = () => {
   </div>
 
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-    <form class="space-y-6" action="#" method="POST">
+    <form class="space-y-6" action="#" method="POST" onSubmit={(e) => handleSubmit(e, form)}>
       <div>
         <div class="mt-2">
           <FormField

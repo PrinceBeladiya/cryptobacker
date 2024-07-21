@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CustomButton, FormField } from '../componets';
 import {thirdweb} from '../assets/index'
+import { loginWithEmail } from '../context';
 
 const SigninPage = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const SigninPage = () => {
     setForm({ ...form, [fieldName]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.email || !form.password) {
@@ -24,12 +25,26 @@ const SigninPage = () => {
     }
 
     setIsLoading(true);
+
+    try {
+      const res = await loginWithEmail(form);
+      if(res) {
+        alert('Sign-in successful!');
+        navigate('/');
+      } else {
+        console.log("Email and password are not match.")
+      }
+    } catch(err) {
+      console.log("error : ", err)
+    }
+    
+    setIsLoading(false);
+
     // Simulate API request (replace with actual API call)
-    setTimeout(() => {
-      setIsLoading(false);
-      alert('Sign-in successful!');
-      navigate('/');
-    }, 2000); // Simulating a 2-second delay for demonstration
+    // setTimeout(() => {
+      
+    //   
+    // }, 2000); // Simulating a 2-second delay for demonstration
   };
 
   const handleMetaMaskSignIn = () => {
@@ -45,7 +60,7 @@ const SigninPage = () => {
   </div>
 
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-    <form class="space-y-6" action="#" method="POST">
+    <form class="space-y-6" action="#" method="POST" onSubmit={(e) => handleSubmit(e)}>
       <div>
         <div class="mt-2">
           <FormField
@@ -63,11 +78,11 @@ const SigninPage = () => {
         </div>
         <div class="mt-2">
         <FormField
-            inputType={'email'}
+            inputType={'password'}
             placeholder={'Enter Your Password'}
             labelName={'Password'}
-            value={form.email}
-            handleChange={(e) => handleFormFieldChange('email', e.target.value)}
+            value={form.password}
+            handleChange={(e) => handleFormFieldChange('password', e.target.value)}
           />
         </div>
       </div>
