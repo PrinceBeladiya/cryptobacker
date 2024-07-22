@@ -25,7 +25,7 @@ const Navbar = () => {
           title={'Create a campaign'}
           styles={'bg-[#8c6dfd]'}
           handleClick={() => {
-            
+            navigate('/create-campaign')
           }}
           disable={false}
         />
@@ -80,7 +80,7 @@ const Navbar = () => {
               title={'Create a campaign'}
               styles={'bg-[#8c6dfd]'}
               handleClick={() => {
-              
+                navigate('/create-campaign')
               }}
             />
             </div>
