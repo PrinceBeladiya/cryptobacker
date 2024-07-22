@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CustomButton, FormField } from '../componets';
 import {thirdweb} from '../assets/index'
-import { loginWithEmail } from '../context';
+import { getcurrentuser, loginWithEmail } from '../context';
 
 const SigninPage = () => {
   const navigate = useNavigate();
@@ -30,6 +30,8 @@ const SigninPage = () => {
       const res = await loginWithEmail(form);
       if(res) {
         alert('Sign-in successful!');
+        localStorage.setItem('username',res.address);
+        console.log("Response :- ",res);
         navigate('/');
       } else {
         console.log("Email and password are not match.")
@@ -46,6 +48,9 @@ const SigninPage = () => {
     //   
     // }, 2000); // Simulating a 2-second delay for demonstration
   };
+  if(getcurrentuser().res){
+    console.log('current user :- ',getcurrentuser());
+  }
 
   const handleMetaMaskSignIn = () => {
     // Implement MetaMask sign-in logic here

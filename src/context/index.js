@@ -347,6 +347,26 @@ export async function getUserInfo() {
   }
 }
 
+export function getcurrentuser()
+{
+  const data = localStorage.getItem('username');
+  if(data){
+    return {
+      address: data,
+      res: true
+    }
+  }
+  return {
+    adaddress: data,
+    res: false
+  } 
+}
+
+export function logout()
+{
+  localStorage.clear();
+}
+
 export async function loginWithEmail(form) {
   // If MetaMask exists
   if (typeof window.ethereum !== "undefined") {
@@ -365,12 +385,22 @@ export async function loginWithEmail(form) {
         form.password
       );
       console.log("data: ", data);
-      return data;
+      // return data;
+      const address = await signer.getAddress();
+      if(data) {
+        return {
+          address,
+          res : true
+        }
+      } else {
+        return {
+          address,
+          res : false
+        }
+      }
     } catch (error) {
       console.log("Error: ", error);
-      return false;
+      return false;
     }
-  } else {
-      console.log("Please install metamsk first.")
   }
 }
