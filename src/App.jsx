@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LandingPage, Layout, LoginPage, RegisterPage, CampaignList } from './pages';
+import { LandingPage, Layout, LoginPage, RegisterPage, CampaignList, PageNotFound } from './pages';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 function App() {
   const [count, setCount] = useState(0);
@@ -24,6 +24,10 @@ function App() {
         {
           path: 'campaign-list',
           element: <CampaignList/>
+        },
+        {
+          path: '*',
+          element: <PageNotFound/>
         }
       ],
     },

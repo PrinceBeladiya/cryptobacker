@@ -1,19 +1,3 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-'use client'
-
 import { useState } from 'react'
 import {
   Dialog,
@@ -29,6 +13,8 @@ import {
 } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
+import FundCard from './FundCard'
+import { useNavigate } from 'react-router-dom'
 
 const sortOptions = [
   { name: 'Most Popular', href: '#', current: true },
@@ -57,7 +43,11 @@ function classNames(...classes) {
 
 export default function DisplayCampagin({title,isloading,campaigns}) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const navigate = useNavigate();
 
+  const handleNavigate = () => {
+        navigate(`/campaign-details`);
+  }
   return (
     <div className="bg-white">
       <div>
@@ -227,6 +217,23 @@ export default function DisplayCampagin({title,isloading,campaigns}) {
               </form>
 
               {/* Product grid */}
+              <div className="lg:col-span-3">
+          <div className="flex flex-wrap">
+            {campaigns.length > 0 && campaigns.map((data) => (
+              <FundCard 
+                key={12}
+                owner={data[0]}
+                title={data.title}
+                description={data.description}
+                // target={ethers.utils.formatEther(data.target._hex) + " ETH"}
+                deadline={'12'}
+                // amountCollected={ethers.utils.formatEther(data.amountCollected)}
+                image={data.image}
+                handleClick={() => handleNavigate()}
+              />
+            ))}
+          </div>    
+              </div>
             </div>
           </section>
         </main>

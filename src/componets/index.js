@@ -5,5 +5,4 @@ export {
     FundCard,
     DisplayCampagin,
     Navbar,
-    
 }
