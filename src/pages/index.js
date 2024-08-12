@@ -1,18 +1,12 @@
-import Layout from "./Layout";  
-import CreateCampaign from "./CreateCampaign";
-import HomePage from "./HomePage";
-import WithDrawPage from "./WithDrawPage";
-import SigninPage from "./SignInPage";
-import RegisterPage from "./RegisterPage";  
-import CampaignDetails from "./CampaignDetails";    
-import WithDrawDetails from "./WithDrawDetails";
-export  {
-    Layout,
-    CreateCampaign,
-    HomePage,
-    WithDrawPage,
-    SigninPage,
+import LandingPage from './LandingPage/LandingPage'
+import LoginPage from './Authentication/LoginPage'
+import RegisterPage from './Authentication/RegisterPage'
+import Layout from './Layout/Layout'
+import CampaignList from './CampaignList/CampaignList'  
+export {
+    LandingPage,
+    LoginPage,
     RegisterPage,
-    CampaignDetails,
-    WithDrawDetails
+    Layout,
+    CampaignList
 }
