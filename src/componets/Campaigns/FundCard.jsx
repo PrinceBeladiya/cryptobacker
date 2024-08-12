@@ -3,7 +3,7 @@ import {tagType,thirdweb} from '../../assets'
 const FundCard = ({ owner, title, description, target, deadline, amountCollected, image, handleClick }) => {
   const [isImageLoading,setisImageLoading] = useState(false);
   return (
-    <div className='px-10'>
+    <div className='p-3 flex ml-10'>
       <div className="sm:w-[288px] w-full rounded-[15px] bg-white border border-gray-200 shadow dark:bg-gray-800 dark:border-gray-700" onClick={handleClick}>
       {/* {isImageLoading && (
         <div className="w-full h-[158px] flex justify-center items-center">
