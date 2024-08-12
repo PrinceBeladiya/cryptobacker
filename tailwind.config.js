@@ -1,11 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'custom-radial-gradient': 'radial-gradient(circle at 50% 50%, transparent 10%, rgba(0, 0, 0, 0.95) 20%)',
+      },
+    },
   },
   plugins: [],
 }
-
