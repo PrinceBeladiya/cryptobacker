@@ -1,33 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+import { toastFun } from "../../../utils";
 import '../../../Style.css'; // Ensure this file includes the #blurround and .register-container styles
 
 const Register = () => {
+  const navigate = useNavigate();
   // Set initial form state
   const [form, setForm] = useState({
-    email: '',
-    password: '',
     name: '',
-    proof: undefined,
-    dob: '',
+    email: '',
     mobile: '',
-    remember: false,
+    password: '',
+    file: undefined,
+    DOB: '',
+    role: 'User'
   });
 
   // Handle input change
   const handleChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
+    const { name, value, type, files } = e.target;
     setForm((prevForm) => ({
       ...prevForm,
-      [name]: type === 'checkbox' ? checked : type === 'file' ? files[0] : value,
+      [name]: type === 'file' ? files[0] : value,
     }));
   };
 
   // Handle form submit
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // Process form data
-    console.log('Form submitted:', form);
+
+    var formData = new FormData();
+    for (let ele in form) {
+      formData.append(ele, form[ele])
+    }
+
+    axios.post('http://localhost:3001/user/signup', formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" }
+      }
+    ).then((res) => {
+      toastFun(res.data.message, 'success');
+
+      navigate("/login")
+    }).catch((err) => {
+      toastFun(err.response.data.message, 'error');
+    })
   };
 
   useEffect(() => {
