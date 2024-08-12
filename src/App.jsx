@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import React from "react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { LandingPage, Layout, LoginPage, RegisterPage, CampaignList, PageNotFound } from './pages';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-function App() {
-  const [count, setCount] = useState(0);
 
+function App() {
   const router = createBrowserRouter([
     {
       path: '/',
@@ -35,6 +36,17 @@ function App() {
 
   return (
     <div>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <RouterProvider router={router} />
     </div>
   );
