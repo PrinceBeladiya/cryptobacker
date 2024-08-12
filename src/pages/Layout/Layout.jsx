@@ -1,13 +1,20 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
 import { Outlet, useLocation } from 'react-router-dom'
-import { Navbar } from '../../componets';
 import HomeNavbar from '../../componets/Navbar/HomeNavbar';
+import { useEffect } from 'react';
+import { setToken } from '../../redux/reducer/UserSession';
+import { useDispatch } from 'react-redux';
 
 const Layout = () => {
-  const authvalue = useSelector((state) => state.auth.value);
+  const dispatch = useDispatch();
+
   const location = useLocation();
   const path = location.pathname;
+
+  useEffect(() => {
+    if(localStorage.getItem('JWT_Token')) {
+      dispatch(setToken(localStorage.getItem('JWT_Token')));
+    }
+  }, []);
   
   return (
     <div>

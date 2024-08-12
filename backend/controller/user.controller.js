@@ -4,9 +4,9 @@ const { buildToken } = require("../utils/token");
 const { unlink } = require('node:fs');
 
 exports.signup = async (req, res) => {
-  const path = req.file.path;
   
   try {
+    const path = req.file.path;
     const { name, mobile, email, DOB, password, role } = req.body;
 
     if (!name || !mobile || !email || !DOB || !password || !role || !req.file) {
@@ -128,10 +128,12 @@ exports.signup = async (req, res) => {
     });
 
   } catch (err) {
-    console.log("Error : ", err)
-    unlink(path, (err) => {
-      if (err) throw err;
-    });
+    if(req.file && req.file.path) {
+      console.log("Error : ", err)
+      unlink(req.file.path, (err) => {
+        if (err) throw err;
+      });
+    }
 
     return res.status(500).send({
       status: false,
@@ -208,7 +210,7 @@ exports.login = async (req, res) => {
     return res.status(200).send({
       status: true,
       message: "User Authorized",
-      data: token
+      token: token
     });
   } catch (err) {
     console.log("Error : ", err)

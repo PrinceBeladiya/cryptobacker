@@ -1,4 +1,3 @@
-import React from "react";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { LandingPage, Layout, LoginPage, RegisterPage, CampaignList, PageNotFound } from './pages';

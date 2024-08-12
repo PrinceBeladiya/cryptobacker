@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavLink } from 'react-router-dom';
-import { isloggedin } from '../AuthSlice';
+import { NavLink, useNavigate } from 'react-router-dom';
 import '../../../Style.css';
+import { toastFun } from "../../../utils"
+import axios from 'axios';
+import { setToken } from '../../../redux/reducer/UserSession';
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -22,8 +26,23 @@ const Login = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    dispatch(isloggedin(true));
-    console.log('Form submitted:', form);
+    
+    axios.post(`http://localhost:3001/user/login`, {
+      ...form
+    }).then((res) => {
+      if(res?.data.token.length > 0) {
+        localStorage.setItem("JWT_Token", res?.data.token);
+        
+        dispatch(setToken(res?.data.token))
+        toastFun("User sign-in successfully.", 'success');
+        navigate("/");
+      } else {
+        toastFun("Something Went Wrong", 'warn');  
+      }
+    }).catch((err) => {
+      console.log("error - ", err?.response.data.message)
+      toastFun(err?.response.data.message, 'error');
+    })
   };
 
   useEffect(() => {
