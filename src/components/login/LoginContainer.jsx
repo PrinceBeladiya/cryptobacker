@@ -40,21 +40,10 @@ const LoginContainer = () => {
         toast("Something Went Wrong", 'warn');  
       }
     }).catch((err) => {
-      console.log("error - ", err?.response.data.message)
-      toast.error(err?.response.data.message);
+      console.log("error - ", err.message ? err.message : err?.response.data.message)
+      toast.error(err.message ? err.message : err?.response.data.message);
     })
   };
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      document.documentElement.style.setProperty('--x', `${e.clientX}px`);
-      document.documentElement.style.setProperty('--y', `${e.clientY}px`);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   return (
     <Login

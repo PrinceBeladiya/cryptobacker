@@ -37,7 +37,7 @@ const Navbar = ({
                     />
                   </button>
                   {isDropdownOpen && (
-                    <div style={{top: "2.5rem"}} className="absolute right-0 z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow" id="user-dropdown">
+                    <div style={{ top: "2.5rem" }} className="absolute right-0 z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow" id="user-dropdown">
                       <div className="px-4 py-3">
                         <span className="block text-sm text-gray-900">{userName}</span>
                         <span className="block text-sm text-gray-500 truncate">{userEmail}</span>
@@ -47,11 +47,11 @@ const Navbar = ({
                           <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</Link>
                         </li>
                         <li>
-                          <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</Link>
+                          <Link to="/create-campaign" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Create Campaign</Link>
                         </li>
-                        <li>
+                        {/* <li>
                           <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Earnings</Link>
-                        </li>
+                        </li> */}
                         <li>
                           <Link to="/" onClick={handleLogOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</Link>
                         </li>
@@ -79,18 +79,13 @@ const Navbar = ({
                       </Link>
                     </li>
                     <li>
+                      <Link to="/campaign-list" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">
+                        Campaign
+                      </Link>
+                    </li>
+                    <li>
                       <Link to="/" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">
                         About
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">
-                        Services
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">
-                        Pricing
                       </Link>
                     </li>
                     <li>

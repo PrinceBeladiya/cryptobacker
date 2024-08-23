@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Layout from "./Layout"
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserDetails, setToken, logout } from "../../redux/reducer/UserSession";
+import { fetchUserDetails, setToken } from "../../redux/reducer/UserSession";
 
 const LayoutContainer = () => {
   const dispatch = useDispatch();
@@ -19,17 +19,10 @@ const LayoutContainer = () => {
     }
   }, []);
 
-  const handleLogOut = () => {
-    localStorage.clear();
-
-    dispatch(logout());
-  }
-
   return (
     <Layout
       userName={userName}
       userEmail={userEmail}
-      handleLogOut={handleLogOut}
     />
   )
 }
