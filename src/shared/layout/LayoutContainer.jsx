@@ -5,7 +5,7 @@ import { fetchUserDetails, setToken } from "../../redux/reducer/UserSession";
 
 const LayoutContainer = () => {
   const dispatch = useDispatch();
-  const { userToken, userName, userEmail } = useSelector((state) => state.user)
+  const { userToken } = useSelector((state) => state.user)
 
   useEffect(() => {
     if (userToken) {
@@ -20,10 +20,7 @@ const LayoutContainer = () => {
   }, []);
 
   return (
-    <Layout
-      userName={userName}
-      userEmail={userEmail}
-    />
+    <Layout />
   )
 }
 

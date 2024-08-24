@@ -2,16 +2,10 @@
 import { Outlet } from "react-router-dom"
 import { FooterContainer, NavbarContainer } from "../"
 
-const Layout = ({
-  userName,
-  userEmail,
-}) => {
+const Layout = () => {
   return (
     <div>
-      <NavbarContainer
-        userName={userName}
-        userEmail={userEmail}
-      />
+      <NavbarContainer />
       <Outlet />
       <FooterContainer />
     </div>

@@ -5,6 +5,7 @@ const initialState = {
   userToken: "",
   userName: "",
   userEmail: "",
+  userStatus: ""
 }
 
 // Create an async thunk for fetching user details
@@ -37,6 +38,7 @@ export const userSlice = createSlice({
       state.userToken = ""
       state.userName = ""
       state.userEmail = ""
+      state.userStatus = ""
     }
   },
   extraReducers: (builder) => {
@@ -48,6 +50,7 @@ export const userSlice = createSlice({
         state.status = 'succeeded'
         state.userName = action.payload.name
         state.userEmail = action.payload.email
+        state.userStatus = action.payload.status
       })
       .addCase(fetchUserDetails.rejected, (state, action) => {
         state.status = 'failed'
