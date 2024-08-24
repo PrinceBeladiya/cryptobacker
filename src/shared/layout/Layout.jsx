@@ -12,7 +12,9 @@ const Layout = ({
         userName={userName}
         userEmail={userEmail}
       />
-      <Outlet />
+       <div style={{ minHeight: "calc(100vh - 64px - 164.8px)" }}>
+        <Outlet />
+      </div>
       <FooterContainer />
     </div>
   )
