@@ -21,6 +21,10 @@ const NavbarContainer = () => {
     setDropdownOpen(false);
   }
 
+  const handleclick = () => {
+    setDropdownOpen(false); 
+  }
+
   return (
     <Navbar
       userName={userName}
@@ -29,6 +33,7 @@ const NavbarContainer = () => {
       handleLogOut={handleLogOut}
       isDropdownOpen={isDropdownOpen}
       toggleDropdown={toggleDropdown}
+      handleclick={handleclick}
     />
   )
 }

@@ -1,9 +1,10 @@
 import { Toaster } from 'react-hot-toast';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { LayoutContainer, NotFoundContainer } from './shared';
-import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, UserDashboardContainer, CreateCampaignContainer } from "./components";
+import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer } from "./components";
 
-function App() {  
+function App() {
+
   const router = createBrowserRouter([
     {
       path: '/',
@@ -23,23 +24,28 @@ function App() {
         },
         {
           path: 'campaign-list',
-          element: <CampaignListContainer />
+          element: <CampaignListContainer />,
         },
         {
           path: 'create-campaign',
-          element: <CreateCampaignContainer />
+          element: <CreateCampaignContainer />,
         },
         {
           path: 'user-dashboard',
-          element: <UserDashboardContainer />
+          element: <UserDashBoardContainer />,
+        },
+        {
+          path: 'campaign-detail/:id',
+          element: <CampaignDetailsContainer />,
         },
         {
           path: '*',
-          element: <NotFoundContainer />
-        }
+          element: <NotFoundContainer />,
+        },
       ],
     },
   ]);
+  
 
   return (
     <>

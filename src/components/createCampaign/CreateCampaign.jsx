@@ -26,10 +26,10 @@ const CreateCampaign = ({handleSubmit,handlechange}) => {
                   <Label htmlFor="campaign_title" value="Campaign Title" />
                 </div>
                 <TextInput
-                  id="heading"
+                  id="title"
                   type="text"
                   placeholder="Enter Camapaign Title"
-                  name="heading"
+                  name="title"
                   onChange={handlechange}
                   required
                 />
@@ -50,10 +50,11 @@ const CreateCampaign = ({handleSubmit,handlechange}) => {
             </div>
             <div>
               <div className="block mb-2">
-                <Label htmlFor="description" value="Description" />
+                <Label htmlFor="description_lbl" value="Description" />
               </div>
               <Textarea
                 id="description"
+                name="description"
                 placeholder="Enter description..."
                 required
                 onChange={handlechange}
@@ -79,11 +80,11 @@ const CreateCampaign = ({handleSubmit,handlechange}) => {
               </div>
               <div>
                 <div className="block mb-2">
-                  <Label htmlFor="post_date" value="Ending Date" />
+                  <Label htmlFor="deadline_lbl" value="Ending Date" />
                 </div>
                 <input
                   type="date"
-                  name="post_date"
+                  name="deadline"
                   onChange={handlechange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   required
@@ -103,7 +104,7 @@ const CreateCampaign = ({handleSubmit,handlechange}) => {
               </div>
               <div>
                 <div className="block mb-2">
-                  <Label htmlFor="post_date" value="Upload Campaign Report" />
+                  <Label htmlFor="camapaign_rep" value="Upload Campaign Report" />
                 </div>
                 <FileInput
                   type="file"
