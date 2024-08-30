@@ -1,60 +1,66 @@
-  import CreateCampaign from "./CreateCampaign"
-  import { useState } from "react";
-  import { isAlphabets,isdescreption,isFutureDate } from "../../utils";
-  import toast from "react-hot-toast";
-  const CreateCampaignContainer = () => {
+import CreateCampaign from "./CreateCampaign"
+import { useState } from "react";
+import { isAlphabets, isdescreption, isFutureDate } from "../../utils";
+import toast from "react-hot-toast";
+import { createCampaign, getCampaigns } from "../../context";
+import { useSelector } from "react-redux";
+const CreateCampaignContainer = () => {
 
-    const [formData, setFormData] = useState({
-      title: '',
-      target: '',
-      description: '',
-      select_category: 'NA',
-      deadline: '',
-      campaingn_thumbnil: undefined,
-      campaingn_report: undefined,
-    });
+  const { userName } = useSelector((state) => state.user);
 
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      if(formData.title.length > 0 && formData.description.trim().length > 0 && formData.select_category !='NA'){
-        if(isAlphabets(formData.title) && Number(formData.target) > 0 && isdescreption(formData.description) && isFutureDate(formData.deadline)){
-          toast.success('Data Submitted','success');
+  const [formData, setFormData] = useState({
+    name: '',
+    title: '',
+    target: '',
+    description: '',
+    category: 'NA',
+    deadline: '',
+    campaingn_thumbnail: undefined,
+    campaingn_report: undefined,
+  });
 
-          // ********** add your logic here *************
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.title.length > 0 && formData.description.trim().length > 0 && formData.select_category != 'NA') {
+      if (isAlphabets(formData.title) && Number(formData.target) > 0 && isFutureDate(formData.deadline)) {
+        formData['name'] = userName;
 
-        }
-        else{
-          toast.error('Please Fill Valid Deatils','warn')
-        }
+        await createCampaign(formData);
+        const data = await getCampaigns();
+        console.log(data);
       }
-      else{
-        toast.error('Please Fill all Details')
+      else {
+        toast.error('Please Fill Valid Deatils', 'warn')
       }
     }
-
-    const handlechange = (e) => {
-      const { name, value, type, files } = e.target;
-    
-      if (type === 'file') {
-        setFormData(prevState => ({
-          ...prevState,
-          [name]: files[0],
-        }));
-      } else {
-        setFormData(prevState => ({
-          ...prevState,
-          [name]: value,
-        }));
-      }
-    };
-    
-
-    return (
-      <CreateCampaign
-      handleSubmit={handleSubmit}
-      handlechange={handlechange}
-      />
-    )
+    else {
+      toast.error('Please Fill all Details')
+    }
   }
 
-  export default CreateCampaignContainer
+  const handlechange = (e) => {
+    const { name, value, type, files } = e.target;
+
+    if (type === 'file') {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: files[0],
+      }));
+    } else {
+      setFormData(prevState => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
+
+
+  return (
+    <CreateCampaign
+      handleSubmit={handleSubmit}
+      handlechange={handlechange}
+    />
+  )
+}
+
+export default CreateCampaignContainer

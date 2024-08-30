@@ -24,11 +24,18 @@ contract CryptoBacker is ReentrancyGuard {
         uint256 deadline;
         uint256 amountCollectedETH;
         uint256 amountCollectedUSDC;
-        string image;
         uint256 status;
-        address[] donators;
-        uint256[] donationETH;
-        uint256[] donationUSDC;
+        uint256 createdAt;
+        Donation[] donations;
+    }
+
+    struct Donation {
+      address donor;
+      string donorName;
+      string donorEmail;
+      uint256 amountETH;
+      uint256 amountUSDC;
+      uint256 timestamp;
     }
 
     ISwapRouter public immutable swapRouter;
@@ -39,8 +46,8 @@ contract CryptoBacker is ReentrancyGuard {
     mapping(uint256 => Campaign) public campaigns;
     uint256 public numberOfCampaigns = 0;
 
-    event CampaignCreated(uint256 indexed campaignCode, address indexed owner, uint256 target, uint256 deadline);
-    event DonationReceived(uint256 indexed campaignCode, address indexed donor, uint256 amountETH, uint256 amountUSDC);
+    event CampaignCreated(uint256 indexed campaignCode, address indexed owner, uint256 target, uint256 deadline, uint256 createdAt);
+    event DonationReceived(uint256 indexed campaignCode, address indexed donor, string donorName, string donorEmail, uint256 amountETH, uint256 amountUSDC, uint256 timestamp);
     event CampaignStatusUpdated(uint256 indexed campaignCode, uint256 newStatus);
     event CampaignDeleted(uint256 indexed campaignCode); // Event for deletion
 
@@ -90,8 +97,7 @@ contract CryptoBacker is ReentrancyGuard {
         string memory _description,
         string memory _category,
         uint256 _target,
-        uint256 _deadline,
-        string memory _image
+        uint256 _deadline
     ) public returns(uint256) {
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(_owner != address(0), "Invalid owner address");
@@ -100,7 +106,6 @@ contract CryptoBacker is ReentrancyGuard {
         require(bytes(_category).length > 0, "Category cannot be empty");
         require(_target > 0, "Target must be greater than 0");
         require(_deadline > block.timestamp, "Deadline must be in the future");
-        require(bytes(_image).length > 0, "Image URL cannot be empty");
 
         Campaign storage newCampaign = campaigns[numberOfCampaigns];
 
@@ -113,36 +118,45 @@ contract CryptoBacker is ReentrancyGuard {
         newCampaign.deadline = _deadline;
         newCampaign.amountCollectedETH = 0;
         newCampaign.amountCollectedUSDC = 0;
-        newCampaign.image = _image;
         newCampaign.status = 0;
         newCampaign.campaignCode = numberOfCampaigns;
+        newCampaign.createdAt = block.timestamp;
 
-        emit CampaignCreated(numberOfCampaigns, _owner, _target, _deadline);
+        emit CampaignCreated(numberOfCampaigns, _owner, _target, _deadline, block.timestamp);
 
         numberOfCampaigns++;
         return numberOfCampaigns - 1;
     }
 
-    function donateToCampaign(uint256 _id) public payable nonReentrant returns(uint256) {
+    function donateToCampaign(
+      uint256 _id,
+      string memory _userName,
+      string memory _userEmail
+    ) public payable nonReentrant returns(uint256) {
         require(numberOfCampaigns > 0, "No campaigns available");
         require(_id < numberOfCampaigns, "Invalid campaign ID");
         require(msg.value > 0, "Donation must be greater than zero");
 
         Campaign storage campaign = campaigns[_id];
-        require(campaign.status == 0, "Campaign is not active");
+        require(campaign.status != 0, "Campaign is not active");
         require(block.timestamp < campaign.deadline, "Campaign has ended");
 
         uint256 amountETH = msg.value;
         uint256 amountUSDC = swapExactInputSingle(amountETH / 2);
 
-        campaign.donators.push(msg.sender);
-        campaign.donationETH.push(amountETH / 2);
-        campaign.donationUSDC.push(amountUSDC);
+        campaign.donations.push(Donation({
+            donor: msg.sender,
+            amountETH: amountETH / 2,
+            amountUSDC: amountUSDC,
+            timestamp: block.timestamp,
+            donorName: _userName,
+            donorEmail: _userEmail
+        }));
 
         campaign.amountCollectedETH += amountETH / 2;
         campaign.amountCollectedUSDC += amountUSDC;
 
-        emit DonationReceived(_id, msg.sender, amountETH / 2, amountUSDC);
+        emit DonationReceived(_id, msg.sender, _userName, _userEmail, amountETH / 2, amountUSDC, block.timestamp);
 
         if (campaign.amountCollectedETH >= campaign.target) {
             campaign.status = 1; // Completed
@@ -152,9 +166,9 @@ contract CryptoBacker is ReentrancyGuard {
         return amountUSDC;
     }
 
-    function getDonator(uint256 _id) view public returns(address[] memory, uint256[] memory, uint256[] memory) {
+    function getDonations(uint256 _id) view public returns(Donation[] memory) {
         require(_id < numberOfCampaigns, "Invalid campaign ID");
-        return (campaigns[_id].donators, campaigns[_id].donationETH, campaigns[_id].donationUSDC);
+        return campaigns[_id].donations;
     }
 
     function getCampaigns() view public returns(Campaign[] memory) {
@@ -187,6 +201,7 @@ contract CryptoBacker is ReentrancyGuard {
         
         // Clear the campaign data
         delete campaigns[_id];
+        numberOfCampaigns--;
 
         emit CampaignDeleted(_id);
     }

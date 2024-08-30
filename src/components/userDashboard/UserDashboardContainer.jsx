@@ -1,9 +1,21 @@
-import React from 'react'
 import { useEffect,useRef,useState } from 'react';
 import UserDashboard from './UserDashboard'
 import ApexCharts from 'apexcharts';
+import { getUserCampaigns } from '../../context';
+
 const UserDashBoardContainer = () => {
   const chartRef = useRef(null);
+  const [userCampaigns, setUserCampaigns] = useState([]);
+
+  const getUserCampaignDetails = () => {
+    getUserCampaigns().then((res) => {
+      setUserCampaigns(res);
+    });
+  }
+
+  useEffect(() => {
+    getUserCampaignDetails();
+  }, []);
 
   const camapaigns = [
     {
@@ -207,7 +219,7 @@ const UserDashBoardContainer = () => {
   return (
     <UserDashboard
     chartRef={chartRef}
-    campaigns={camapaigns}
+    campaigns={userCampaigns}
     handleclick={handleclick}
     toggleDropdown={toggleDropdown}
     isOpen={isOpen}

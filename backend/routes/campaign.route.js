@@ -13,5 +13,6 @@ router.post('/createCampaign', auth(['User']), async (req, res, next) => {
 });
 
 router.delete('/deleteCampaign', auth(['User']), campaignController.deleteCampaign)
+router.post('/campaignExist', auth(['User']), campaignController.campaignExist)
 
 module.exports = router;

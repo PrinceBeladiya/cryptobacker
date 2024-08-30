@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import CryptoBacker from '../artifacts/contracts/cryptoBacker.sol/CryptoBacker.json';
 import { ethers } from "ethers";
 import axios from 'axios';
@@ -15,7 +14,7 @@ const getProvider = () => {
 
 export const updateCampaignStatus = async (campaignCode, newStatus) => {
   try {
-    if (typeof campaignCode !== 'number' || campaignCode < 0) {
+    if (campaignCode < 0) {
       throw new Error("Invalid campaign code");
     }
 
@@ -57,13 +56,12 @@ export const enableEthereum = async () => {
 };
 
 export const createCampaign = async (form) => {
-  let newCampaignCode = -1;
   try {
     const provider = await getProvider();
     const signer = await getSigner(provider);
     const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
 
-    if (!form.name || !form.title || !form.description || !form.category || !form.target || !form.deadline || !form.image || !form.files) {
+    if (!form.name || !form.title || !form.description || !form.category || !form.target || !form.deadline || !form.campaingn_thumbnail || !form.campaingn_report) {
       throw new Error("All fields are required");
     }
 
@@ -75,64 +73,73 @@ export const createCampaign = async (form) => {
       throw new Error("Deadline must be in the future");
     }
 
-    // const feeData = await provider.getFeeData();
-    const tx = await contract.createCampaign(
-      form.name,
-      await signer.getAddress(),
-      form.title,
-      form.description,
-      form.category,
-      ethers.parseEther(form.target.toString()),
-      Math.floor(new Date(form.deadline).getTime() / 1000),
-      form.image
-    );
-
-    const receipt = await tx.wait();
-
-    // Check if events are present and if the event 'CampaignCreated' is in the receipt
-    if (!receipt.logs || !receipt.logs.length) {
-      throw new Error("No events emitted by the transaction");
-    }
-
-    const event = receipt.logs.find(event => event.eventName === 'CampaignCreated');
-
-    if (!event) {
-      throw new Error("CampaignCreated event not found in the receipt");
-    }
-
-    const [campaignCode] = event.args;
-    newCampaignCode = campaignCode;
-    const createdCampaign = await getCampaigns();
-    console.log(createdCampaign[Number(campaignCode)]);
-
-    await axios.post("http://localhost:3001/campaign/createCampaign", {
-      ...createdCampaign[Number(campaignCode)],
-      files: form.files
-    },
+    await axios.post("http://localhost:3001/campaign/campaignExist", form,
       {
         headers: { 'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}` }
       }
-    ).then((res) => {
-      toast.success(res.data.message);
-      return res.data.data;
-    }).catch(async (err) => {
-      newCampaignCode != -1 && deleteCampaign(newCampaignCode);
+    ).then(async (res) => {
+      const formData = new FormData();
 
-      await axios.delete("http://localhost:3001/campaign/deleteCampaign", {
-        newCampaignCode
-      },
+      const tx = await contract.createCampaign(
+        form.name,
+        await signer.getAddress(),
+        form.title,
+        form.description,
+        form.category,
+        ethers.parseEther(form.target.toString()),
+        Math.floor(new Date(form.deadline).getTime() / 1000)
+      );
+
+      const receipt = await tx.wait();
+
+      // Check if events are present and if the event 'CampaignCreated' is in the receipt
+      if (!receipt.logs || !receipt.logs.length) {
+        throw new Error("No events emitted by the transaction");
+      }
+
+      const event = receipt.logs.find(event => event.eventName === 'CampaignCreated');
+
+      if (!event) {
+        throw new Error("CampaignCreated event not found in the receipt");
+      }
+
+      const [campaignCode] = event.args;
+      // newCampaignCode = campaignCode;
+      const createdCampaign = await getCampaigns();
+      console.log(createdCampaign[Number(campaignCode)]);
+
+      const data = {
+        ...createdCampaign[Number(campaignCode)]
+      };
+
+      // Append text fields
+      formData.append('campaignCode', data.campaignCode);
+      formData.append('category', data.category);
+      formData.append('deadline', data.deadline);
+      formData.append('description', data.description);
+      formData.append('name', data.name);
+      formData.append('status', data.status);
+      formData.append('target', data.target);
+      formData.append('title', data.title);
+      formData.append('files', form.campaingn_thumbnail)
+      formData.append('files', form.campaingn_report)
+
+      await axios.post("http://localhost:3001/campaign/createCampaign", formData,
         {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}` }
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+            "Content-Type": "multipart/form-data"
+          }
         }
       ).then((res) => {
         toast.success(res.data.message);
         return res.data.data;
-      }).catch((err) => {
+      }).catch(async (err) => {
         toast.error(err.response.data.message);
-  
+
         throw err;
       })
-
+    }).catch((err) => {
       toast.error(err.response.data.message);
 
       throw err;
@@ -140,22 +147,6 @@ export const createCampaign = async (form) => {
   } catch (error) {
     console.error("Error creating campaign:", error);
 
-    newCampaignCode != -1 && deleteCampaign(newCampaignCode);
-    await axios.delete("http://localhost:3001/campaign/deleteCampaign", {
-      newCampaignCode
-    },
-      {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}` }
-      }
-    ).then((res) => {
-      toast.success(res.data.message);
-      return res.data.data;
-    }).catch((err) => {
-      toast.error(err.response.data.message);
-
-      throw err;
-    })
-    
     throw error;
   }
 };
@@ -166,12 +157,24 @@ export const getCampaignDonation = async (campaignCode) => {
     const signer = await getSigner(provider);
     const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
 
-    if (typeof campaignCode !== 'number' || campaignCode < 0) {
+    if (campaignCode < 0) {
       throw new Error("Invalid campaign code");
     }
 
-    const data = await contract.getDonator(campaignCode);
-    return data;
+    const data = await contract.getDonations(campaignCode);
+
+
+    // If campaigns is an array of objects
+    const donationData = data.map(donations => ({
+      donor: donations.donor,
+      donorName: donations.donorName,
+      donorEmail: donations.donorEmail,
+      amountETH: donations.amountETH,
+      amountUSDC: donations.amountUSDC,
+      timestamp: new Date(Number(donations.timestamp) * 1000).toISOString(),
+    }));
+
+    return donationData;
   } catch (error) {
     console.error("Error getting campaign donation:", error);
     throw error;
@@ -208,6 +211,9 @@ export const getCampaigns = async () => {
 
     // If campaigns is an array of objects
     const formattedCampaigns = campaigns.map(campaign => ({
+      owner: campaign.owner,
+      amountCollectedETH: campaign.amountCollectedETH,
+      amountCollectedUSDC: campaign.amountCollectedUSDC,
       campaignCode: Number(campaign.campaignCode),
       name: campaign.name,
       title: campaign.title,
@@ -215,8 +221,8 @@ export const getCampaigns = async () => {
       category: campaign.category,
       target: ethers.formatEther(campaign.target),
       deadline: new Date(Number(campaign.deadline) * 1000).toISOString(),
-      image: campaign.image,
       status: Number(campaign.status),
+      createdAt: new Date(Number(campaign.createdAt) * 1000).toISOString(),
     }));
 
     return formattedCampaigns;
@@ -282,13 +288,15 @@ export const getUserCampaigns = async () => {
   }
 };
 
-export const donateToCampaign = async (campaignCode, amount) => {
+export const donateToCampaign = async (data) => {
   try {
-    if (typeof campaignCode !== 'number' || campaignCode < 0) {
+    const { campaignCode, amount, userName, userEmail } = data;
+
+    if (campaignCode < 0) {
       throw new Error("Invalid campaign code");
     }
 
-    if (typeof amount !== 'number' || amount <= 0) {
+    if (amount <= 0) {
       throw new Error("Donation amount must be greater than zero");
     }
 
@@ -297,22 +305,39 @@ export const donateToCampaign = async (campaignCode, amount) => {
     const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
 
     const feeData = await provider.getFeeData();
-    const tx = await contract.donateToCampaign(
-      campaignCode,
-      {
-        value: ethers.parseEther(amount.toString()),
-        maxFeePerGas: feeData.maxFeePerGas * 2n,
-        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas + ethers.parseUnits('1', 'gwei')
-      }
-    );
+    let tx;
+    if (userName && userEmail) {
+      tx = await contract.donateToCampaign(
+        campaignCode, userName, userEmail,
+        {
+          value: ethers.parseEther(amount.toString()),
+          maxFeePerGas: feeData.maxFeePerGas * 2n,
+          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas + ethers.parseUnits('1', 'gwei')
+        }
+      );
+    }
 
     const receipt = await tx.wait();
-    const event = receipt.events.find(event => event.event === 'DonationReceived');
-    const [, , amountETH, amountUSDC] = event.args;
+
+    if (!receipt.logs || !receipt.logs.length) {
+      throw new Error("No events emitted by the transaction");
+    }
+
+    const donationEvent = receipt.logs.find(event => event.eventName === 'DonationReceived');
+
+    if (!donationEvent) {
+      throw new Error("DonationReceived event not found");
+    }
+
+    const { donor, donorName, donorEmail, amountETH, amountUSDC, timestamp } = donationEvent.args;
 
     return {
+      donor,
+      donorName,
+      donorEmail,
       amountETH: ethers.formatEther(amountETH),
-      amountUSDC: ethers.formatUnits(amountUSDC, 6)
+      amountUSDC: ethers.formatUnits(amountUSDC, 6),
+      timestamp
     };
   } catch (error) {
     console.error("Error donating to campaign:", error);
@@ -322,7 +347,7 @@ export const donateToCampaign = async (campaignCode, amount) => {
 
 export const deleteCampaign = async (campaignCode) => {
   try {
-    if (typeof campaignCode !== 'number' || campaignCode < 0) {
+    if (campaignCode < 0) {
       throw new Error("Invalid campaign code");
     }
 

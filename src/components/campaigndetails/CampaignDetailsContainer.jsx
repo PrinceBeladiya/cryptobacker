@@ -1,13 +1,62 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CampaignDetails from './CampaignDetails'
 import { useParams } from 'react-router-dom'
 import toast from 'react-hot-toast';
+import { donateToCampaign, getCampaignDonation, updateCampaignStatus } from '../../context';
+import { useSelector } from 'react-redux';
 
 const CampaignDetailsContainer = () => {
-  const [isexpanded,setisexpanded] = useState(false);
-  const [isAdmin,setisAdmin] = useState(false);
-  const [amount,setAmount] = useState('');
-  const [donors,setdonors] = useState([
+  const pathname = window.location.pathname.split("/");
+  const campaignCode = pathname[pathname.length - 1];
+
+  const { userName, userEmail } = useSelector((state) => state.user)
+
+  const getUserCampaignDetails = () => {
+    getCampaignDonation(campaignCode).then((res) => {
+      // Aggregate donations by donor for admin view
+      const aggregatedDonations = res.reduce((acc, donation) => {
+        const donor = donation.donor;
+
+        // If donor already exists in the accumulator, add to their totals
+        if (acc[donor]) {
+          acc[donor].amountETH += BigInt(donation.amountETH);
+          acc[donor].amountUSDC += BigInt(donation.amountUSDC);
+        } else {
+          // If donor doesn't exist, create a new entry
+          acc[donor] = {
+            amountETH: BigInt(donation.amountETH),
+            amountUSDC: BigInt(donation.amountUSDC),
+            donorName: donation.donorName,
+            donorEmail: donation.donorEmail,
+            donor: donor,
+            timestamp: donation.timestamp // Optional: You can decide how to handle the timestamp
+          };
+        }
+        return acc;
+      }, {});
+
+      // Convert the aggregated donations object back into an array
+      const aggregatedDonationsArray = Object.values(aggregatedDonations);
+
+      // Now set the state with the aggregated donations
+      console.log("aggregatedDonationsArray : ");
+      console.log(aggregatedDonationsArray);
+
+      // for user view
+      console.log("all donations")
+      console.log(res);
+      return res;
+    });
+  }
+
+  useEffect(() => {
+    getUserCampaignDetails();
+  }, []);
+
+  const [isexpanded, setisexpanded] = useState(false);
+  const [isAdmin, setisAdmin] = useState(false);
+  const [amount, setAmount] = useState('');
+  const [donors, setdonors] = useState([
     {
       id: 1,
       name: "Neil Sims",
@@ -138,39 +187,49 @@ const CampaignDetailsContainer = () => {
       status: 'Cancelled',
     },
   ];
-  const {id} = useParams();
+  const { id } = useParams();
 
-    const handleclick = (e) => {
-      if(e.target.name == "pay"){
-        if(amount > 0 && !isNaN(amount)){
-          // add pay function here
-        }
-        else{
-          toast.error('Enter Valid Amount','warn');   
-        }
+  const handleclick = (e) => {
+    if (e.target.name == "pay") {
+      if (amount > 0 && !isNaN(amount)) {
+        updateCampaignStatus(campaignCode, 1).then((res) => {
+          donateToCampaign({
+            campaignCode,
+            amount,
+            userName,
+            userEmail,
+          }).then((res) => {
+            console.log("Res", res);
+            setdonors(res)
+          })
+        })
       }
-      setisexpanded(!isexpanded)
+      else {
+        toast.error('Enter Valid Amount', 'warn');
+      }
     }
+    setisexpanded(!isexpanded)
+  }
 
-    const handleInputChange = (e) => {
-      setAmount(e.target.value);
-    };
+  const handleInputChange = (e) => {
+    setAmount(e.target.value);
+  };
 
-    return (
+  return (
     <div>
       <CampaignDetails
-      id={id}
-      handleClick={handleclick}
-      isexpanded={isexpanded}
-      amount={amount}
-      handleInputChange={handleInputChange}
-      isAdmin={isAdmin}
-      donors={donors}
-      totalRaised={totalRaised}
-      goal={goal}
-      topDonor={topDonor}
-      averageDonation={averageDonation}
-      orders={orders}
+        id={id}
+        handleClick={handleclick}
+        isexpanded={isexpanded}
+        amount={amount}
+        handleInputChange={handleInputChange}
+        isAdmin={isAdmin}
+        donors={donors}
+        totalRaised={totalRaised}
+        goal={goal}
+        topDonor={topDonor}
+        averageDonation={averageDonation}
+        orders={orders}
       />
     </div>
   )

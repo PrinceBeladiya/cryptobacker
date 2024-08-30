@@ -10,8 +10,11 @@ exports.createCampaign = async (req, res) => {
     const { campaignCode, name, title, target, deadline, description, category } = req.body;
     const files = req.files;
 
-    if (req.files && req.files.length > 0) {
-      files.forEach(file => uploadedFilePaths.push(file.path));
+    if (req.files.campaign_thumbnail && req.files.campaign_thumbnail.length > 0) {
+      uploadedFilePaths.push(req.files.campaign_thumbnail[0].path);
+    }
+    if (req.files.campaign_report && req.files.campaign_report.length > 0) {
+      uploadedFilePaths.push(req.files.campaign_report[0].path);
     }
 
     if (!title || !target || !deadline || !description || !category || !campaignCode || !name || !req.user._id || !files) {
@@ -157,6 +160,54 @@ exports.deleteCampaign = async (req, res) => {
         message: "Campaign cannot be deleted"
       });
     }
+  } catch (err) {
+    console.log("Error : ", err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
+exports.campaignExist = async (req, res) => {
+  try {
+    const { name, title, description, category } = req.body;
+
+    if (!title || !description || !category || !name || !req.user._id) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const campaignExist = await Campaign.exists({
+      $or: [
+        {
+          description: description.trim()
+        },
+        {
+          name: name.trim()
+        },
+        {
+          title: title.trim()
+        },
+        {
+          category: category.trim()
+        },
+      ]
+    })
+
+    if (campaignExist) {
+      return res.status(400).send({
+        status: false,
+        message: "Some Details of campaign is already registered"
+      })
+    }
+
+    return res.status(200).send({
+      status: true,
+      message: "Campaign can create"
+    })
   } catch (err) {
     console.log("Error : ", err);
     return res.status(500).send({

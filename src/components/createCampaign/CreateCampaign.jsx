@@ -1,14 +1,18 @@
-import { 
+/* eslint-disable react/prop-types */
+import {
   Card,
-  TextInput, 
+  TextInput,
   Label,
   Textarea,
   Button,
   Select,
   FileInput
- } from "flowbite-react";
+} from "flowbite-react";
 
-const CreateCampaign = ({handleSubmit,handlechange}) => {
+const CreateCampaign = ({ 
+  handleSubmit,
+  handlechange
+}) => {
   return (
     <section>
       <div className="flex justify-center gap-24 px-5 py-8 md:px-14">
@@ -19,53 +23,53 @@ const CreateCampaign = ({handleSubmit,handlechange}) => {
             </h5>
           </div>
           <div className="flex justify-center">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-4 md:flex-row">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 md:flex-row">
+                <div>
+                  <div className="block mb-2">
+                    <Label htmlFor="campaign_title" value="Campaign Title" />
+                  </div>
+                  <TextInput
+                    id="title"
+                    type="text"
+                    placeholder="Enter Camapaign Title"
+                    name="title"
+                    onChange={handlechange}
+                    required
+                  />
+                </div>
+                <div>
+                  <div className="block mb-2">
+                    <Label htmlFor="target" value="Enter Target" />
+                  </div>
+                  <TextInput
+                    id="target"
+                    type="number"
+                    name="target"
+                    placeholder="ETH"
+                    onChange={handlechange}
+                    required
+                  />
+                </div>
+              </div>
               <div>
                 <div className="block mb-2">
-                  <Label htmlFor="campaign_title" value="Campaign Title" />
+                  <Label htmlFor="description_lbl" value="Description" />
                 </div>
-                <TextInput
-                  id="title"
-                  type="text"
-                  placeholder="Enter Camapaign Title"
-                  name="title"
-                  onChange={handlechange}
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Enter description..."
                   required
+                  onChange={handlechange}
+                  rows={4}
                 />
               </div>
               <div>
                 <div className="block mb-2">
-                  <Label htmlFor="target" value="Enter Target" />
+                  <Label htmlFor="campaign_cateogry" value="Category" />
                 </div>
-                <TextInput
-                  id="target"
-                  type="number"
-                  name="target"
-                  placeholder="ETH"
-                  onChange={handlechange}
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <div className="block mb-2">
-                <Label htmlFor="description_lbl" value="Description" />
-              </div>
-              <Textarea
-                id="description"
-                name="description"
-                placeholder="Enter description..."
-                required
-                onChange={handlechange}
-                rows={4}
-              />
-            </div>
-              <div>
-                <div className="block mb-2">
-                  <Label htmlFor="campaign_cateogry" value="Category"/>
-                </div>
-                <Select id="select_category" name="select_category" defaultValue={"NA"} onChange={handlechange} required>
+                <Select id="select_category" name="category" defaultValue={"NA"} onChange={handlechange} required>
                   <option value="NA" disabled>
                     Select Camapaign Category
                   </option>
@@ -96,7 +100,7 @@ const CreateCampaign = ({handleSubmit,handlechange}) => {
                 </div>
                 <FileInput
                   type="file"
-                  name="campaingn_thumbnil"
+                  name="campaingn_thumbnail"
                   onChange={handlechange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full"
                   required
@@ -115,12 +119,12 @@ const CreateCampaign = ({handleSubmit,handlechange}) => {
                 />
               </div>
 
-            <hr className="my-4" />
+              <hr className="my-4" />
 
-            <Button type="submit" color={"blue"}>
-              Submit
-            </Button>
-          </form>
+              <Button type="submit" color={"blue"}>
+                Submit
+              </Button>
+            </form>
           </div>
         </Card>
         <div className="items-center justify-center hidden md:flex">
