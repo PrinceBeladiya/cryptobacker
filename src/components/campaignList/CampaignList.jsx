@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const CampaignList = ({ campaigns, isOpen, categories, handleCheckboxChange, toggleDropdown, handleNavigate }) => {
   return (
@@ -64,19 +65,22 @@ const CampaignList = ({ campaigns, isOpen, categories, handleCheckboxChange, tog
           <div className='mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4'>
             {campaigns.length > 0 ? (
               campaigns.map((campaign) => (
-                <div key={campaign.id} className="group relative overflow-hidden bg-white border border-gray-200 rounded-lg shadow-md">
+                <div key={campaign._id} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow">
                   <div className="flex-shrink-0">
-                    <img src={campaign.imageUrl} alt={campaign.title} className="h-48 w-full object-cover" />
+                    <img src={'../../backend/' + campaign.filePaths[0]} alt={campaign.title} className="h-48 w-full object-fit" />
                   </div>
                   <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900">{campaign.title}</h3>
-                    <p className="mt-2 text-base text-gray-500">{campaign.description}</p>
-                    <button
-                      onClick={() => handleNavigate(campaign.id)}
-                      className="mt-4 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                    <h3 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">{campaign.title}</h3>
+                    <p class="mb-3 font-normal text-justify text-gray-70">{campaign.description.slice(0, 103) + "..."}</p>
+                    <Link
+                      to={'../campaign-detail/' + campaign.campaignCode}
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 "
                     >
                       View Details
-                    </button>
+                      <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
               ))

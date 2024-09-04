@@ -25,7 +25,7 @@ exports.createCampaign = async (req, res) => {
     }
 
     const campaignExist = await Campaign.exists({
-      $or: [
+      $and: [
         {
           campaignCode: campaignCode
         },
@@ -181,7 +181,7 @@ exports.campaignExist = async (req, res) => {
     }
 
     const campaignExist = await Campaign.exists({
-      $or: [
+      $and: [
         {
           description: description.trim()
         },
@@ -207,6 +207,73 @@ exports.campaignExist = async (req, res) => {
     return res.status(200).send({
       status: true,
       message: "Campaign can create"
+    })
+  } catch (err) {
+    console.log("Error : ", err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
+exports.getAllCampaign = async (req, res) => {
+  try {
+    if (!req.user._id) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const campaignList = await Campaign.find();
+
+    if (campaignList) {
+      return res.status(200).send({
+        status: true,
+        message: "Campaign Details Fetched.",
+        data: campaignList
+      })
+    }
+
+    return res.status(400).send({
+      status: false,
+      message: "There is no campaigns"
+    })
+  } catch (err) {
+    console.log("Error : ", err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
+exports.getCampaign = async (req, res) => {
+  try {
+    const { campaignCode } = req.body;
+    if (Number(campaignCode) || !req.user._id) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const campaignExist = await Campaign.findOne({
+      campaignCode: Number(campaignCode)
+    });
+
+    if (campaignExist) {
+      return res.status(400).send({
+        status: true,
+        message: "Campaign Details Fetched.",
+        data: campaignExist
+      })
+    }
+
+    return res.status(200).send({
+      status: false,
+      message: "There is no campaign for " + campaignCode
     })
   } catch (err) {
     console.log("Error : ", err);

@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import CampaignDetails from './CampaignDetails'
-import { useParams } from 'react-router-dom'
 import toast from 'react-hot-toast';
-import { donateToCampaign, getCampaignDonation, updateCampaignStatus } from '../../context';
+import { donateToCampaign, getCampaignDonation, updateCampaignStatus, getSpecificCampaign } from '../../context';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 const CampaignDetailsContainer = () => {
+  
   const pathname = window.location.pathname.split("/");
   const campaignCode = pathname[pathname.length - 1];
-
+  
   const { userName, userEmail } = useSelector((state) => state.user)
+  
 
   const getUserCampaignDetails = () => {
     getCampaignDonation(campaignCode).then((res) => {
@@ -49,12 +51,14 @@ const CampaignDetailsContainer = () => {
     });
   }
 
-  useEffect(() => {
-    getUserCampaignDetails();
+  useEffect(() => {    
+    getSpecificCampaign(Number(campaignCode)).then((res) => {
+      console.log(res);
+    })
   }, []);
 
   const [isexpanded, setisexpanded] = useState(false);
-  const [isAdmin, setisAdmin] = useState(false);
+  const [isAdmin, setisAdmin] = useState(true);
   const [amount, setAmount] = useState('');
   const [donors, setdonors] = useState([
     {
@@ -187,7 +191,6 @@ const CampaignDetailsContainer = () => {
       status: 'Cancelled',
     },
   ];
-  const { id } = useParams();
 
   const handleclick = (e) => {
     if (e.target.name == "pay") {
@@ -218,7 +221,6 @@ const CampaignDetailsContainer = () => {
   return (
     <div>
       <CampaignDetails
-        id={id}
         handleClick={handleclick}
         isexpanded={isexpanded}
         amount={amount}

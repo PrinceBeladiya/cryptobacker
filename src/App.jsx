@@ -1,7 +1,7 @@
 import { Toaster } from 'react-hot-toast';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { LayoutContainer, NotFoundContainer } from './shared';
-import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer } from "./components";
+import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer, ContactUsContainer, WithDrawContainer, AdminDashboardContainer } from "./components";
 
 function App() {
 
@@ -37,6 +37,18 @@ function App() {
         {
           path: 'campaign-detail/:id',
           element: <CampaignDetailsContainer />,
+        },
+        {
+          path: 'contact',
+          element: <ContactUsContainer/>
+        },
+        {
+          path: 'withdraw-page',
+          element: <WithDrawContainer/>
+        },
+        {
+          path: 'admin-dashboard',
+          element: <AdminDashboardContainer/>
         },
         {
           path: '*',

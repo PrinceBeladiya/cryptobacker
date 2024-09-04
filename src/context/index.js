@@ -55,6 +55,23 @@ export const enableEthereum = async () => {
   }
 };
 
+export const getAllCampaignDetails = async () => {
+  try {
+    const response = await axios.get("http://localhost:3001/campaign/getAllCampaign", {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+      }
+    });
+    toast.success(response.data.message);
+    return response.data.data; // Return the data here
+  } catch (error) {
+    console.error("Error getting campaign donation:", error);
+    toast.error(error.response?.data?.message || "An error occurred");
+    throw error;
+  }
+}
+
+
 export const createCampaign = async (form) => {
   try {
     const provider = await getProvider();
@@ -212,8 +229,8 @@ export const getCampaigns = async () => {
     // If campaigns is an array of objects
     const formattedCampaigns = campaigns.map(campaign => ({
       owner: campaign.owner,
-      amountCollectedETH: campaign.amountCollectedETH,
-      amountCollectedUSDC: campaign.amountCollectedUSDC,
+      amountCollectedETH: Number(campaign.amountCollectedETH),
+      amountCollectedUSDC: Number(campaign.amountCollectedUSDC),
       campaignCode: Number(campaign.campaignCode),
       name: campaign.name,
       title: campaign.title,
@@ -234,12 +251,12 @@ export const getCampaigns = async () => {
 
 export const getSpecificCampaign = async (campaignCode) => {
   try {
-    if (typeof campaignCode !== 'number' || campaignCode < 0) {
+    if (campaignCode < 0) {
       throw new Error("Invalid campaign code");
     }
 
     const allCampaigns = await getCampaigns();
-    return allCampaigns.filter((campaign) => campaign.campaignCode.toNumber() === campaignCode);
+    return allCampaigns.filter((campaign) => Number(campaign.campaignCode) === campaignCode);
   } catch (error) {
     console.error("Error getting specific campaign:", error);
     throw error;
