@@ -157,7 +157,7 @@ const UserDashboard = ({
                           {campaign.createdAt}
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white" style={{ paddingLeft: '55px' }}>
-                          {ethers.formatEther(campaign.amountCollectedETH.toString())} ETH
+                          {Number(campaign.amountCollectedETH) / 10**18} ETH
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white" style={{ paddingLeft: '55px' }}>
                           {campaign.amountCollectedUSDC / 10**6} USDC

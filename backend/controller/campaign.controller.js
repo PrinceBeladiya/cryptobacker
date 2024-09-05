@@ -172,7 +172,7 @@ exports.deleteCampaign = async (req, res) => {
 exports.getCampaign = async (req, res) => {
   try {
     const { campaignCode } = req.body;
-    if (Number(campaignCode) || !req.user._id) {
+    if (campaignCode == undefined || !req.user._id) {
       return res.status(400).send({
         status: false,
         message: "Invalid Details"
@@ -180,18 +180,18 @@ exports.getCampaign = async (req, res) => {
     }
 
     const campaignExist = await Campaign.findOne({
-      campaignCode: Number(campaignCode)
+      campaignCode: campaignCode
     });
 
     if (campaignExist) {
-      return res.status(400).send({
+      return res.status(200).send({
         status: true,
         message: "Campaign Details Fetched.",
         data: campaignExist
       })
     }
 
-    return res.status(200).send({
+    return res.status(400).send({
       status: false,
       message: "There is no campaign for " + campaignCode
     })
@@ -274,41 +274,6 @@ exports.getAllCampaign = async (req, res) => {
     return res.status(400).send({
       status: false,
       message: "There is no campaigns"
-    })
-  } catch (err) {
-    console.log("Error : ", err);
-    return res.status(500).send({
-      status: false,
-      message: err.message || "Internal Server Error.",
-    });
-  }
-}
-
-exports.getCampaign = async (req, res) => {
-  try {
-    const { campaignCode } = req.body;
-    if (Number(campaignCode) || !req.user._id) {
-      return res.status(400).send({
-        status: false,
-        message: "Invalid Details"
-      })
-    }
-
-    const campaignExist = await Campaign.findOne({
-      campaignCode: Number(campaignCode)
-    });
-
-    if (campaignExist) {
-      return res.status(400).send({
-        status: true,
-        message: "Campaign Details Fetched.",
-        data: campaignExist
-      })
-    }
-
-    return res.status(200).send({
-      status: false,
-      message: "There is no campaign for " + campaignCode
     })
   } catch (err) {
     console.log("Error : ", err);

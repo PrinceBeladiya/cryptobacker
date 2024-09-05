@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import CampaignDetails from './CampaignDetails'
+import { useParams } from 'react-router-dom'
 import toast from 'react-hot-toast';
-import { donateToCampaign, getCampaignDonation, getSpecificCampaign, updateCampaignStatus } from '../../context';
+import { donateToCampaign, getCampaignDetails, getCampaignDonation, getSpecificCampaign, updateCampaignStatus } from '../../context';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 
 const CampaignDetailsContainer = () => {
-  
   const pathname = window.location.pathname.split("/");
   const campaignCode = pathname[pathname.length - 1];
   
-  const [isAdmin, setIsAdmin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [amount, setAmount] = useState('');
 
   const [campaign, setCampaign] = useState([]);
@@ -18,14 +17,17 @@ const CampaignDetailsContainer = () => {
   const [aggregatedDonations, setAggregatedDonations] = useState([]);
   const [topDonor, setTopDonor] = useState({});
   const [totalDonation, setTotalDonation] = useState(0);
+  const [filePaths, setFilePaths] = useState([]);
 
   const { userName, userEmail } = useSelector((state) => state.user)
-  
 
-  const getUserCampaignDetails = () => {
+  const getUserCampaignDetails = async () => {
     getSpecificCampaign(campaignCode).then((res) => {
       setCampaign(res[0])
     });
+
+    const data = await getCampaignDetails(campaignCode);
+    setFilePaths(data.filePaths);
 
     getCampaignDonation(campaignCode).then((res) => {
       // Aggregate donations by donor for admin view
@@ -76,10 +78,8 @@ const CampaignDetailsContainer = () => {
     });
   }
 
-  useEffect(() => {    
-    getSpecificCampaign(Number(campaignCode)).then((res) => {
-      console.log(res);
-    })
+  useEffect(() => {
+    getUserCampaignDetails();
   }, []);
 
   const { id } = useParams();
@@ -111,6 +111,7 @@ const CampaignDetailsContainer = () => {
   return (
     <div>
       <CampaignDetails
+        id={id}
         handleClick={handleclick}
         amount={amount}
         handleInputChange={handleInputChange}
@@ -119,6 +120,7 @@ const CampaignDetailsContainer = () => {
         aggregatedDonations={aggregatedDonations}
         totalRaised={Number(totalDonation) / 10**18}
         campaign={campaign}
+        filePaths={filePaths}
         totalDonors={aggregatedDonations.length}
         topDonor={topDonor}
         averageDonation={Number(0) / 10**18}

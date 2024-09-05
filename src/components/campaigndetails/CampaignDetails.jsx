@@ -13,16 +13,18 @@ const CampaignDetails = ({
   campaign,
   topDonor,
   totalDonors,
-  averageDonation
+  averageDonation,
+  filePaths
 }) => {
   return (
     <section className="py-8 bg-white md:py-16 antialiased">
       <div className="max-w-screen-xl px-4 mx-auto 2xl:px-0">
         <div className="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
           <div className="shrink-0 max-w-md lg:max-w-lg mx-auto">
+            {console.log(filePaths)}
             <img
               className="min-w-40 min-h-60"
-              src="https://images.unsplash.com/photo-1724515543157-e2ed5385d1a6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzNHx8fGVufDB8fHx8fA%3D%3D"
+              src={`../../backend/${filePaths[0]}`}
               alt="Campaign"
             />
           </div>
@@ -89,8 +91,7 @@ const CampaignDetails = ({
               <ul
                 className={`max-w-md mt-2 divide-y p-5 border border-gray-200 rounded-xl shadow-sm divide-gray-200 ${donors.length > 5 ? 'overflow-y-scroll h-96' : ''}`}
               >
-                {console.log(aggregatedDonations)}
-                {aggregatedDonations.map((profile, index) => (
+                {aggregatedDonations && aggregatedDonations.map((profile, index) => (
                   <li key={index} className="py-3 sm:py-4">
                     <div className="flex items-center space-x-4 rtl:space-x-reverse">
                       <div className="flex-shrink-0">
@@ -137,7 +138,7 @@ const CampaignDetails = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {donors.map((order, index) => (
+                    {donors && donors.map((order, index) => (
                       <tr key={index} className="text-sm text-gray-800 hover:bg-gray-50 border-b last:border-none">
                         <td className="py-4 px-4">Payment From {order.donorName}</td>
                         <td className="py-4 px-4">{order.timestamp}</td>

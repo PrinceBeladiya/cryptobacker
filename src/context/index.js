@@ -62,7 +62,6 @@ export const getAllCampaignDetails = async () => {
         'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
       }
     });
-    toast.success(response.data.message);
     return response.data.data; // Return the data here
   } catch (error) {
     console.error("Error getting campaign donation:", error);
@@ -167,6 +166,24 @@ export const createCampaign = async (form) => {
     throw error;
   }
 };
+
+export const getCampaignDetails = async (campaignCode) => {
+  try {
+    const res = await axios.post("http://localhost:3001/campaign/getCampaign", { campaignCode: campaignCode },
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`
+        }
+      }
+    )
+
+    return res.data.data;
+  } catch (error) {
+    console.error("Error :", error);
+
+    throw error;
+  }
+}
 
 export const getCampaignDonation = async (campaignCode) => {
   try {
