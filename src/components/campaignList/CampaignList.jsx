@@ -1,6 +1,13 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
 
-const CampaignList = ({ campaigns, isOpen, categories, handleCheckboxChange, toggleDropdown, handleNavigate }) => {
+const CampaignList = ({
+  campaigns,
+  isOpen,
+  categories,
+  handleCheckboxChange,
+  toggleDropdown,
+  handleNavigate
+}) => {
   return (
     <div>
       <section className='bg-gray-50 py-8 antialiased'>

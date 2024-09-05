@@ -1,4 +1,4 @@
-import { useEffect,useRef,useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import UserDashboard from './UserDashboard'
 import ApexCharts from 'apexcharts';
 import { getUserCampaigns } from '../../context';
@@ -17,56 +17,6 @@ const UserDashBoardContainer = () => {
     getUserCampaignDetails();
   }, []);
 
-  const camapaigns = [
-    {
-      id: '1',
-      name : 'Campaign 1',
-      date: '01 Feb,2022',
-      amountcollected: '$1000',
-      target: '$2000',
-      status: 'Verfied',
-    },
-    {
-      id: '2',
-      name : 'Campaign 2',
-      date: '01 Feb,2022',
-      amountcollected: '$11000',
-      target: '$20010',
-      status: 'Verfied',
-    },
-    {
-      id: '3',
-      name : 'Campaign 3',
-      date: '01 Feb,2022',
-      amountcollected: '$1000',
-      target: '$2000',
-      status: 'Pending',
-    },
-    {
-      id:  '4',
-      name : 'Campaign 4',
-      date: '01 Feb,2022',
-      amountcollected: '$1000',
-      target: '$2000',
-      status: 'Verfied',
-    },
-    {
-      id: '5',
-      name : 'Campaign 5',
-      date: '01 Feb,2022',
-      amountcollected: '$2000',
-      target: '$4000',
-      status: 'Pending',
-    },
-    {
-      id: '6',
-      name : 'Campaign 6',
-      date: '01 Feb,2022',
-      amountcollected: '$1000',
-      target: '$2000',
-      status: 'Verfied',
-    },
-  ];
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState([
     { id: 'apple', name: 'Apple', count: 56, checked: false },
@@ -86,7 +36,7 @@ const UserDashBoardContainer = () => {
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleCheckboxChange = (id) => {
-    setCategories(categories.map(category => 
+    setCategories(categories.map(category =>
       category.id === id ? { ...category, checked: !category.checked } : category
     ));
   };
@@ -218,13 +168,13 @@ const UserDashBoardContainer = () => {
   }, []);
   return (
     <UserDashboard
-    chartRef={chartRef}
-    campaigns={userCampaigns}
-    handleclick={handleclick}
-    toggleDropdown={toggleDropdown}
-    isOpen={isOpen}
-    categories={categories}
-    handleCheckboxChange={handleCheckboxChange}
+      chartRef={chartRef}
+      userCampaigns={userCampaigns}
+      handleclick={handleclick}
+      toggleDropdown={toggleDropdown}
+      isOpen={isOpen}
+      categories={categories}
+      handleCheckboxChange={handleCheckboxChange}
     />
   )
 }

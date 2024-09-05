@@ -2,16 +2,29 @@ import { useEffect, useState } from 'react'
 import CampaignDetails from './CampaignDetails'
 import { useParams } from 'react-router-dom'
 import toast from 'react-hot-toast';
-import { donateToCampaign, getCampaignDonation, updateCampaignStatus } from '../../context';
+import { donateToCampaign, getCampaignDonation, getSpecificCampaign, updateCampaignStatus } from '../../context';
 import { useSelector } from 'react-redux';
 
 const CampaignDetailsContainer = () => {
   const pathname = window.location.pathname.split("/");
   const campaignCode = pathname[pathname.length - 1];
+  
+  const [isAdmin, setIsAdmin] = useState(true);
+  const [amount, setAmount] = useState('');
+
+  const [campaign, setCampaign] = useState([]);
+  const [donors, setdonors] = useState([]);
+  const [aggregatedDonations, setAggregatedDonations] = useState([]);
+  const [topDonor, setTopDonor] = useState({});
+  const [totalDonation, setTotalDonation] = useState(0);
 
   const { userName, userEmail } = useSelector((state) => state.user)
 
   const getUserCampaignDetails = () => {
+    getSpecificCampaign(campaignCode).then((res) => {
+      setCampaign(res[0])
+    });
+
     getCampaignDonation(campaignCode).then((res) => {
       // Aggregate donations by donor for admin view
       const aggregatedDonations = res.reduce((acc, donation) => {
@@ -39,13 +52,25 @@ const CampaignDetailsContainer = () => {
       const aggregatedDonationsArray = Object.values(aggregatedDonations);
 
       // Now set the state with the aggregated donations
-      console.log("aggregatedDonationsArray : ");
-      console.log(aggregatedDonationsArray);
+      setAggregatedDonations(aggregatedDonationsArray);
+
+      let top_donor = {
+        amountUSDC: 0,
+        amountETH: 0
+      };
+      aggregatedDonationsArray.map((donation) => {
+        Number(donation.amountUSDC) > Number(top_donor.amountUSDC) ? top_donor = donation : ''
+      });
+      setTopDonor(top_donor);
 
       // for user view
-      console.log("all donations")
-      console.log(res);
-      return res;
+      setdonors(res);
+
+      let sum = 0
+      res.map((donation) => {
+        sum += Number(donation.amountETH)
+      })
+      setTotalDonation(sum);
     });
   }
 
@@ -53,153 +78,18 @@ const CampaignDetailsContainer = () => {
     getUserCampaignDetails();
   }, []);
 
-  const [isexpanded, setisexpanded] = useState(false);
-  const [isAdmin, setisAdmin] = useState(false);
-  const [amount, setAmount] = useState('');
-  const [donors, setdonors] = useState([
-    {
-      id: 1,
-      name: "Neil Sims",
-      email: "email@flowbite.com",
-      amount: "$320",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 2,
-      name: "Bonnie Green",
-      email: "email@flowbite.com",
-      amount: "$3467",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 3,
-      name: "Michael Gough",
-      email: "email@flowbite.com",
-      amount: "$67",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 4,
-      name: "Thomas Lean",
-      email: "email@flowbite.com",
-      amount: "$2367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 5,
-      name: "Lana Byrd",
-      email: "email@flowbite.com",
-      amount: "$367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 4,
-      name: "Thomas Lean",
-      email: "email@flowbite.com",
-      amount: "$2367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 5,
-      name: "Lana Byrd",
-      email: "email@flowbite.com",
-      amount: "$367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 4,
-      name: "Thomas Lean",
-      email: "email@flowbite.com",
-      amount: "$2367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 5,
-      name: "Lana Byrd",
-      email: "email@flowbite.com",
-      amount: "$367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 4,
-      name: "Thomas Lean",
-      email: "email@flowbite.com",
-      amount: "$2367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-    {
-      id: 5,
-      name: "Lana Byrd",
-      email: "email@flowbite.com",
-      amount: "$367",
-      imageSrc: "https://images.unsplash.com/photo-1650934556718-6f808b6dac1d?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    },
-  ])
-  const totalRaised = 1249.99; // Example value, can be dynamic
-  const goal = 2000; // Example goal, can be dynamic
-  const topDonor = donors.reduce((prev, current) =>
-    parseFloat(current.amount.replace('$', '')) > parseFloat(prev.amount.replace('$', ''))
-      ? current
-      : prev
-  );
-  const averageDonation = (totalRaised / donors.length).toFixed(2);
-  const orders = [
-    {
-      transaction: 'Payment from Bonnie Green',
-      date: 'Apr 23, 2021',
-      amount: '$2300',
-      status: 'Completed',
-    },
-    {
-      transaction: 'Payment refund to #00910',
-      date: 'Apr 23, 2021',
-      amount: '-$670',
-      status: 'Completed',
-    },
-    {
-      transaction: 'Payment failed from #087651',
-      date: 'Apr 18, 2021',
-      amount: '$234',
-      status: 'Cancelled',
-    },
-    {
-      transaction: 'Payment failed from #087651',
-      date: 'Apr 18, 2021',
-      amount: '$234',
-      status: 'Cancelled',
-    },
-    {
-      transaction: 'Payment failed from #087651',
-      date: 'Apr 18, 2021',
-      amount: '$234',
-      status: 'Cancelled',
-    },
-    {
-      transaction: 'Payment failed from #087651',
-      date: 'Apr 18, 2021',
-      amount: '$234',
-      status: 'Cancelled',
-    },
-    {
-      transaction: 'Payment failed from #087651',
-      date: 'Apr 18, 2021',
-      amount: '$234',
-      status: 'Cancelled',
-    },
-  ];
   const { id } = useParams();
 
   const handleclick = (e) => {
     if (e.target.name == "pay") {
       if (amount > 0 && !isNaN(amount)) {
-        updateCampaignStatus(campaignCode, 1).then((res) => {
+        updateCampaignStatus(campaignCode, 1).then(() => {
           donateToCampaign({
             campaignCode,
             amount,
             userName,
             userEmail,
           }).then((res) => {
-            console.log("Res", res);
             setdonors(res)
           })
         })
@@ -208,7 +98,6 @@ const CampaignDetailsContainer = () => {
         toast.error('Enter Valid Amount', 'warn');
       }
     }
-    setisexpanded(!isexpanded)
   }
 
   const handleInputChange = (e) => {
@@ -220,16 +109,16 @@ const CampaignDetailsContainer = () => {
       <CampaignDetails
         id={id}
         handleClick={handleclick}
-        isexpanded={isexpanded}
         amount={amount}
         handleInputChange={handleInputChange}
         isAdmin={isAdmin}
         donors={donors}
-        totalRaised={totalRaised}
-        goal={goal}
+        aggregatedDonations={aggregatedDonations}
+        totalRaised={Number(totalDonation) / 10**18}
+        campaign={campaign}
+        totalDonors={aggregatedDonations.length}
         topDonor={topDonor}
-        averageDonation={averageDonation}
-        orders={orders}
+        averageDonation={Number(0) / 10**18}
       />
     </div>
   )

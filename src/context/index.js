@@ -212,8 +212,8 @@ export const getCampaigns = async () => {
     // If campaigns is an array of objects
     const formattedCampaigns = campaigns.map(campaign => ({
       owner: campaign.owner,
-      amountCollectedETH: campaign.amountCollectedETH,
-      amountCollectedUSDC: campaign.amountCollectedUSDC,
+      amountCollectedETH: Number(campaign.amountCollectedETH),
+      amountCollectedUSDC: Number(campaign.amountCollectedUSDC),
       campaignCode: Number(campaign.campaignCode),
       name: campaign.name,
       title: campaign.title,
@@ -234,17 +234,33 @@ export const getCampaigns = async () => {
 
 export const getSpecificCampaign = async (campaignCode) => {
   try {
-    if (typeof campaignCode !== 'number' || campaignCode < 0) {
+    if (campaignCode < 0) {
       throw new Error("Invalid campaign code");
     }
 
     const allCampaigns = await getCampaigns();
-    return allCampaigns.filter((campaign) => campaign.campaignCode.toNumber() === campaignCode);
+    return allCampaigns.filter((campaign) => Number(campaign.campaignCode) === Number(campaignCode));
   } catch (error) {
     console.error("Error getting specific campaign:", error);
     throw error;
   }
 };
+
+// export const getTransactions = async (address) => {
+//   const provider = new ethers.JsonRpcProvider("https://eth-mainnet.g.alchemy.com/v2/dVA4AxGZUZ_wZeXeXjtB_grkGCcpus5n");
+//   // const provider = await getProvider();
+
+//   const filter = {
+//     address: address, // replace with your contract address
+//     topics: [
+//       ethers.utils.id("MyEvent(address,uint256)") // replace with your event signature
+//     ]
+//   };
+
+//   provider.on(filter, (log, event) => {
+//     console.log(`Transaction: ${log.transactionHash}, Event: ${event}`);
+//   });
+// };
 
 export const getContractBalance = async () => {
   try {

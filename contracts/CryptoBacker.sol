@@ -142,21 +142,21 @@ contract CryptoBacker is ReentrancyGuard {
         require(block.timestamp < campaign.deadline, "Campaign has ended");
 
         uint256 amountETH = msg.value;
-        uint256 amountUSDC = swapExactInputSingle(amountETH / 2);
+        uint256 amountUSDC = swapExactInputSingle(amountETH);
 
         campaign.donations.push(Donation({
             donor: msg.sender,
-            amountETH: amountETH / 2,
+            amountETH: amountETH,
             amountUSDC: amountUSDC,
             timestamp: block.timestamp,
             donorName: _userName,
             donorEmail: _userEmail
         }));
 
-        campaign.amountCollectedETH += amountETH / 2;
+        campaign.amountCollectedETH += amountETH;
         campaign.amountCollectedUSDC += amountUSDC;
 
-        emit DonationReceived(_id, msg.sender, _userName, _userEmail, amountETH / 2, amountUSDC, block.timestamp);
+        emit DonationReceived(_id, msg.sender, _userName, _userEmail, amountETH, amountUSDC, block.timestamp);
 
         if (campaign.amountCollectedETH >= campaign.target) {
             campaign.status = 1; // Completed

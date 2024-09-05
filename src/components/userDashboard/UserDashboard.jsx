@@ -1,7 +1,8 @@
+import { ethers } from "ethers";
 import { Link } from "react-router-dom";
 const UserDashboard = ({
   chartRef,
-  campaigns,
+  userCampaigns,
   activity,
   handleclick,
   toggleDropdown,
@@ -119,7 +120,7 @@ const UserDashboard = ({
         <div className="flex flex-col mt-6">
           <div className="overflow-x-auto rounded-lg">
             <div className="inline-block w-full align-middle">
-              <div className="overflow-hidden shadow sm:rounded-lg">
+              <div className="shadow sm:rounded-lg">
                 <table className="w-full divide-y divide-gray-200 dark:divide-gray-600">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
@@ -147,7 +148,7 @@ const UserDashboard = ({
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800">
-                    {campaigns.map((campaign) => (
+                    {userCampaigns && userCampaigns.map((campaign) => (
                       <tr key={campaign.campaignCode}>
                         <td className="p-4 text-sm font-normal text-gray-900 whitespace-nowrap dark:text-white">
                           {campaign.title}
@@ -156,16 +157,16 @@ const UserDashboard = ({
                           {campaign.createdAt}
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white" style={{ paddingLeft: '55px' }}>
-                          {Number(campaign.amountCollectedETH)} ETH
+                          {ethers.formatEther(campaign.amountCollectedETH.toString())} ETH
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white" style={{ paddingLeft: '55px' }}>
-                          {Number(campaign.amountCollectedUSDC)} USDC
+                          {campaign.amountCollectedUSDC / 10**6} USDC
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-gray-400" style={{ paddingLeft: '22px' }}>
-                          {campaign.target}
+                          {campaign.target} ETH
                         </td>
                         <td className="p-4 whitespace-nowrap">
-                          {campaign.status == 1 ? <span className="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md">Completed</span>
+                          {campaign.status == 1 ? <span className="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-md">Approved</span>
                             : <span className="bg-orange-100 text-orange-800 text-xs mr-2 font-medium px-2.5 py-0.5 rounded-md">Pending</span>}
                         </td>
                         <td>

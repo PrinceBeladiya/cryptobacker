@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import CampaignList from './CampaignList';
+import { getSpecificCampaign } from '../../context';
 
 
 const CampaignListContainer = () => {
@@ -19,6 +20,12 @@ const CampaignListContainer = () => {
     { id: 'microsoft', name: 'Microsoft', count: 45, checked: false },
     { id: 'razor', name: 'Razor', count: 49, checked: false },
   ]);
+
+  useEffect(() => {
+    getSpecificCampaign(0).then((res) => {
+      console.log(res);
+    })
+  }, []);
 
   const handleCheckboxChange = (id) => {
     setCategories(categories.map(category => 
