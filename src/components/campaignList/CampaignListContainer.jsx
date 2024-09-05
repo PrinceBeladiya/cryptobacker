@@ -1,24 +1,23 @@
 import { useState, useEffect } from 'react';
 import CampaignList from './CampaignList';
-import { getSpecificCampaign } from '../../context';
+import { getAllCampaignDetails, getSpecificCampaign } from '../../context';
+import { addCampaign } from '../../redux/reducer/Campaign';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const CampaignListContainer = () => {
-  const [sortedCampaigns, setSortedCampaigns] = useState([]);
+  const [sortedCampaigns, setSortedCampaigns] = useState([])
+  const { campaigns } = useSelector((state) => state.campaigns);
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
   const [categories, setCategories] = useState([
-    { id: 'apple', name: 'Apple', count: 56, checked: false },
-    { id: 'fitbit', name: 'Fitbit', count: 56, checked: false },
-    { id: 'dell', name: 'Dell', count: 56, checked: false },
-    { id: 'asus', name: 'Asus', count: 97, checked: false },
-    { id: 'logitech', name: 'Logitech', count: 97, checked: false },
-    { id: 'msi', name: 'MSI', count: 97, checked: false },
-    { id: 'bosch', name: 'Bosch', count: 176, checked: false },
-    { id: 'sony', name: 'Sony', count: 234, checked: false },
-    { id: 'samsung', name: 'Samsung', count: 76, checked: false },
-    { id: 'canon', name: 'Canon', count: 49, checked: false },
-    { id: 'microsoft', name: 'Microsoft', count: 45, checked: false },
-    { id: 'razor', name: 'Razor', count: 49, checked: false },
+    { id: 'health', name: 'Health & Medical', count: 56, checked: false },
+    { id: 'education', name: 'Education', count: 56, checked: false },
+    { id: 'technology', name: 'Technology & Innovation', count: 56, checked: false },
+    { id: 'environment', name: 'Environment', count: 97, checked: false },
+    { id: 'business', name: 'Business & Startups', count: 97, checked: false },
+    { id: 'animal', name: 'Animals & Pets', count: 97, checked: false },
+    { id: 'projects', name: 'Creative Projects', count: 176, checked: false },
   ]);
 
   useEffect(() => {
@@ -28,34 +27,55 @@ const CampaignListContainer = () => {
   }, []);
 
   const handleCheckboxChange = (id) => {
-    setCategories(categories.map(category => 
+    // Update the checked status of the selected category
+    const updatedCategories = categories.map(category =>
       category.id === id ? { ...category, checked: !category.checked } : category
-    ));
+    );
+    setCategories(updatedCategories);
+
+    // Filter campaigns based on selected categories
+    const selectedCategories = updatedCategories
+      .filter(category => category.checked)
+      .map(category => category.id);
+
+    if (selectedCategories.length > 0) {
+      const filteredCampaigns = campaigns.filter(campaign =>
+        selectedCategories.includes(campaign.category)
+      );
+      setSortedCampaigns(filteredCampaigns);
+    } else {
+      // If no category is selected, show all campaigns
+      setSortedCampaigns(campaigns);
+    }
   };
 
+
+
   const toggleDropdown = () => setIsOpen(!isOpen);
+  const getCampaignDetails = async () => {
+    getAllCampaignDetails()
+      .then((res) => {
+        console.log(res);
+        dispatch(addCampaign(res))
+        setSortedCampaigns(res)
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+  }
 
   useEffect(() => {
-    // Fetch or set campaigns logic
-    setSortedCampaigns([
-      // Sample campaign data
-      { id: '1', title: 'Tech for Good', description: 'Supporting technology-driven solutions for global challenges.', imageUrl: 'https://via.placeholder.com/400x300?text=Tech+for+Good' },
-      { id: '2', title: 'Green Energy Initiative', description: 'Promoting renewable energy sources and sustainability.', imageUrl: 'https://via.placeholder.com/400x300?text=Green+Energy+Initiative' },
-      { id: '3', title: 'Education for All', description: 'Ensuring access to quality education for underserved communities.', imageUrl: 'https://via.placeholder.com/400x300?text=Education+for+All' },
-      { id: '4', title: 'Health and Wellness', description: 'Improving healthcare access and wellness programs.', imageUrl: 'https://via.placeholder.com/400x300?text=Health+and+Wellness' },
-      { id: '5', title: 'Clean Water Project', description: 'Providing clean and safe drinking water to remote areas.', imageUrl: 'https://via.placeholder.com/400x300?text=Clean+Water+Project' },
-      { id: '6', title: 'Disaster Relief', description: 'Offering aid and support in disaster-stricken regions.', imageUrl: 'https://via.placeholder.com/400x300?text=Disaster+Relief' },
-      { id: '7', title: 'Animal Welfare', description: 'Protecting and caring for animals in need.', imageUrl: 'https://via.placeholder.com/400x300?text=Animal+Welfare' },
-      { id: '8', title: 'Art and Culture', description: 'Supporting artistic and cultural initiatives and projects.', imageUrl: 'https://via.placeholder.com/400x300?text=Art+and+Culture' },
-      { id: '9', title: 'Mental Health Awareness', description: 'Raising awareness and providing support for mental health issues.', imageUrl: 'https://via.placeholder.com/400x300?text=Mental+Health+Awareness' },
-      { id: '10', title: 'Youth Empowerment', description: 'Empowering young people through various programs and initiatives.', imageUrl: 'https://via.placeholder.com/400x300?text=Youth+Empowerment' },
-    ]);
-  }, []);
+    getCampaignDetails();
+  },
+    []);
 
   const handleNavigate = (id) => {
     // Navigation logic
     console.log('Navigate to campaign details with ID:', id);
   };
+
+  console.log("campaigns : ", sortedCampaigns);
 
   return (
     <CampaignList

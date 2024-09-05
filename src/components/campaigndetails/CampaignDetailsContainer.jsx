@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import CampaignDetails from './CampaignDetails'
-import { useParams } from 'react-router-dom'
 import toast from 'react-hot-toast';
 import { donateToCampaign, getCampaignDonation, getSpecificCampaign, updateCampaignStatus } from '../../context';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 const CampaignDetailsContainer = () => {
+  
   const pathname = window.location.pathname.split("/");
   const campaignCode = pathname[pathname.length - 1];
   
@@ -19,6 +20,7 @@ const CampaignDetailsContainer = () => {
   const [totalDonation, setTotalDonation] = useState(0);
 
   const { userName, userEmail } = useSelector((state) => state.user)
+  
 
   const getUserCampaignDetails = () => {
     getSpecificCampaign(campaignCode).then((res) => {
@@ -74,8 +76,10 @@ const CampaignDetailsContainer = () => {
     });
   }
 
-  useEffect(() => {
-    getUserCampaignDetails();
+  useEffect(() => {    
+    getSpecificCampaign(Number(campaignCode)).then((res) => {
+      console.log(res);
+    })
   }, []);
 
   const { id } = useParams();
@@ -107,7 +111,6 @@ const CampaignDetailsContainer = () => {
   return (
     <div>
       <CampaignDetails
-        id={id}
         handleClick={handleclick}
         amount={amount}
         handleInputChange={handleInputChange}

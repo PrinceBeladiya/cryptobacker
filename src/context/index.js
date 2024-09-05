@@ -55,6 +55,23 @@ export const enableEthereum = async () => {
   }
 };
 
+export const getAllCampaignDetails = async () => {
+  try {
+    const response = await axios.get("http://localhost:3001/campaign/getAllCampaign", {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+      }
+    });
+    toast.success(response.data.message);
+    return response.data.data; // Return the data here
+  } catch (error) {
+    console.error("Error getting campaign donation:", error);
+    toast.error(error.response?.data?.message || "An error occurred");
+    throw error;
+  }
+}
+
+
 export const createCampaign = async (form) => {
   try {
     const provider = await getProvider();
@@ -77,7 +94,7 @@ export const createCampaign = async (form) => {
       {
         headers: { 'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}` }
       }
-    ).then(async (res) => {
+    ).then(async () => {
       const formData = new FormData();
 
       const tx = await contract.createCampaign(

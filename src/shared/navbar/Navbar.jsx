@@ -51,9 +51,9 @@ const Navbar = ({
                         <li>
                           <NavLink to="/create-campaign" onClick={handleclick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Create Campaign</NavLink>
                         </li>
-                        {/* <li>
-                          <NavLink to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Earnings</NavLink>
-                        </li> */}
+                        <li>
+                          <NavLink to="/withdraw-page" onClick={handleclick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Withdraw</NavLink>
+                        </li>
                         <li>
                           <NavLink to="/" onClick={handleLogOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</NavLink>
                         </li>
