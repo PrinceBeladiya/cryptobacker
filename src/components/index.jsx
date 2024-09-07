@@ -8,6 +8,7 @@ import CampaignDetailsContainer from "./campaigndetails/CampaignDetailsContainer
 import ContactUsContainer from "./contactus/ContactUsContainer";
 import WithDrawContainer from "./withdraw/WithDrawContainer";
 import AdminDashboardContainer from "./adminDashboard/AdminDashboardContainer";
+import VerifyCampaignContainer from "./verifyCampaign/VerifyCampaignContainer"; 
 export {
   LandingContainer,
   RegisterContainer,
@@ -18,5 +19,6 @@ export {
   CampaignDetailsContainer,
   ContactUsContainer,
   WithDrawContainer,
-  AdminDashboardContainer
+  AdminDashboardContainer,
+  VerifyCampaignContainer
 };

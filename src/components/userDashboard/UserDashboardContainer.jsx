@@ -10,6 +10,8 @@ const UserDashBoardContainer = () => {
   const getUserCampaignDetails = () => {
     getUserCampaigns().then((res) => {
       setUserCampaigns(res);
+      console.log(res);
+      
     });
   }
 
