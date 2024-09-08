@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 const CampaignDetailsContainer = () => {
   const pathname = window.location.pathname.split("/");
   const campaignCode = pathname[pathname.length - 1];
-  
+
   const [isAdmin, setIsAdmin] = useState(false);
   const [amount, setAmount] = useState('');
 
@@ -95,6 +95,8 @@ const CampaignDetailsContainer = () => {
             userEmail,
           }).then((res) => {
             setdonors(res)
+
+            getUserCampaignDetails();
           })
         })
       }
@@ -118,12 +120,12 @@ const CampaignDetailsContainer = () => {
         isAdmin={isAdmin}
         donors={donors}
         aggregatedDonations={aggregatedDonations}
-        totalRaised={Number(totalDonation) / 10**18}
+        totalRaised={Number(totalDonation) / 10 ** 18}
         campaign={campaign}
         filePaths={filePaths}
         totalDonors={aggregatedDonations.length}
         topDonor={topDonor}
-        averageDonation={Number(0) / 10**18}
+        averageDonation={Number(0) / 10 ** 18}
       />
     </div>
   )

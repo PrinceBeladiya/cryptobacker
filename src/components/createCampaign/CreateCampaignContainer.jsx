@@ -8,7 +8,7 @@ const CreateCampaignContainer = () => {
 
   const { userName } = useSelector((state) => state.user);
 
-  const [isLoading,setisLoading] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -23,24 +23,30 @@ const CreateCampaignContainer = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.title.length > 0 && formData.description.trim().length > 0 && formData.select_category != 'NA') {
-      if (isAlphabets(formData.title) && Number(formData.target) > 0 && isFutureDate(formData.deadline)) {
-        setisLoading(true);
-        formData['name'] = userName;
+    try {
 
-        await createCampaign(formData);
-        setisLoading(false);
-        const data = await getCampaigns();
-        console.log(data);
+      if (formData.title.length > 0 && formData.description.trim().length > 0 && formData.select_category != 'NA') {
+        if (isAlphabets(formData.title) && Number(formData.target) > 0 && isFutureDate(formData.deadline)) {
+          setisLoading(true);
+          formData['name'] = userName;
+
+          await createCampaign(formData);
+          setisLoading(false);
+          const data = await getCampaigns();
+          console.log(data);
+        }
+        else {
+          setisLoading(false);
+          toast.error('Please Fill Valid Deatils', 'warn')
+        }
       }
       else {
         setisLoading(false);
-        toast.error('Please Fill Valid Deatils', 'warn')
+        toast.error('Please Fill all Details')
       }
-    }
-    else {
+    } catch(err) {
+      console.log(err);
       setisLoading(false);
-      toast.error('Please Fill all Details')
     }
   }
 

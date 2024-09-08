@@ -138,7 +138,7 @@ const CampaignDetails = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {donors && donors.map((order, index) => (
+                    {donors && donors.length > 0 && donors.map((order, index) => (
                       <tr key={index} className="text-sm text-gray-800 hover:bg-gray-50 border-b last:border-none">
                         <td className="py-4 px-4">Payment From {order.donorName}</td>
                         <td className="py-4 px-4">{order.timestamp}</td>

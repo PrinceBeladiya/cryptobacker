@@ -416,3 +416,69 @@ export const deleteCampaign = async (campaignCode) => {
     throw error;
   }
 };
+
+export const createWithdrawRequest = async (data) => {
+  console.log("data");
+  console.log(data);
+  try {
+    if (!data.name || !data.campaignOwner || !data.title || data.campaignCode == undefined || !data.campaign || !data.amount) {
+      throw new Error("All fields are required");
+    }
+
+    if (Number(data.amount) <= 0) {
+      throw new Error("Amount must be greater than zero");
+    }
+
+    const formData = new FormData();
+
+    formData.append('campaignCode', data.campaignCode);
+    formData.append('name', data.name);
+    formData.append('title', data.title);
+    formData.append('campaignOwner', data.campaignOwner)
+    formData.append('campaign', data.campaign)
+    formData.append('amount', data.amount)
+    formData.append('file', data.report)
+
+    await axios.post("http://localhost:3001/withdraws/createWithdrawRequest", formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+          "Content-Type": "multipart/form-data"
+        }
+      }
+    ).then((res) => {
+      toast.success(res.data.message);
+      return res.data.data;
+    }).catch(async (err) => {
+      toast.error(err.response.data.message);
+
+      throw err;
+    })
+  } catch (error) {
+    console.error("Error creating campaign:", error);
+
+    throw error;
+  }
+};
+
+export const getWithdraws = async () => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const address = await signer.getAddress();
+
+    const res = await axios.post("http://localhost:3001/withdraws/getWithdrawRequest", {campaignOwner: address},
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting campaign:", error);
+    toast.error('Error deleting campaign');
+    throw error;
+  }
+};

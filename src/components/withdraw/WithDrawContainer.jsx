@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WithDraw from './WithDraw';
+import { createWithdrawRequest, getUserCampaigns, getWithdraws } from '../../context';
+import toast from 'react-hot-toast';
 
 const WithDrawContainer = () => {
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const [availableAmount, setAvailableAmount] = useState(1000);
+  const [campaign, setCampaign] = useState();
+  const [selectCampaignCode, setSelectCampaignCode] = useState(-1);
+  const [withdrawHistory, setWithdrawHistory] = useState();
+  const [selectedCampaign, setSelectedCampaign] = useState();
   const [formData, setFormData] = useState({
     name: '',
     amount: '',
@@ -12,35 +18,51 @@ const WithDrawContainer = () => {
     title: '',
   });
 
-  const fakeTransactionHistory = [
-    {
-      title: 'Campaign Fund Withdrawal',
-      amount: 500,
-      status: 'Approved',
-      date: '2024-08-25',
-    },
-    {
-      title: 'Project Support',
-      amount: 1500,
-      status: 'Pending',
-      date: '2024-08-20',
-    },
-    {
-      title: 'Research Grant',
-      amount: 750,
-      status: 'Rejected',
-      date: '2024-08-15',
-    },
-  ];
+  useEffect(() => {
+    getUserCampaigns().then((res) => {
+      setCampaign(res);
+    })
 
-  const handleSubmit = (e) => {
+    getWithdraws().then((res) => {
+      setWithdrawHistory(res.data);
+    })
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // Additional logic for form submission can be added here
+
+    try {
+      const data = {
+        ...formData,
+        campaign: selectedCampaign.title,
+        campaignCode: selectedCampaign.campaignCode,
+        campaignOwner: selectedCampaign.owner
+      }
+
+      const res = await createWithdrawRequest(data);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+      toast.error(err.response.data.message);
+    }
   };
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
+  
+    if (name === 'campaign') {
+      const selected_campaign = campaign.find(c => Number(c.campaignCode) === Number(value)); // Find the selected campaign
+      setSelectCampaignCode(value);
+      setFormData(prevState => ({
+        ...prevState,
+        campaign: value,
+      }));
+      if (selected_campaign) {
+        setSelectedCampaign(selected_campaign);
+        setAvailableAmount(selected_campaign.amountCollectedETH); // Set the available balance
+      }
+    }
+  
     if (type === 'file') {
       setFormData(prevState => ({
         ...prevState,
@@ -52,7 +74,7 @@ const WithDrawContainer = () => {
         [name]: value,
       }));
     }
-  };
+  };  
 
   return (
     <div>
@@ -60,9 +82,10 @@ const WithDrawContainer = () => {
         form={formData}
         handleChange={handleChange}
         handleSubmit={handleSubmit}
-        fakeTransactionHistory={fakeTransactionHistory}
+        withdrawHistory={withdrawHistory}
         isLoading={isLoading}
         availableAmount={availableAmount}
+        campaign={campaign}
       />
     </div>
   );
