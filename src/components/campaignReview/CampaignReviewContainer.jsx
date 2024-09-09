@@ -38,8 +38,14 @@ const CampaignReviewContainer = () => {
 
     setUpdating(true);
     try {
-      const updatedCampaign = await updateCampaignStatus(campaignCode, 'approved');
-      setCampaign(updatedCampaign);
+      updateCampaignStatus(campaignCode, 1).then((res) => {
+        console.log(res);
+        setCampaign(res);
+      }).catch((err) => {
+        setMessage("Error: Failed to approve the campaign.");
+        setMessage("Error: Failed to approve the campaign.");
+        console.log(err);
+      });
       setMessage("Success: Campaign approved successfully!");
     } catch (error) {
       setMessage("Error: Failed to approve the campaign.");
@@ -63,10 +69,15 @@ const CampaignReviewContainer = () => {
 
     setUpdating(true);
     try {
-      const updatedCampaign = await updateCampaignStatus(campaignCode, 'rejected', rejectReason);
-      setCampaign(updatedCampaign);
-      toast.success("Campaign rejected successfully!",'warn');
-      setShowRejectReason(false); // Hide the rejection note section after submission
+      updateCampaignStatus(campaignCode, 2).then((res) => {
+        console.log(res);
+        setCampaign(res);
+        toast.success("Campaign rejected successfully!",'warn');
+        setShowRejectReason(false); // Hide the rejection note section after submission
+      }).catch((err) => {
+        toast.error("Failed to reject the campaign.",'warn');
+        console.log(err);
+      });
     } catch (error) {
       toast.error("Failed to reject the campaign.",'warn');
     } finally {

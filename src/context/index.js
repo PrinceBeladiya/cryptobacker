@@ -7,10 +7,28 @@ const CryptoBackerContractAddress = import.meta.env.VITE_CRYPTOBACKER_ADDRESS;
 
 const getProvider = () => {
   if (typeof window.ethereum === "undefined") {
+    toast.error("MetaMask is not installed. Please install it to use this application.")
     throw new Error("MetaMask is not installed. Please install it to use this application.");
   }
   return new ethers.BrowserProvider(window.ethereum);
 };
+
+export const addAdmin = async () => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
+
+    const txResponse = await contract.addAdmin("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
+     // Wait for the transaction to be mined
+     const receipt = await txResponse.wait();
+
+     return receipt;
+  } catch (error) {
+    console.error("Error updating campaign status:", error);
+    throw error;
+  }
+}
 
 export const updateCampaignStatus = async (campaignCode, newStatus) => {
   try {
@@ -18,7 +36,7 @@ export const updateCampaignStatus = async (campaignCode, newStatus) => {
       throw new Error("Invalid campaign code");
     }
 
-    if (![0, 1, 2].includes(newStatus)) {
+    if (![0, 1, 2].includes(Number(newStatus))) {
       throw new Error("Invalid status");
     }
 
@@ -515,3 +533,28 @@ export const getUser = async (ID) => {
     throw error;
   }
 }
+export const getUserDonations = async () => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const userAdd = await signer.getAddress();
+    const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
+
+    const data = await contract.getUserDonationsByDate(userAdd);
+
+    // If campaigns is an array of objects
+    const donationData = data.map(donations => ({
+      donor: donations.donor,
+      donorName: donations.donorName,
+      donorEmail: donations.donorEmail,
+      amountETH: donations.amountETH,
+      amountUSDC: donations.amountUSDC,
+      timestamp: new Date(Number(donations.timestamp) * 1000).toISOString(),
+    }));
+
+    return donationData;
+  } catch (error) {
+    console.error("Error getting campaign donation:", error);
+    throw error;
+  }
+};

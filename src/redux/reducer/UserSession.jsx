@@ -39,6 +39,7 @@ export const userSlice = createSlice({
       state.userName = ""
       state.userEmail = ""
       state.userStatus = ""
+      state.userRole = ""
     }
   },
   extraReducers: (builder) => {

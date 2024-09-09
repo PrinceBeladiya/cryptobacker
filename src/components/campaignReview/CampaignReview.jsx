@@ -1,5 +1,5 @@
+/* eslint-disable react/prop-types */
 import { Card } from 'flowbite-react';
-import React from 'react';
 
 const CampaignReview = ({ 
   campaign, 
@@ -64,13 +64,13 @@ const CampaignReview = ({
           {/* Display the PDF inline using an iframe */}
           {campaign.filePaths && campaign.filePaths[1] && (
             <li className="mb-4">
-              <iframe
-                src={`http://localhost:3001/${campaign.filePaths[1].replace(/\\/g, '/')}`}
-                title="Supporting Document PDF"
+              <embed
+                src={`../../backend/${campaign.filePaths[1]}`}
+                type="application/pdf"
                 width="100%"
                 height="500px"
                 className="border rounded-lg"
-              ></iframe>
+              />
             </li>
           )}
         </ul>

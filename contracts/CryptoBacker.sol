@@ -30,12 +30,12 @@ contract CryptoBacker is ReentrancyGuard {
     }
 
     struct Donation {
-      address donor;
-      string donorName;
-      string donorEmail;
-      uint256 amountETH;
-      uint256 amountUSDC;
-      uint256 timestamp;
+        address donor;
+        string donorName;
+        string donorEmail;
+        uint256 amountETH;
+        uint256 amountUSDC;
+        uint256 timestamp;
     }
 
     ISwapRouter public immutable swapRouter;
@@ -46,19 +46,52 @@ contract CryptoBacker is ReentrancyGuard {
     mapping(uint256 => Campaign) public campaigns;
     uint256 public numberOfCampaigns = 0;
 
+    // Admin management
+    mapping(address => bool) public admins;  // Mapping to store the list of admins
+    address public superAdmin;  // The address of the super admin (who can add/remove admins)
+
+    event AdminAdded(address indexed admin);
+    event AdminRemoved(address indexed admin);
     event CampaignCreated(uint256 indexed campaignCode, address indexed owner, uint256 target, uint256 deadline, uint256 createdAt);
     event DonationReceived(uint256 indexed campaignCode, address indexed donor, string donorName, string donorEmail, uint256 amountETH, uint256 amountUSDC, uint256 timestamp);
-    event CampaignStatusUpdated(uint256 indexed campaignCode, uint256 newStatus);
-    event CampaignDeleted(uint256 indexed campaignCode); // Event for deletion
+    event CampaignStatusUpdated(uint256 indexed campaignCode, uint256 newStatus, address indexed admin);
+    event CampaignDeleted(uint256 indexed campaignCode);
 
-    constructor(address _swapRouter, address _WETH, address _USDC) {
+    constructor(address _swapRouter, address _WETH, address _USDC, address _superAdmin) {
         swapRouter = ISwapRouter(_swapRouter);
         WETH = _WETH;
         USDC = _USDC;
+        superAdmin = _superAdmin;  // Set the super admin
+        admins[_superAdmin] = true;  // Super admin is also an admin
     }
 
-    receive() external payable {}
-    fallback() external payable {}
+    // Modifier to check if the caller is an admin
+    modifier onlyAdmin() {
+        require(admins[msg.sender], "Only admins can perform this action");
+        _;
+    }
+
+    // Modifier to check if the caller is the super admin
+    modifier onlySuperAdmin() {
+        require(msg.sender == superAdmin, "Only the super admin can perform this action");
+        _;
+    }
+
+    // Add an admin (only the super admin can do this)
+    function addAdmin(address _admin) public onlySuperAdmin {
+        require(_admin != address(0), "Invalid admin address");
+        require(!admins[_admin], "Admin already exists");
+        admins[_admin] = true;
+        emit AdminAdded(_admin);
+    }
+
+    // Remove an admin (only the super admin can do this)
+    function removeAdmin(address _admin) public onlySuperAdmin {
+        require(_admin != address(0), "Invalid admin address");
+        require(admins[_admin], "Admin does not exist");
+        admins[_admin] = false;
+        emit AdminRemoved(_admin);
+    }
 
     function getContractBalance() public view returns (uint256) {
         return address(this).balance;
@@ -90,6 +123,7 @@ contract CryptoBacker is ReentrancyGuard {
         return amountOut;
     }
 
+    // Create a campaign (anyone can create)
     function createCampaign(
         string memory _name,
         address _owner,
@@ -127,18 +161,17 @@ contract CryptoBacker is ReentrancyGuard {
         numberOfCampaigns++;
         return numberOfCampaigns - 1;
     }
-
+    
     function donateToCampaign(
       uint256 _id,
       string memory _userName,
       string memory _userEmail
     ) public payable nonReentrant returns(uint256) {
-        require(numberOfCampaigns > 0, "No campaigns available");
         require(_id < numberOfCampaigns, "Invalid campaign ID");
         require(msg.value > 0, "Donation must be greater than zero");
 
         Campaign storage campaign = campaigns[_id];
-        require(campaign.status != 0, "Campaign is not active");
+        require(campaign.status != 0, "Campaign is Pending");
         require(block.timestamp < campaign.deadline, "Campaign has ended");
 
         uint256 amountETH = msg.value;
@@ -157,11 +190,6 @@ contract CryptoBacker is ReentrancyGuard {
         campaign.amountCollectedUSDC += amountUSDC;
 
         emit DonationReceived(_id, msg.sender, _userName, _userEmail, amountETH, amountUSDC, block.timestamp);
-
-        if (campaign.amountCollectedETH >= campaign.target) {
-            campaign.status = 1; // Completed
-            emit CampaignStatusUpdated(_id, 1);
-        }
 
         return amountUSDC;
     }
@@ -182,15 +210,15 @@ contract CryptoBacker is ReentrancyGuard {
         return allCampaigns;
     }
 
-    function updateCampaignStatus(uint256 _id, uint256 _newStatus) public {
+    // Update campaign status (only an admin can perform this)
+    function updateCampaignStatus(uint256 _id, uint256 _newStatus) public onlyAdmin {
         require(_id < numberOfCampaigns, "Invalid campaign ID");
         require(_newStatus <= 2, "Invalid status");
         
         Campaign storage campaign = campaigns[_id];
-        require(msg.sender == address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266), "Only admin can update status");
-        
         campaign.status = _newStatus;
-        emit CampaignStatusUpdated(_id, _newStatus);
+
+        emit CampaignStatusUpdated(_id, _newStatus, msg.sender);
     }
 
     function deleteCampaign(uint256 _id) public {
@@ -205,4 +233,45 @@ contract CryptoBacker is ReentrancyGuard {
 
         emit CampaignDeleted(_id);
     }
+
+    function getUserDonationsByDate(address _user) public view returns (Donation[] memory) {
+        // Variable to count total donations for the user
+        uint256 totalDonations = 0;
+
+        // First loop: Calculate total donations made in all the campaigns owned by the user
+        for (uint256 i = 0; i < numberOfCampaigns; i++) {
+            if (campaigns[i].owner == _user) {
+                totalDonations += campaigns[i].donations.length;
+            }
+        }
+
+        // Create a dynamic array of donations with the exact length
+        Donation[] memory userDonations = new Donation[](totalDonations);
+
+        // Second loop: Collect all donations from all campaigns owned by the user
+        uint256 donationIndex = 0;
+        for (uint256 i = 0; i < numberOfCampaigns; i++) {
+            if (campaigns[i].owner == _user) {
+                for (uint256 j = 0; j < campaigns[i].donations.length; j++) {
+                    userDonations[donationIndex] = campaigns[i].donations[j];
+                    donationIndex++;
+                }
+            }
+        }
+
+        // Sort donations by timestamp (date-wise sorting)
+        for (uint256 i = 0; i < userDonations.length; i++) {
+            for (uint256 j = i + 1; j < userDonations.length; j++) {
+                if (userDonations[i].timestamp > userDonations[j].timestamp) {
+                    // Swap donations to sort by date
+                    Donation memory temp = userDonations[i];
+                    userDonations[i] = userDonations[j];
+                    userDonations[j] = temp;
+                }
+            }
+        }
+        
+        return userDonations;
+    }
+
 }

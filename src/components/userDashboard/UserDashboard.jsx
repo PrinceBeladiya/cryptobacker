@@ -1,4 +1,5 @@
-import { ethers } from "ethers";
+/* eslint-disable react/prop-types */
+
 import { Link } from "react-router-dom";
 const UserDashboard = ({
   chartRef,
@@ -8,7 +9,9 @@ const UserDashboard = ({
   toggleDropdown,
   isOpen,
   categories,
-  handleCheckboxChange
+  handleCheckboxChange,
+  currentWeekDonation,
+  growth
 }) => {
   return (
     <>
@@ -16,11 +19,11 @@ const UserDashboard = ({
         <div className="p-4 ml-2 mb-6 bg-white border w-1/2 border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-shrink-0">
-              <span className="text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white">$45,385</span>
+              <span className="text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white">{currentWeekDonation} ETH</span>
               <h3 className="text-base font-light text-gray-500 dark:text-gray-400">Donation this week</h3>
             </div>
             <div className="flex items-center justify-end flex-1 text-base font-medium text-green-500 dark:text-green-400">
-              12.5%
+              {growth}%
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clipRule="evenodd"></path>
               </svg>
@@ -157,10 +160,10 @@ const UserDashboard = ({
                           {campaign.createdAt}
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white" style={{ paddingLeft: '55px' }}>
-                          {Number(campaign.amountCollectedETH) / 10**18} ETH
+                          {Number(campaign.amountCollectedETH) / 10 ** 18} ETH
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-white" style={{ paddingLeft: '55px' }}>
-                          {campaign.amountCollectedUSDC / 10**6} USDC
+                          {campaign.amountCollectedUSDC / 10 ** 6} USDC
                         </td>
                         <td className="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap dark:text-gray-400" style={{ paddingLeft: '22px' }}>
                           {campaign.target} ETH
