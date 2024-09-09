@@ -5,10 +5,10 @@ const Sidebar = () => {
   return (
     <aside
       id="default-sidebar"
-      className="fixed top-16 left-0 z-40 w-64 h-full dark:bg-gray-800 transition-transform sm:translate-x-0"
+      className="fixed left-0 z-40 w-64 h-full dark:bg-gray-800 transition-transform sm:translate-x-0"
       aria-label="Sidebar"
     >
-      <div className="h-full px-3 py-4 overflow-y-auto">
+      <div className="h-full px-3 py-4 overflow-y-auto" style={{ marginTop: '80px' }}>
         <ul className="space-y-2 font-medium">
           <li>
             <NavLink

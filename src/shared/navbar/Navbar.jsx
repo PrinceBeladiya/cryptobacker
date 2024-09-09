@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import { NavLink } from "react-router-dom"
+import { NavLink } from "react-router-dom";
+import { logo } from "../../assets/images";
 
 const Navbar = ({
   userName,
@@ -12,18 +13,18 @@ const Navbar = ({
   isAdmin
 }) => {
   return (
-    <div className="border border-gray-400">
+    <div className={`border border-gray-400 ${isAdmin ? 'fixed top-0 left-0 w-full z-50' : ''}`}>
       <nav className="bg-white border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <NavLink to="/" className="flex items-center space-x-3">
-        <img 
-          src="https://flowbite.com/docs/images/logo.svg" 
-          className="h-8" 
-          alt="Flowbite Logo" 
-          style={isAdmin ? { marginLeft: '-90px' } : {}}
-        />
-        <span className="self-center text-2xl font-semibold whitespace-nowrap">CryptoBacker</span>
-      </NavLink>
+          <NavLink to="/" className="flex items-center space-x-3">
+            <img 
+              src={logo} 
+              className="h-8" 
+              alt="Flowbite Logo" 
+              style={isAdmin ? { marginLeft: '-90px' } : {}}
+            />
+            <span className="self-center text-2xl font-semibold whitespace-nowrap">CryptoBacker</span>
+          </NavLink>
           {
             userName && userEmail ? (
               <>
@@ -44,7 +45,7 @@ const Navbar = ({
                     />
                   </button>
                   {isDropdownOpen && (
-                    <div style={{ top: "2.5rem" }} className="absolute right-0 z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow" id="user-dropdown">
+                    <div className="absolute right-0 z-50 mt-2 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow" id="user-dropdown">
                       <div className="px-4 py-3">
                         <span className="block text-sm text-gray-900">{userName}</span>
                         <span className="block text-sm text-gray-500 truncate">{userEmail}</span>

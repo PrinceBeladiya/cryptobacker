@@ -1,39 +1,98 @@
 import React, { useEffect, useState } from 'react';
 import CampaignReview from './CampaignReview';
-import { useParams } from 'react-router-dom';
-import { getCampaignDetails } from '../../context';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getCampaignDetails, updateCampaignStatus } from '../../context';
+import toast from 'react-hot-toast';
 
 const CampaignReviewContainer = () => {
   const { campaignCode } = useParams();
-  const [campaign, setCampaign] = useState(null); // Initialize as null to handle loading state
+  const [campaign, setCampaign] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState(null);
+  const [showRejectReason, setShowRejectReason] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const navigate = useNavigate();
 
-  const handleApprove = () => {
-    alert('Campaign approved');
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      try {
+        const res = await getCampaignDetails(campaignCode);
+        setCampaign(res);
+      } catch (error) {
+        setError("Failed to load campaign details.");
+        setMessage("Error: Unable to fetch campaign details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampaign();
+  }, [campaignCode]);
+
+  const handleApprove = async () => {
+    if (!campaign) return;
+
+    const confirmApprove = window.confirm("Are you sure you want to approve this campaign?");
+    if (!confirmApprove) return;
+
+    setUpdating(true);
+    try {
+      const updatedCampaign = await updateCampaignStatus(campaignCode, 'approved');
+      setCampaign(updatedCampaign);
+      setMessage("Success: Campaign approved successfully!");
+    } catch (error) {
+      setMessage("Error: Failed to approve the campaign.");
+    } finally {
+      setUpdating(false);
+    }
   };
 
   const handleReject = () => {
-    alert('Campaign rejected');
+    setShowRejectReason(true); // Show the rejection reason input
   };
 
-  useEffect(() => {
-    getCampaignDetails(campaignCode)
-      .then(res => {
-        console.log("New Data :- ", res); 
-        setCampaign(res); // Set campaign data when it is fetched
-      })
-      .catch(error => console.error("Error fetching campaign details:", error));
-  }, [campaignCode]);
+  const submitRejectReason = async () => {
+    if (!rejectReason.trim()) {
+      setMessage("Error: Please provide a reason for rejection.");
+      return;
+    }
 
-  if (!campaign) {
-    return <div>Loading...</div>; // Render a loading state until data is available
+    const confirmReject = window.confirm("Are you sure you want to reject this campaign?");
+    if (!confirmReject) return;
+
+    setUpdating(true);
+    try {
+      const updatedCampaign = await updateCampaignStatus(campaignCode, 'rejected', rejectReason);
+      setCampaign(updatedCampaign);
+      toast.success("Campaign rejected successfully!",'warn');
+      setShowRejectReason(false); // Hide the rejection note section after submission
+    } catch (error) {
+      toast.error("Failed to reject the campaign.",'warn');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
   }
 
   return (
-    <CampaignReview 
-      campaign={campaign}
-      handleApprove={handleApprove}
-      handleReject={handleReject}
-    />
+      <CampaignReview 
+        campaign={campaign}
+        handleApprove={handleApprove}
+        handleReject={handleReject}
+        showRejectReason={showRejectReason}
+        rejectReason={rejectReason}
+        setRejectReason={setRejectReason}
+        submitRejectReason={submitRejectReason}
+        updating={updating}
+      />
   );
 };
 
