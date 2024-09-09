@@ -174,6 +174,40 @@ exports.getUser = async (req, res) => {
   }
 }
 
+exports.getUserById = async (req, res) => {
+  try {
+    const { ID } = req.body;
+
+    if (!ID) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const user = await User.findById(ID).select("-password")
+    if (!user) {
+      return res.status(400).send({
+        status: false,
+        message: "User Does Not Exists."
+      });
+    }
+
+    return res.status(200).send({
+      status: true,
+      message: "User Details fetched successfully",
+      data: user
+    });
+
+  } catch (err) {
+    console.log("Error : ", err)
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
 exports.getAllUsers = async (req, res) => {
   try {
     if (!req.user) {

@@ -6,7 +6,7 @@ import { logout } from "../../redux/reducer/UserSession";
 
 const NavbarContainer = () => {
   const dispatch = useDispatch();
-  const { userName, userEmail, userStatus } = useSelector((state) => state.user)
+  const { userName, userEmail, userStatus, userRole } = useSelector((state) => state.user)
 
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
@@ -34,6 +34,7 @@ const NavbarContainer = () => {
       isDropdownOpen={isDropdownOpen}
       toggleDropdown={toggleDropdown}
       handleclick={handleclick}
+      isAdmin={userRole == "Admin"}
     />
   )
 }

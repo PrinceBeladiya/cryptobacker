@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Link } from 'react-router-dom';
 
 const CampaignList = ({
@@ -7,8 +6,9 @@ const CampaignList = ({
   categories,
   handleCheckboxChange,
   toggleDropdown,
-  handleNavigate
 }) => {
+  console.log(campaigns);
+  
   return (
     <div>
       <section className='bg-gray-50 py-8 antialiased'>
@@ -73,9 +73,15 @@ const CampaignList = ({
             {campaigns.length > 0 ? (
               campaigns.map((campaign) => (
                 <div key={campaign._id} className="max-w-sm bg-white border border-gray-200 rounded-lg shadow">
-                  <div className="flex-shrink-0">
-                    <img src={'../../backend/' + campaign.filePaths[0]} alt={campaign.title} className="h-48 w-full object-fit" />
-                  </div>
+                  {campaign.filePaths && campaign.filePaths.length > 0 ? (
+                    <div className="flex-shrink-0">
+                      <img src={'../../backend/' + campaign.filePaths[0]} alt={campaign.title} className="h-48 w-full object-fit" />
+                    </div>
+                  ) : (
+                    <div className="flex-shrink-0">
+                      <img src='/default-image.jpg' alt='Default' className="h-48 w-full object-fit" />
+                    </div>
+                  )}
                   <div className="p-6">
                     <h3 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">{campaign.title}</h3>
                     <p className="mb-3 font-normal text-justify text-gray-70">{campaign.description.slice(0, 103) + "..."}</p>

@@ -9,6 +9,9 @@ import ContactUsContainer from "./contactus/ContactUsContainer";
 import WithDrawContainer from "./withdraw/WithDrawContainer";
 import AdminDashboardContainer from "./adminDashboard/AdminDashboardContainer";
 import VerifyCampaignContainer from "./verifyCampaign/VerifyCampaignContainer"; 
+import CampaignReviewContainer from './campaignReview/CampaignReviewContainer';
+import VerifyUserContainer from "./verifyUser/VerifyUserContainer"; 
+import UserReviewContainer from "./userReview/UserReviewContainer";
 export {
   LandingContainer,
   RegisterContainer,
@@ -20,5 +23,7 @@ export {
   ContactUsContainer,
   WithDrawContainer,
   AdminDashboardContainer,
-  VerifyCampaignContainer
+  VerifyCampaignContainer,
+  CampaignReviewContainer,
+  VerifyUserContainer
 };

@@ -176,7 +176,6 @@ export const getCampaignDetails = async (campaignCode) => {
         }
       }
     )
-
     return res.data.data;
   } catch (error) {
     console.error("Error :", error);
@@ -467,7 +466,7 @@ export const getWithdraws = async () => {
     const signer = await getSigner(provider);
     const address = await signer.getAddress();
 
-    const res = await axios.post("http://localhost:3001/withdraws/getWithdrawRequest", {campaignOwner: address},
+    const res = await axios.post("http://localhost:3001/withdraws/getWithdrawRequest", { campaignOwner: address },
       {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
@@ -490,6 +489,22 @@ export const getAllUsers = async () => {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
         }
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting campaign:", error);
+    toast.error('Error deleting campaign');
+    throw error;
+  }
+}
+
+export const getUser = async (ID) => {
+  try {
+    const res = await axios.post("http://localhost:3001/user/getuserById",
+      {
+        ID: ID
       }
     );
 
