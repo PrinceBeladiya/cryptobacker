@@ -5,7 +5,7 @@ import { fetchUserDetails, setToken } from "../../redux/reducer/UserSession";
 
 const LayoutContainer = () => {
   const dispatch = useDispatch();
-  const [isAdmin,setisAdmin] = useState(true);
+  const [isAdmin,setisAdmin] = useState(false);
   const { userToken } = useSelector((state) => state.user)
 
   useEffect(() => {

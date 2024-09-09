@@ -174,6 +174,70 @@ exports.getUser = async (req, res) => {
   }
 }
 
+exports.getAllUsers = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const users = await User.find().select("-password")
+    if (!users) {
+      return res.status(400).send({
+        status: false,
+        message: "User can't fetched."
+      });
+    }
+
+    return res.status(200).send({
+      status: true,
+      message: "Users Details fetched successfully",
+      data: users
+    });
+
+  } catch (err) {
+    console.log("Error : ", err)
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const users = await User.find().select("-password")
+    if (!users) {
+      return res.status(400).send({
+        status: false,
+        message: "User can't fetched."
+      });
+    }
+
+    return res.status(200).send({
+      status: true,
+      message: "Users Details fetched successfully",
+      data: users
+    });
+
+  } catch (err) {
+    console.log("Error : ", err)
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;

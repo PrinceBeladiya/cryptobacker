@@ -482,3 +482,21 @@ export const getWithdraws = async () => {
     throw error;
   }
 };
+
+export const getAllUsers = async () => {
+  try {
+    const res = await axios.get("http://localhost:3001/user/getAllUser",
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting campaign:", error);
+    toast.error('Error deleting campaign');
+    throw error;
+  }
+}

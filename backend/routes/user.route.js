@@ -7,5 +7,6 @@ const multerConfig = require('../utils/multer');
 router.post('/signup', multerConfig.singleFileUpload.single("file"), userController.signup)
 router.post('/login', userController.login)
 router.get('/getUser', auth(['User']), userController.getUser)
+router.get('/getAllUser', auth(['User']), userController.getAllUsers)
 
 module.exports = router;

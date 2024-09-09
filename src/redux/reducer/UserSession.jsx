@@ -51,6 +51,7 @@ export const userSlice = createSlice({
         state.userName = action.payload.name
         state.userEmail = action.payload.email
         state.userStatus = action.payload.status
+        state.userRole = action.payload.role
       })
       .addCase(fetchUserDetails.rejected, (state, action) => {
         state.status = 'failed'
