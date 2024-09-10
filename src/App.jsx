@@ -1,7 +1,7 @@
 import { Toaster } from 'react-hot-toast';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { LayoutContainer, NotFoundContainer } from './shared';
-import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer, ContactUsContainer, WithDrawContainer, AdminDashboardContainer, VerifyCampaignContainer, CampaignReviewContainer, VerifyUserContainer, UserReviewContainer, ManageCampaignContainer } from "./components";
+import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer, ContactUsContainer, WithDrawContainer, AdminDashboardContainer, VerifyCampaignContainer, CampaignReviewContainer, VerifyUserContainer, UserReviewContainer, ManageCampaignContainer, ManageCampaignReviewContainer } from "./components";
 
 function App() {
 
@@ -72,7 +72,13 @@ function App() {
         },
         {
           path: 'manage-campaign',
-          element: <ManageCampaignContainer />
+          element: <ManageCampaignContainer />,
+          children: [
+            {
+              path: ':campaignCode',
+              element: <ManageCampaignReviewContainer />,
+            }
+          ],
         },
         {
           path: '*',

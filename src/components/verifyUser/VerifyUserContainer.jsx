@@ -78,6 +78,14 @@ const VerifyUserContainer = () => {
 
   const [searchValue, setSearchValue] = useState('');
 
+  const onSearchByUserID = (query) => {
+    setSearchValue(query);
+    const filtered = currentItems.filter(user =>
+      user._id.toLowerCase().includes(query.toLowerCase())
+    );
+    setSortedUsers(filtered);
+  };
+
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
     onSearchByUserID(e.target.value);
