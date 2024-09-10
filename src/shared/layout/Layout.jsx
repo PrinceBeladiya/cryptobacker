@@ -1,10 +1,13 @@
 /* eslint-disable react/prop-types */
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 import { FooterContainer, NavbarContainer, SideBarContainer } from "../"
 import { AdminDashboardContainer } from "../../components"
 
 
 const Layout = ({isAdmin}) => {
+  if(isAdmin){
+    useNavigate('/admin-dashboard')
+  }
   return (
     <>
     {!isAdmin && 
@@ -20,7 +23,7 @@ const Layout = ({isAdmin}) => {
       <NavbarContainer />
     <div className="flex flex-1">
       <SideBarContainer />
-      <main className="flex-1 p-4 bg-gray-50" style={{ marginLeft: '270px', marginRight: '15px'}}>
+      <main className="flex-1 p-4 bg-gray-50" style={{ marginLeft: '270px', marginRight: '15px', marginTop: '64px'}}>
         <Outlet/>
       </main>
     </div>

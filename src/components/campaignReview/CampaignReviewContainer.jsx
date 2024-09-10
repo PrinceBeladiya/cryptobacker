@@ -8,7 +8,8 @@ const CampaignReviewContainer = () => {
   const { campaignCode } = useParams();
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
+  const [buttonloader,setbuttonloader] = useState(false);
+  const [rejectionloader,setrejectionloader] = useState(false);
   const [error, setError] = useState(null);
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -36,21 +37,23 @@ const CampaignReviewContainer = () => {
     const confirmApprove = window.confirm("Are you sure you want to approve this campaign?");
     if (!confirmApprove) return;
 
-    setUpdating(true);
+    setbuttonloader(true);
     try {
       updateCampaignStatus(campaignCode, 1).then((res) => {
         console.log(res);
         setCampaign(res);
+        setbuttonloader(false);
+        useNavigate('/verify-campaign')
       }).catch((err) => {
         setMessage("Error: Failed to approve the campaign.");
         setMessage("Error: Failed to approve the campaign.");
+        setbuttonloader(false);
         console.log(err);
       });
       setMessage("Success: Campaign approved successfully!");
     } catch (error) {
+      setbuttonloader(false);
       setMessage("Error: Failed to approve the campaign.");
-    } finally {
-      setUpdating(false);
     }
   };
 
@@ -102,7 +105,8 @@ const CampaignReviewContainer = () => {
         rejectReason={rejectReason}
         setRejectReason={setRejectReason}
         submitRejectReason={submitRejectReason}
-        updating={updating}
+        buttonloader={buttonloader}
+        rejectionloader={rejectionloader}
       />
   );
 };

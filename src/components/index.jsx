@@ -12,6 +12,7 @@ import VerifyCampaignContainer from "./verifyCampaign/VerifyCampaignContainer";
 import CampaignReviewContainer from './campaignReview/CampaignReviewContainer';
 import VerifyUserContainer from "./verifyUser/VerifyUserContainer"; 
 import UserReviewContainer from "./userReview/UserReviewContainer";
+import ManageCampaignContainer from "./managecampaign/ManageCampaignContainer";
 export {
   LandingContainer,
   RegisterContainer,
@@ -25,5 +26,7 @@ export {
   AdminDashboardContainer,
   VerifyCampaignContainer,
   CampaignReviewContainer,
-  VerifyUserContainer
+  VerifyUserContainer,
+  UserReviewContainer,
+  ManageCampaignContainer
 };
