@@ -7,14 +7,14 @@ import toast from 'react-hot-toast';
 const ManageCampaignReviewContainer = () => {
   const { campaignCode } = useParams();
   const [campaign, setCampaign] = useState(null);
-  const [file,setfile] = useState(null);
+  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [buttonloader,setbuttonloader] = useState(false);
-  const [rejectionloader,setrejectionloader] = useState(false);
+  const [buttonLoader, setButtonLoader] = useState(false);
+  const [rejectionLoader, setRejectionLoader] = useState(false);
   const [error, setError] = useState(null);
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Store navigate instance here
 
   useEffect(() => {
     const fetchCampaign = async () => {
@@ -22,10 +22,9 @@ const ManageCampaignReviewContainer = () => {
         const res = await getSpecificCampaign(campaignCode);
         const file = await getCampaignDetails(campaignCode);
         setCampaign(res[0]);
-        setfile(file.filePaths[1])
+        setFile(file.filePaths[1]);
       } catch (error) {
         setError("Failed to load campaign details.");
-        setMessage("Error: Unable to fetch campaign details.");
       } finally {
         setLoading(false);
       }
@@ -37,57 +36,55 @@ const ManageCampaignReviewContainer = () => {
   const handleApprove = async () => {
     if (!campaign) return;
 
-    const confirmApprove = window.confirm("Are you sure you want to approve this campaign?");
+    setButtonLoader(true);
+    const confirmApprove = window.confirm("Are you sure you want to activate this campaign?");
     if (!confirmApprove) return;
-
-    setbuttonloader(true);
+    
     try {
-      updateCampaignStatus(campaignCode, 1).then((res) => {
-        console.log(res);
-        setCampaign(res);
-        setbuttonloader(false);
-        useNavigate('/verify-campaign')
-      }).catch((err) => {
-        setMessage("Error: Failed to approve the campaign.");
-        setMessage("Error: Failed to approve the campaign.");
-        setbuttonloader(false);
-        console.log(err);
-      });
-      setMessage("Success: Campaign approved successfully!");
-    } catch (error) {
-      setbuttonloader(false);
-      setMessage("Error: Failed to approve the campaign.");
+      const res = await updateCampaignStatus(campaignCode, 1);
+      setCampaign(res);
+      setButtonLoader(false);
+      toast.success("Campaign activated successfully!");
+      navigate('/manage-campaign'); // Use the navigate instance directly here
+    } catch (err) {
+      toast.error("Error: Failed to activate the campaign.");
+      setButtonLoader(false);
     }
   };
 
   const handleReject = () => {
-    setShowRejectReason(true); // Show the rejection reason input
+    setShowRejectReason(true);
   };
 
   const submitRejectReason = async () => {
+    setRejectionLoader(true);
     if (!rejectReason.trim()) {
-      setMessage("Error: Please provide a reason for rejection.");
+      if(campaign.status === 2){
+        toast.error("Please provide a reason for deletion");
+      }else{
+        toast.error("Please provide a reason for suspension");
+      }
+      setRejectionLoader(false);
       return;
     }
 
     const confirmReject = window.confirm("Are you sure you want to reject this campaign?");
-    if (!confirmReject) return;
+    if (!confirmReject) {
+      setRejectionLoader(false);
+      return;
+    }
 
-    setUpdating(true);
-    try {
-      updateCampaignStatus(campaignCode, 2).then((res) => {
-        console.log(res);
+    if (campaign.status === 1) {
+      try {
+        const res = await updateCampaignStatus(campaignCode, 2);
         setCampaign(res);
-        toast.success("Campaign rejected successfully!",'warn');
-        setShowRejectReason(false); // Hide the rejection note section after submission
-      }).catch((err) => {
-        toast.error("Failed to reject the campaign.",'warn');
-        console.log(err);
-      });
-    } catch (error) {
-      toast.error("Failed to reject the campaign.",'warn');
-    } finally {
-      setUpdating(false);
+        toast.success("Campaign suspended successfully!");
+        navigate('/manage-campaign');
+      } catch (err) {
+        toast.error("Error: Failed to suspend the campaign.");
+      } finally {
+        setRejectionLoader(false);
+      }
     }
   };
 
@@ -100,18 +97,18 @@ const ManageCampaignReviewContainer = () => {
   }
 
   return (
-      <ManageCampaignReview 
-        campaign={campaign}
-        handleApprove={handleApprove}
-        handleReject={handleReject}
-        showRejectReason={showRejectReason}
-        rejectReason={rejectReason}
-        setRejectReason={setRejectReason}
-        submitRejectReason={submitRejectReason}
-        buttonloader={buttonloader}
-        rejectionloader={rejectionloader}
-        file={file}
-      />
+    <ManageCampaignReview 
+      campaign={campaign}
+      handleApprove={handleApprove}
+      handleReject={handleReject}
+      showRejectReason={showRejectReason}
+      rejectReason={rejectReason}
+      setRejectReason={setRejectReason}
+      submitRejectReason={submitRejectReason}
+      buttonLoader={buttonLoader}
+      rejectionLoader={rejectionLoader}
+      file={file}
+    />
   );
 };
 

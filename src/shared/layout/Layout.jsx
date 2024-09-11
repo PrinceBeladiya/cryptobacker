@@ -4,9 +4,9 @@ import { FooterContainer, NavbarContainer, SideBarContainer } from "../"
 import { AdminDashboardContainer } from "../../components"
 
 
-const Layout = ({isAdmin}) => {
+const Layout = ({isAdmin,navigate}) => {
   if(isAdmin){
-    useNavigate('/admin-dashboard')
+    navigate('/admin-dashboard')
   }
   return (
     <>

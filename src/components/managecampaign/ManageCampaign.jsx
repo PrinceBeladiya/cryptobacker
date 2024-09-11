@@ -112,10 +112,13 @@ const ManageCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
                       className={`px-2 py-1 text-xs font-medium rounded-full ${
                         campaign.status === 0
                           ? 'bg-yellow-200 text-yellow-800'
+                          : campaign.status == 2
+                          ? 'bg-red-200 text-red-800'
                           : 'bg-green-200 text-green-800'
                       }`}
                     >
-                      {campaign.status === 0 ? 'Pending' : 'Approved'}
+                      {campaign.status === 0 ? 'Pending' :
+                        campaign.status === 1 ? 'Active' : 'Suspended'}
                     </span>
                   </td>
                   <td className="py-3 px-6">

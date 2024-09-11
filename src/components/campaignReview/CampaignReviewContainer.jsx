@@ -66,25 +66,27 @@ const CampaignReviewContainer = () => {
       setMessage("Error: Please provide a reason for rejection.");
       return;
     }
-
+    setrejectionloader(true);
     const confirmReject = window.confirm("Are you sure you want to reject this campaign?");
-    if (!confirmReject) return;
-
-    setUpdating(true);
+    if (!confirmReject){
+      setrejectionloader(false);
+       return;
+    }
     try {
       updateCampaignStatus(campaignCode, 2).then((res) => {
         console.log(res);
         setCampaign(res);
         toast.success("Campaign rejected successfully!",'warn');
-        setShowRejectReason(false); // Hide the rejection note section after submission
+        setrejectionloader(false);
+        setShowRejectReason(false);
       }).catch((err) => {
         toast.error("Failed to reject the campaign.",'warn');
+        setrejectionloader(false);
         console.log(err);
       });
     } catch (error) {
       toast.error("Failed to reject the campaign.",'warn');
-    } finally {
-      setUpdating(false);
+      setrejectionloader(false);
     }
   };
 
