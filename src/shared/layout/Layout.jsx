@@ -5,9 +5,6 @@ import { AdminDashboardContainer } from "../../components"
 
 
 const Layout = ({isAdmin,navigate}) => {
-  if(isAdmin){
-    navigate('/admin-dashboard')
-  }
   return (
     <>
     {!isAdmin && 
