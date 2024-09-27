@@ -3,9 +3,12 @@ import { useState } from "react";
 import Navbar from "./Navbar"
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/reducer/UserSession";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const NavbarContainer = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { userName, userEmail, userStatus, userRole } = useSelector((state) => state.user)
 
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -21,15 +24,36 @@ const NavbarContainer = () => {
     setDropdownOpen(false);
   }
 
-  const handleclick = () => {
-    setDropdownOpen(false); 
-  }
+  const handleclick = (e) => {
+    const event = e.target.id;
+    
+    if (event === 'create' || event === 'withdraw') {
+      const isUserVerified = userStatus !== "Pending";
+      
+      if (!isUserVerified) {
+        toast.error('You are not Verified','warn');
+        const path = location.pathname;
+        navigate(path);
+      } else {
+        switch (event) {
+          case "create":
+            navigate('/create-campaign');
+            break;
+          case "withdraw":
+            navigate('/withdraw-page');
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    setDropdownOpen(false);
+  };  
 
   return (
     <Navbar
       userName={userName}
       userEmail={userEmail}
-      userStatus={userStatus}
       handleLogOut={handleLogOut}
       isDropdownOpen={isDropdownOpen}
       toggleDropdown={toggleDropdown}

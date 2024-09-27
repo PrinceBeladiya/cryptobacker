@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 
 import { Link } from "react-router-dom";
+import { Card } from "flowbite-react";
+import { FolderOpen } from 'lucide-react';
 const UserDashboard = ({
   chartRef,
   userCampaigns,
@@ -15,6 +17,21 @@ const UserDashboard = ({
 }) => {
   return (
     <>
+    {userCampaigns.length === 0
+    ? 
+    <div className="flex items-center justify-center -mt-3 h-screen">
+      <Card className="w-full max-w-md shadow-lg bg-blue-50">
+        <div className="flex flex-col items-center p-8 text-center">
+          <FolderOpen className="w-20 h-20 text-blue-400 mb-6" />
+          <h2 className="text-2xl font-bold text-blue-700 mb-3">No Campaigns Yet</h2>
+          <p className="text-blue-600">
+            You haven't created any campaigns. Your future campaigns and their donation history will appear here.
+          </p>
+        </div>
+      </Card>
+    </div> 
+    : 
+    <div>
       <div className='flex pt-5 w-full overflow-hidden bg-gray-50'>
         <div className="p-4 ml-2 mb-6 bg-white border w-1/2 border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 sm:p-6">
           <div className="flex items-center justify-between mb-4">
@@ -261,6 +278,7 @@ const UserDashboard = ({
           </div>
         </div>
       </div>
+    </div>}
     </>
   );
 };

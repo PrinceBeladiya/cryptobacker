@@ -11,6 +11,7 @@ const CampaignDetailsContainer = () => {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [amount, setAmount] = useState('');
+  const [isLoading,setisLoading] = useState(false);
 
   const [campaign, setCampaign] = useState([]);
   const [donors, setdonors] = useState([]);
@@ -85,9 +86,9 @@ const CampaignDetailsContainer = () => {
   const { id } = useParams();
 
   const handleclick = (e) => {
-    if (e.target.name == "pay") {
+    if (e.target.id == "pay") {
+      setisLoading(true);
       if (amount > 0 && !isNaN(amount)) {
-        updateCampaignStatus(campaignCode, 1).then(() => {
           donateToCampaign({
             campaignCode,
             amount,
@@ -95,12 +96,12 @@ const CampaignDetailsContainer = () => {
             userEmail,
           }).then((res) => {
             setdonors(res)
-
             getUserCampaignDetails();
+            setisLoading(false);
           })
-        })
       }
       else {
+        setisLoading(false);
         toast.error('Enter Valid Amount', 'warn');
       }
     }
@@ -125,6 +126,7 @@ const CampaignDetailsContainer = () => {
         filePaths={filePaths}
         totalDonors={aggregatedDonations.length}
         topDonor={topDonor}
+        isLoading={isLoading}
         averageDonation={Number(0) / 10 ** 18}
       />
     </div>
