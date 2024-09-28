@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import CampaignList from './CampaignList';
 import { getAllCampaignDetails, getCampaigns } from '../../context';
 import { addCampaign } from '../../redux/reducer/Campaign';
@@ -9,15 +9,27 @@ const CampaignListContainer = () => {
   const { campaigns } = useSelector((state) => state.campaigns);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
+  const countCategoriesLength = useMemo(() => (name) => {
+    return sortedCampaigns.filter((campaign) => campaign.category === name).length;
+  }, [sortedCampaigns]);
   const [categories, setCategories] = useState([
-    { id: 'health', name: 'Health & Medical', count: 56, checked: false },
-    { id: 'education', name: 'Education', count: 56, checked: false },
-    { id: 'technology', name: 'Technology & Innovation', count: 56, checked: false },
-    { id: 'environment', name: 'Environment', count: 97, checked: false },
-    { id: 'business', name: 'Business & Startups', count: 97, checked: false },
-    { id: 'animal', name: 'Animals & Pets', count: 97, checked: false },
-    { id: 'projects', name: 'Creative Projects', count: 176, checked: false },
+    { id: 'health', name: 'Health & Medical', count: 0, checked: false },
+    { id: 'education', name: 'Education', count: 0, checked: false },
+    { id: 'technology', name: 'Technology & Innovation', count: 0, checked: false },
+    { id: 'environment', name: 'Environment', count: 0, checked: false },
+    { id: 'business', name: 'Business & Startups', count: 0, checked: false },
+    { id: 'animal', name: 'Animals & Pets', count: 0, checked: false },
+    { id: 'projects', name: 'Creative Projects', count: 0, checked: false },
   ]);
+
+  const updateCategoryCounts = () => {
+    setCategories(prevCategories => 
+      prevCategories.map(category => ({
+        ...category,
+        count: countCategoriesLength(category.id)
+      }))
+    );
+  };
 
   const handleCheckboxChange = (id) => {
     // Update the checked status of the selected category
@@ -72,6 +84,10 @@ const CampaignListContainer = () => {
   useEffect(() => {
     getCampaignDetails();
   }, []);
+
+  useEffect(() => {
+    updateCategoryCounts();
+  }, [sortedCampaigns, countCategoriesLength]);
 
   return (
     <CampaignList

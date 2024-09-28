@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import UserDashboard from './UserDashboard';
 import ApexCharts from 'apexcharts';
 import { getUserCampaigns, getUserDonations } from '../../context';
@@ -14,29 +14,52 @@ const UserDashBoardContainer = () => {
   const [error, setError] = useState(null);
 
   const { userStatus } = useSelector((state) => state.user);
+  const [sortedCampaigns, setSortedCampaigns] = useState([]);
 
   const [isOpen, setIsOpen] = useState(false);
+  const countCategoriesLength = useMemo(() => (name) => {
+    return sortedCampaigns.filter((campaign) => campaign.category === name).length;
+  }, [sortedCampaigns]);
+
   const [categories, setCategories] = useState([
-    { id: 'apple', name: 'Apple', count: 56, checked: false },
-    { id: 'fitbit', name: 'Fitbit', count: 56, checked: false },
-    { id: 'dell', name: 'Dell', count: 56, checked: false },
-    { id: 'asus', name: 'Asus', count: 97, checked: false },
-    { id: 'logitech', name: 'Logitech', count: 97, checked: false },
-    { id: 'msi', name: 'MSI', count: 97, checked: false },
-    { id: 'bosch', name: 'Bosch', count: 176, checked: false },
-    { id: 'sony', name: 'Sony', count: 234, checked: false },
-    { id: 'samsung', name: 'Samsung', count: 76, checked: false },
-    { id: 'canon', name: 'Canon', count: 49, checked: false },
-    { id: 'microsoft', name: 'Microsoft', count: 45, checked: false },
-    { id: 'razor', name: 'Razor', count: 49, checked: false },
+    { id: 'health', name: 'Health & Medical', count: 0, checked: false },
+    { id: 'education', name: 'Education', count: 0, checked: false },
+    { id: 'technology', name: 'Technology & Innovation', count: 0, checked: false },
+    { id: 'environment', name: 'Environment', count: 0, checked: false },
+    { id: 'business', name: 'Business & Startups', count: 0, checked: false },
+    { id: 'animal', name: 'Animals & Pets', count: 0, checked: false },
+    { id: 'projects', name: 'Creative Projects', count: 0, checked: false },
   ]);
+
+  const updateCategoryCounts = () => {
+    setCategories(prevCategories => 
+      prevCategories.map(category => ({
+        ...category,
+        count: countCategoriesLength(category.id)
+      }))
+    );
+  };
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleCheckboxChange = (id) => {
-    setCategories(categories.map(category =>
+    const updatedCategories = categories.map(category =>
       category.id === id ? { ...category, checked: !category.checked } : category
-    ));
+    );
+    setCategories(updatedCategories);
+
+    const selectedCategories = updatedCategories
+      .filter(category => category.checked)
+      .map(category => category.id);
+
+    if (selectedCategories.length > 0) {
+      const filteredCampaigns = campaigns.filter(campaign =>
+        selectedCategories.includes(campaign.category)
+      );
+      setSortedCampaigns(filteredCampaigns);
+    } else {
+      setSortedCampaigns(filteredCampaigns);
+    }
   };
 
   const handleclick = () => {
@@ -139,6 +162,10 @@ const UserDashBoardContainer = () => {
   useEffect(() => {
     getUserCampaignDetails();
   }, [getUserCampaignDetails]);
+
+  useEffect(() => {
+    updateCategoryCounts();
+  }, [sortedCampaigns, countCategoriesLength]);
 
   useEffect(() => {
     if (chartData && chartRef.current && typeof ApexCharts !== 'undefined') {
