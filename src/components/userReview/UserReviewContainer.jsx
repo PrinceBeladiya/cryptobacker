@@ -24,6 +24,12 @@ const UserReviewContainer = () => {
       .catch(error => console.error("Error fetching User details:", error));
   }, [userCode]);
 
+  const extractFilePath = (url) => {
+    const urlObj = new URL(url); // Create a URL object to parse the URL
+    return urlObj.pathname.substring(1); // Remove the leading '/'
+  };
+  
+
   if (!User) {
     return <div>Loading...</div>;
   }
@@ -33,6 +39,7 @@ const UserReviewContainer = () => {
       user={User}
       handleApprove={handleApprove}
       handleReject={handleReject}
+      extractFilePath={extractFilePath}
     />
   );
 };

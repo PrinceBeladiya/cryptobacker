@@ -87,8 +87,10 @@ const ManageCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
             </div>
           </div>
         </div>
-
-        <div className="overflow-x-auto">
+        {currentItems.length > 0 
+        ? 
+        (<div>
+          <div className="overflow-x-auto">
           <table className="w-full min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
             <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
               <tr>
@@ -203,6 +205,16 @@ const ManageCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
             </ul>
           </nav>
         </div>
+        </div>)
+        :
+        (<div className="text-center py-10">
+          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No campaigns available</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">There are currently no campaigns to verify.</p>
+        </div>
+      )}
       </div>
     </Card>
   );

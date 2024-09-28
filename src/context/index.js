@@ -424,12 +424,9 @@ export const deleteCampaign = async (campaignCode) => {
 
     const tx = await contract.deleteCampaign(campaignCode);
     await tx.wait();
-
-    toast.success('Campaign deleted successfully');
     return true;
   } catch (error) {
     console.error("Error deleting campaign:", error);
-    toast.error('Error deleting campaign');
     throw error;
   }
 };

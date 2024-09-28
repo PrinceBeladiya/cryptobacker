@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import CampaignReview from './CampaignReview';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCampaignDetails, updateCampaignStatus } from '../../context';
+import { getCampaignDetails, getCampaigns, updateCampaignStatus } from '../../context';
 import toast from 'react-hot-toast';
+import { addCampaign } from '../../redux/reducer/Campaign';
+import { useDispatch } from 'react-redux';
 
 const CampaignReviewContainer = () => {
   const { campaignCode } = useParams();
@@ -14,6 +16,7 @@ const CampaignReviewContainer = () => {
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchCampaign = async () => {
@@ -33,37 +36,36 @@ const CampaignReviewContainer = () => {
 
   const handleApprove = async () => {
     if (!campaign) return;
+    setbuttonloader(true);
 
     const confirmApprove = window.confirm("Are you sure you want to approve this campaign?");
-    if (!confirmApprove) return;
-
-    setbuttonloader(true);
-    try {
+    if (!confirmApprove) {
+      setbuttonloader(false);
+      return; 
+    }
       updateCampaignStatus(campaignCode, 1).then((res) => {
-        console.log(res);
+        getCampaigns().then((res) => {
+          dispatch(addCampaign(res));
+        })
         setCampaign(res);
         setbuttonloader(false);
-        useNavigate('/verify-campaign')
-      }).catch((err) => {
-        setMessage("Error: Failed to approve the campaign.");
-        setMessage("Error: Failed to approve the campaign.");
-        setbuttonloader(false);
-        console.log(err);
-      });
-      setMessage("Success: Campaign approved successfully!");
-    } catch (error) {
-      setbuttonloader(false);
-      setMessage("Error: Failed to approve the campaign.");
-    }
+        toast.success("Success: Campaign approved successfully!");
+        navigate('/verify-campaign');
+        })
+        .catch((err) => {
+          toast.error("Error: Failed to activate the campaign.");
+          setbuttonloader(false);
+          console.log(err);
+          
+        })
   };
 
   const handleReject = () => {
-    setShowRejectReason(true); // Show the rejection reason input
+    setShowRejectReason(true);
   };
 
   const submitRejectReason = async () => {
     if (!rejectReason.trim()) {
-      setMessage("Error: Please provide a reason for rejection.");
       return;
     }
     setrejectionloader(true);
@@ -72,22 +74,22 @@ const CampaignReviewContainer = () => {
       setrejectionloader(false);
        return;
     }
-    try {
-      updateCampaignStatus(campaignCode, 2).then((res) => {
-        console.log(res);
-        setCampaign(res);
-        toast.success("Campaign rejected successfully!",'warn');
-        setrejectionloader(false);
-        setShowRejectReason(false);
-      }).catch((err) => {
+    
+    updateCampaignStatus(campaignCode, 2).then((res) => {
+      getCampaigns().then((res) => {
+        dispatch(addCampaign(res));
+      })
+      setCampaign(res);
+      setrejectionloader(false);
+      toast.success("Campaign rejected successfully!",'warn');
+      navigate('/verify-campaign');
+      })
+      .catch((err) => {
         toast.error("Failed to reject the campaign.",'warn');
         setrejectionloader(false);
         console.log(err);
-      });
-    } catch (error) {
-      toast.error("Failed to reject the campaign.",'warn');
-      setrejectionloader(false);
-    }
+        
+      })
   };
 
   if (loading) {

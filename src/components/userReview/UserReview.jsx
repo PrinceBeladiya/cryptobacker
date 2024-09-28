@@ -1,7 +1,9 @@
 import { Card } from 'flowbite-react';
 import React from 'react';
 
-const UserReview = ({ user, handleReject, handleApprove }) => {
+const UserReview = ({ user, handleReject, handleApprove, extractFilePath }) => {
+  console.log("user :- ",user);
+  
   return (
     <Card className="bg-white shadow-lg rounded-lg">
       <div className="p-6 border-b border-gray-200">
@@ -41,15 +43,15 @@ const UserReview = ({ user, handleReject, handleApprove }) => {
         <h3 className="text-lg font-medium text-gray-800 mb-2">Supporting Documents</h3>
         <ul className="list-none list-inside mb-6">
           {/* Display the PDF inline using an iframe */}
-          {user.file && user.file && (
+          {user.file && (
             <li className="mb-4">
-              <iframe
-                src={`http://localhost:3001/${user.file.replace(/\\/g, '/')}`}
-                title="Supporting Document PDF"
+              <embed
+                src={`../../backend/${extractFilePath(user.file)}`}
+                type="application/pdf"
                 width="100%"
                 height="500px"
                 className="border rounded-lg"
-              ></iframe>
+              />
             </li>
           )}
         </ul>

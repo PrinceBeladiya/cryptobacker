@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ManageCampaignReview from './ManageCampaignReview'
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCampaignDetails, getSpecificCampaign, updateCampaignStatus } from '../../context';
+import { getCampaignDetails, getSpecificCampaign, updateCampaignStatus, getCampaigns, deleteCampaign } from '../../context';
 import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { addCampaign } from '../../redux/reducer/Campaign';
 
 const ManageCampaignReviewContainer = () => {
   const { campaignCode } = useParams();
@@ -14,7 +16,8 @@ const ManageCampaignReviewContainer = () => {
   const [error, setError] = useState(null);
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const navigate = useNavigate(); // Store navigate instance here
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchCampaign = async () => {
@@ -33,23 +36,28 @@ const ManageCampaignReviewContainer = () => {
     fetchCampaign();
   }, [campaignCode]);
 
-  const handleApprove = async () => {
+  const handleApprove = () => {
     if (!campaign) return;
 
     setButtonLoader(true);
     const confirmApprove = window.confirm("Are you sure you want to activate this campaign?");
-    if (!confirmApprove) return;
-    
-    try {
-      const res = await updateCampaignStatus(campaignCode, 1);
-      setCampaign(res);
+    if (!confirmApprove){
       setButtonLoader(false);
-      toast.success("Campaign activated successfully!");
-      navigate('/manage-campaign'); // Use the navigate instance directly here
-    } catch (err) {
+      return;
+    }
+    updateCampaignStatus(campaignCode, 1).then((res) => {
+    getCampaigns().then((res) => {
+      dispatch(addCampaign(res));
+    })
+    setCampaign(res);
+    setButtonLoader(false);
+    toast.success("Campaign activated successfully!");
+    navigate('/manage-campaign');
+    })
+    .catch((err) => {
       toast.error("Error: Failed to activate the campaign.");
       setButtonLoader(false);
-    }
+    })
   };
 
   const handleReject = () => {
@@ -68,24 +76,49 @@ const ManageCampaignReviewContainer = () => {
       return;
     }
 
-    const confirmReject = window.confirm("Are you sure you want to reject this campaign?");
+    let confirmReject;
+    if(campaign.status === 2){
+      confirmReject = window.confirm("Are you sure you want to delete this campaign?");
+    }
+    else{
+      confirmReject = window.confirm("Are you sure you want to suspend this campaign?");
+    }
+
     if (!confirmReject) {
       setRejectionLoader(false);
       return;
     }
 
     if (campaign.status === 1) {
-      try {
-        const res = await updateCampaignStatus(campaignCode, 2);
+        updateCampaignStatus(campaignCode, 2).then((res) => {
+        getCampaigns().then((res) => {
+          dispatch(addCampaign(res));
+        })
         setCampaign(res);
+        setRejectionLoader(false);
         toast.success("Campaign suspended successfully!");
         navigate('/manage-campaign');
-      } catch (err) {
-        toast.error("Error: Failed to suspend the campaign.");
-      } finally {
-        setRejectionLoader(false);
+        })
+        .catch((err) => {
+          toast.error("Error: Failed to suspend the campaign.");
+          setRejectionLoader(false);
+        })
       }
-    }
+      else{
+        deleteCampaign(campaignCode).then((res) => {
+          getCampaigns().then((res) => {
+            dispatch(addCampaign(res));
+          })
+          setCampaign(res);
+          setRejectionLoader(false);
+          toast.success("Campaign deleted successfully!");
+          navigate('/manage-campaign');
+          })
+          .catch((err) => {
+            toast.error("Error: Failed to delete the campaign.");
+            setRejectionLoader(false);
+          })
+      }
   };
 
   if (loading) {

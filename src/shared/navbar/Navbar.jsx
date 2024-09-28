@@ -1,11 +1,10 @@
 /* eslint-disable react/prop-types */
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { logo } from "../../assets/images";
 
 const Navbar = ({
   userName,
   userEmail,
-  userStatus,
   handleLogOut,
   isDropdownOpen,
   toggleDropdown,
@@ -54,13 +53,13 @@ const Navbar = ({
                         {!isAdmin && 
                         <>
                           <li>
-                            <NavLink to="user-dashboard" onClick={handleclick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</NavLink>
+                            <NavLink id="dashboard" to="user-dashboard" onClick={handleclick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</NavLink>
                           </li>
                           <li>
-                            <NavLink to="/create-campaign" onClick={handleclick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Create Campaign</NavLink>
+                            <button id="create" onClick={handleclick} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Create Campaign</button>
                           </li>
                           <li>
-                            <NavLink to="/withdraw-page" onClick={handleclick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Withdraw</NavLink>
+                            <button id="withdraw" onClick={handleclick} className="block w-full text-left  px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Withdraw</button>
                           </li>
                         </>
                         }

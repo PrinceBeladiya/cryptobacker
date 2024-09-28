@@ -80,7 +80,7 @@ const CreateCampaign = ({
                   <option value="environment">Environment</option>
                   <option value="business">Business & Startups</option>
                   <option value="animal">Animals & Pets</option>
-                  <option value="projects ">Creative Projects</option>
+                  <option value="projects">Creative Projects</option>
                 </Select>
               </div>
               <div>
