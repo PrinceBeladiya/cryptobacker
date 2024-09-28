@@ -4,12 +4,11 @@ import { isAlphabets, isdescreption, isFutureDate } from "../../utils";
 import toast from "react-hot-toast";
 import { createCampaign, getCampaigns } from "../../context";
 import { useSelector } from "react-redux";
+import { useNavigation } from "react-router-dom";
 const CreateCampaignContainer = () => {
-
-  const { userName } = useSelector((state) => state.user);
+  const { userName, userStatus } = useSelector((state) => state.user);
 
   const [isLoading, setisLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     name: '',
     title: '',
@@ -20,6 +19,8 @@ const CreateCampaignContainer = () => {
     campaingn_thumbnail: undefined,
     campaingn_report: undefined,
   });
+
+  const navigate = useNavigation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,6 +49,8 @@ const CreateCampaignContainer = () => {
       console.log(err);
       setisLoading(false);
     }
+
+    navigate("/campaign-list");
   }
 
   const handlechange = (e) => {
@@ -72,6 +75,7 @@ const CreateCampaignContainer = () => {
       handleSubmit={handleSubmit}
       handlechange={handlechange}
       isLoading={isLoading}
+      userStatus={userStatus}
     />
   )
 }

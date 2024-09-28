@@ -11,7 +11,7 @@ const CampaignDetailsContainer = () => {
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [amount, setAmount] = useState('');
-  const [isLoading,setisLoading] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
 
   const [campaign, setCampaign] = useState([]);
   const [donors, setdonors] = useState([]);
@@ -20,7 +20,7 @@ const CampaignDetailsContainer = () => {
   const [totalDonation, setTotalDonation] = useState(0);
   const [filePaths, setFilePaths] = useState([]);
 
-  const { userName, userEmail } = useSelector((state) => state.user)
+  const { userName, userEmail, userStatus } = useSelector((state) => state.user)
 
   const getUserCampaignDetails = async () => {
     getSpecificCampaign(campaignCode).then((res) => {
@@ -85,24 +85,30 @@ const CampaignDetailsContainer = () => {
 
   const { id } = useParams();
 
+  // updateCampaignStatus(campaignCode, 1);
+
   const handleclick = (e) => {
     if (e.target.id == "pay") {
       setisLoading(true);
       if (amount > 0 && !isNaN(amount)) {
-          donateToCampaign({
-            campaignCode,
-            amount,
-            userName,
-            userEmail,
-          }).then((res) => {
-            setdonors(res)
-            getUserCampaignDetails();
-            setisLoading(false);
-          })
+        donateToCampaign({
+          campaignCode,
+          amount,
+          userName,
+          userEmail,
+        }).then((res) => {
+          setdonors(res)
+          setisLoading(false);  
+
+          getUserCampaignDetails();
+        }).catch((err) => {
+          toast.error(err.message.split(" (")[0])
+          setisLoading(false);  
+        })
       }
       else {
         setisLoading(false);
-        toast.error('Enter Valid Amount', 'warn');
+        toast.error('Enter Valid Amount');
       }
     }
   }
@@ -128,6 +134,7 @@ const CampaignDetailsContainer = () => {
         topDonor={topDonor}
         isLoading={isLoading}
         averageDonation={Number(0) / 10 ** 18}
+        userStatus={userStatus}
       />
     </div>
   )

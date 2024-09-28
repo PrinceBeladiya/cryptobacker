@@ -49,7 +49,7 @@ export const updateCampaignStatus = async (campaignCode, newStatus) => {
 
     return true;
   } catch (error) {
-    console.error("Error updating campaign status:", error);
+    console.error("Error updating campaign status:", error.message.split(" (")[0]);
     throw error;
   }
 };
@@ -83,7 +83,11 @@ export const getAllCampaignDetails = async () => {
     return response.data.data; // Return the data here
   } catch (error) {
     console.error("Error getting campaign donation:", error);
-    toast.error(error.response?.data?.message || "An error occurred");
+    if(error?.message?.split(" (")[0]) {
+      toast.error(error.message.split(" (")[0] || "An error occurred");
+    } else {
+      toast.error("An error occurred");
+    }
     throw error;
   }
 }
@@ -170,16 +174,20 @@ export const createCampaign = async (form) => {
         return res.data.data;
       }).catch(async (err) => {
         toast.error(err.response.data.message);
-
+        
         throw err;
       })
     }).catch((err) => {
-      toast.error(err.response.data.message);
+      if(err?.message?.split(" (")[0]) {
+        toast.error(err.message.split(" (")[0]);
+      } else {
+        toast.error(err.response.data.message);
+      }
 
       throw err;
     })
   } catch (error) {
-    console.error("Error creating campaign:", error);
+    console.error("Error creating campaign:", error.message.split(" (")[0]);
 
     throw error;
   }
@@ -196,7 +204,11 @@ export const getCampaignDetails = async (campaignCode) => {
     )
     return res.data.data;
   } catch (error) {
-    console.error("Error :", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error :", error);
+    }
 
     throw error;
   }
@@ -227,7 +239,12 @@ export const getCampaignDonation = async (campaignCode) => {
 
     return donationData;
   } catch (error) {
-    console.error("Error getting campaign donation:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error getting campaign donation:", error);
+    }
+
     throw error;
   }
 };
@@ -241,7 +258,12 @@ export const getTotalOfCampaigns = async () => {
     console.log("data : " + data);
     return ethers.formatEther(data);
   } catch (error) {
-    console.error("Error getting total campaigns:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error getting total campaigns:", error);
+    }
+  
     throw error;
   }
 };
@@ -278,7 +300,12 @@ export const getCampaigns = async () => {
 
     return formattedCampaigns;
   } catch (error) {
-    console.error("Error getting campaigns:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error getting campaigns:", error);
+    }
+    
     throw error;
   }
 };
@@ -322,7 +349,12 @@ export const getContractBalance = async () => {
     const data = await contract.getContractBalance();
     return ethers.formatEther(data);
   } catch (error) {
-    console.error("Error getting contract balance:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error getting contract balance:", error);
+    }
+    
     throw error;
   }
 };
@@ -336,7 +368,12 @@ export const getContractUSDCBalance = async () => {
     const data = await contract.getContractUSDCBalance();
     return ethers.formatUnits(data, 6);
   } catch (error) {
-    console.error("Error getting contract USDC balance:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error getting contract USDC balance:", error);
+    }
+    
     throw error;
   }
 };
@@ -350,7 +387,12 @@ export const getUserCampaigns = async () => {
 
     return allCampaigns.filter((campaign) => campaign.owner === userAddress);
   } catch (error) {
-    console.error("Error getting user campaigns:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error getting user campaigns:", error);
+    }
+    
     throw error;
   }
 };
@@ -407,7 +449,12 @@ export const donateToCampaign = async (data) => {
       timestamp
     };
   } catch (error) {
-    console.error("Error donating to campaign:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error donating to campaign:", error);
+    }
+
     throw error;
   }
 };
@@ -426,14 +473,18 @@ export const deleteCampaign = async (campaignCode) => {
     await tx.wait();
     return true;
   } catch (error) {
-    console.error("Error deleting campaign:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error deleting campaign:", error);
+    }
+    
+    toast.error('Error deleting campaign');
     throw error;
   }
 };
 
 export const createWithdrawRequest = async (data) => {
-  console.log("data");
-  console.log(data);
   try {
     if (!data.name || !data.campaignOwner || !data.title || data.campaignCode == undefined || !data.campaign || !data.amount) {
       throw new Error("All fields are required");
@@ -491,7 +542,12 @@ export const getWithdraws = async () => {
 
     return res.data;
   } catch (error) {
-    console.error("Error deleting campaign:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error deleting campaign:", error);
+    }
+    
     toast.error('Error deleting campaign');
     throw error;
   }
@@ -551,7 +607,12 @@ export const getUserDonations = async () => {
 
     return donationData;
   } catch (error) {
-    console.error("Error getting campaign donation:", error);
+    if(error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error getting campaign donation:", error);
+    }
+    
     throw error;
   }
 };

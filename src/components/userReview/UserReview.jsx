@@ -1,8 +1,7 @@
+/* eslint-disable react/prop-types */
 import { Card } from 'flowbite-react';
-import React from 'react';
 
 const UserReview = ({ user, handleReject, handleApprove, extractFilePath }) => {
-  console.log("user :- ",user);
   
   return (
     <Card className="bg-white shadow-lg rounded-lg">
@@ -44,7 +43,7 @@ const UserReview = ({ user, handleReject, handleApprove, extractFilePath }) => {
         <ul className="list-none list-inside mb-6">
           {/* Display the PDF inline using an iframe */}
           {user.file && (
-            <li className="mb-4">
+            <li className="mb-4 w-full">
               <embed
                 src={`../../backend/${extractFilePath(user.file)}`}
                 type="application/pdf"

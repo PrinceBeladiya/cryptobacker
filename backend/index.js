@@ -14,13 +14,9 @@ mongoose.connect(process.env.MONGO_URL).then(() => {
   console.log("Error In MongoDB Connection : ", err)
 })
 
+app.use("/storage", express.static("storage"));
+
 app.use('/', route);
-app.get('/*', (req, res) => {
-  res.status(404).send({
-    status: false,
-    message: "Path Not Match"
-  });
-})
 
 app.listen(process.env.NODE_PORT, () => {
   console.log(`Server Listening on ${process.env.NODE_PORT}`)

@@ -108,6 +108,7 @@ const VerifyUser = ({
               <tr>
                 <th className="py-3 px-6 text-left">User ID</th>
                 <th className="py-3 px-6 text-left">User Name</th>
+                <th className="py-3 px-6 text-left">User Email</th>
                 <th className="py-3 px-6 text-left">Date Created</th>
                 <th className="py-3 px-6 text-left">Status</th>
                 <th className="py-3 px-6 text-left">Actions</th>
@@ -118,6 +119,7 @@ const VerifyUser = ({
                 <tr key={user._id} className="border-b border-gray-200 dark:border-gray-700">
                   <td className="py-3 px-6">{user._id}</td>
                   <td className="py-3 px-6">{user.name}</td>
+                  <td className="py-3 px-6">{user.email}</td>
                   <td className="py-3 px-6">
                     {new Date(user.createdAt).toLocaleDateString('en-GB')}
                   </td>

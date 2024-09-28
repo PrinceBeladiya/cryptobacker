@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import WithDraw from './WithDraw';
 import { createWithdrawRequest, getUserCampaigns, getWithdraws } from '../../context';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 const WithDrawContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,6 +18,8 @@ const WithDrawContainer = () => {
     report: null, // Initialize with null instead of undefined
     title: '',
   });
+
+  const { userStatus } = useSelector((state) => state.user);
 
   useEffect(() => {
     getUserCampaigns().then((res) => {
@@ -41,6 +44,25 @@ const WithDrawContainer = () => {
 
       const res = await createWithdrawRequest(data);
       console.log(res);
+
+      getWithdraws().then((res) => {
+        setWithdrawHistory(res.data);
+      })
+      
+      // Filter withdraw history for the selected campaign and sum the withdrawAmount
+      const totalWithdrawnAmount = withdrawHistory
+        .filter((withdraw) => withdraw.campaignCode === selectedCampaign.campaignCode) // Adjust the field names accordingly
+        .reduce((total, withdraw) => {
+          return total + parseFloat(withdraw.withdrawAmount); // Convert to float in case it's a string
+        }, 0);
+
+      // Log the filtered withdraw history and total withdrawn amount for debugging
+      console.log("Filtered Withdraw History for Selected Campaign:", withdrawHistory.filter((withdraw) => withdraw.campaignId === selected_campaign.id));
+      console.log("Total Withdrawn Amount for Selected Campaign:", totalWithdrawnAmount);
+
+      // Set the available amount state
+      const availableBalance = (Number(selectedCampaign.amountCollectedETH) / 10 ** 18) - Number(totalWithdrawnAmount);
+      setAvailableAmount(availableBalance);
     } catch (err) {
       console.log(err);
       toast.error(err.response.data.message);
@@ -49,7 +71,7 @@ const WithDrawContainer = () => {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-  
+
     if (name === 'campaign') {
       const selected_campaign = campaign.find(c => Number(c.campaignCode) === Number(value)); // Find the selected campaign
       setSelectCampaignCode(value);
@@ -59,10 +81,24 @@ const WithDrawContainer = () => {
       }));
       if (selected_campaign) {
         setSelectedCampaign(selected_campaign);
-        setAvailableAmount(selected_campaign.amountCollectedETH); // Set the available balance
+
+        // Filter withdraw history for the selected campaign and sum the withdrawAmount
+        const totalWithdrawnAmount = withdrawHistory
+          .filter((withdraw) => withdraw.campaignCode === selected_campaign.campaignCode) // Adjust the field names accordingly
+          .reduce((total, withdraw) => {
+            return total + parseFloat(withdraw.withdrawAmount); // Convert to float in case it's a string
+          }, 0);
+
+        // Log the filtered withdraw history and total withdrawn amount for debugging
+        console.log("Filtered Withdraw History for Selected Campaign:", withdrawHistory.filter((withdraw) => withdraw.campaignId === selected_campaign.id));
+        console.log("Total Withdrawn Amount for Selected Campaign:", totalWithdrawnAmount);
+
+        // Set the available amount state
+        const availableBalance = (Number(selected_campaign.amountCollectedETH) / 10 ** 18) - Number(totalWithdrawnAmount);
+        setAvailableAmount(availableBalance);
       }
     }
-  
+
     if (type === 'file') {
       setFormData(prevState => ({
         ...prevState,
@@ -74,7 +110,7 @@ const WithDrawContainer = () => {
         [name]: value,
       }));
     }
-  };  
+  };
 
   return (
     <div>
@@ -86,6 +122,7 @@ const WithDrawContainer = () => {
         isLoading={isLoading}
         availableAmount={availableAmount}
         campaign={campaign}
+        userStatus={userStatus}
       />
     </div>
   );
