@@ -4,7 +4,7 @@ import { isAlphabets, isdescreption, isFutureDate } from "../../utils";
 import toast from "react-hot-toast";
 import { createCampaign, getCampaigns } from "../../context";
 import { useSelector } from "react-redux";
-import { useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const CreateCampaignContainer = () => {
   const { userName, userStatus } = useSelector((state) => state.user);
 
@@ -20,7 +20,7 @@ const CreateCampaignContainer = () => {
     campaingn_report: undefined,
   });
 
-  const navigate = useNavigation();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -11,6 +11,8 @@ const LayoutContainer = () => {
   
   useEffect(() => {
     if (userToken) {
+      console.log("userTOken")
+      console.log(userToken)
       dispatch(fetchUserDetails(userToken))
     }
   }, [userToken, dispatch])

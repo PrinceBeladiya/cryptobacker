@@ -20,8 +20,17 @@ export const fetchUserDetails = createAsyncThunk(
       })
       return response.data.data
     } catch (error) {
-      // Return a custom error message
-      return rejectWithValue(error.response.data)
+      console.log(error);
+      try {
+        const adminresponse = await axios.get('http://localhost:3001/admin/getAdmin', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        return adminresponse.data.data
+      } catch (error) {
+        return rejectWithValue(error.response.data)
+      }
     }
   }
 )
@@ -53,6 +62,7 @@ export const userSlice = createSlice({
         state.userEmail = action.payload.email
         state.userStatus = action.payload.status
         state.userRole = action.payload.role
+        state.access = action.payload.adminType
       })
       .addCase(fetchUserDetails.rejected, (state, action) => {
         state.status = 'failed'

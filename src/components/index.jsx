@@ -8,12 +8,17 @@ import CampaignDetailsContainer from "./campaigndetails/CampaignDetailsContainer
 import ContactUsContainer from "./contactus/ContactUsContainer";
 import WithDrawContainer from "./withdraw/WithDrawContainer";
 import AdminDashboardContainer from "./adminDashboard/AdminDashboardContainer";
-import VerifyCampaignContainer from "./verifyCampaign/VerifyCampaignContainer"; 
+import VerifyCampaignContainer from "./verifyCampaign/VerifyCampaignContainer";
 import CampaignReviewContainer from './campaignReview/CampaignReviewContainer';
-import VerifyUserContainer from "./verifyUser/VerifyUserContainer"; 
+import VerifyUserContainer from "./verifyUser/VerifyUserContainer";
 import UserReviewContainer from "./userReview/UserReviewContainer";
 import ManageCampaignContainer from "./managecampaign/ManageCampaignContainer";
 import ManageCampaignReviewContainer from "./managecampaignReview/ManageCampaignReviewContainer";
+import AdminLoginContainer from "./adminLogin/AdminLoginContainer";
+import AdminRegisterContainer from "./adminRegister/AdminRegisterContainer";
+import AddAdminContainer from "./addAdmins/AddAdminsContainer";
+import ManageWithdrawContainer from "./manageWithdraws/ManageWithdrawsContainer";
+
 export {
   LandingContainer,
   RegisterContainer,
@@ -30,5 +35,9 @@ export {
   VerifyUserContainer,
   UserReviewContainer,
   ManageCampaignContainer,
-  ManageCampaignReviewContainer
+  ManageCampaignReviewContainer,
+  AdminLoginContainer,
+  AdminRegisterContainer,
+  AddAdminContainer,
+  ManageWithdrawContainer
 };

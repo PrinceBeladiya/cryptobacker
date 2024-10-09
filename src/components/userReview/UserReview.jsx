@@ -1,37 +1,37 @@
 /* eslint-disable react/prop-types */
 import { Card } from 'flowbite-react';
 
-const UserReview = ({ user, handleReject, handleApprove, extractFilePath }) => {
-  
+const UserReview = ({ user, handleStatusChange, extractFilePath }) => {
+
   return (
     <Card className="bg-white shadow-lg rounded-lg">
       <div className="p-6 border-b border-gray-200">
-  {/* <h1 className="text-3xl font-bold text-gray-800 mb-4">{campaign.title || 'No Title'}</h1> */}
-  
-  <table className="table-auto w-full text-left border-collapse border border-gray-300">
-    <tbody>
-      <tr className="border-t border-gray-200">
-        <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">ID</th>
-        <td className="px-2 py-2 text-gray-800">{user._id || 'N/A'}</td>
-      </tr>
-      <tr className="border-t border-gray-200">
-        <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Name</th>
-        <td className="px-2 py-2 text-gray-800">{user.name || 'N/A'}</td>
-      </tr>
-      <tr className="border-t border-gray-200">
-        <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Email</th>
-        <td className="px-2 py-2 text-gray-800">{user.email || 'N/A'}</td>
-      </tr>
-      <tr className="border-t border-gray-200">
-        <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Date Of Birth</th>
-        <td className="px-2 py-2 text-gray-800">{new Date(user.DOB).toLocaleDateString() || 'N/A'}</td>
-      </tr>
-      <tr className="border-t border-gray-200">
-        <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">User Created</th>
-        <td className="px-2 py-2 text-gray-800">{new Date(user.createdAt).toLocaleDateString() || 'N/A'}</td>
-      </tr>
-    </tbody>
-  </table>
+        {/* <h1 className="text-3xl font-bold text-gray-800 mb-4">{campaign.title || 'No Title'}</h1> */}
+
+        <table className="table-auto w-full text-left border-collapse border border-gray-300">
+          <tbody>
+            <tr className="border-t border-gray-200">
+              <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">ID</th>
+              <td className="px-2 py-2 text-gray-800">{user._id || 'N/A'}</td>
+            </tr>
+            <tr className="border-t border-gray-200">
+              <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Name</th>
+              <td className="px-2 py-2 text-gray-800">{user.name || 'N/A'}</td>
+            </tr>
+            <tr className="border-t border-gray-200">
+              <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Email</th>
+              <td className="px-2 py-2 text-gray-800">{user.email || 'N/A'}</td>
+            </tr>
+            <tr className="border-t border-gray-200">
+              <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Date Of Birth</th>
+              <td className="px-2 py-2 text-gray-800">{new Date(user.DOB).toLocaleDateString() || 'N/A'}</td>
+            </tr>
+            <tr className="border-t border-gray-200">
+              <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">User Created</th>
+              <td className="px-2 py-2 text-gray-800">{new Date(user.createdAt).toLocaleDateString() || 'N/A'}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div className="p-6">
@@ -58,18 +58,18 @@ const UserReview = ({ user, handleReject, handleApprove, extractFilePath }) => {
 
       <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
         {user.status == "Pending" &&
-        <button
-        onClick={handleApprove}
-        className="bg-green-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
-        >
-        Approve
-        </button>
+          <button
+            onClick={() => handleStatusChange(user._id, "Approve")}
+            className="bg-green-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+          >
+            Approve
+          </button>
         }
         <button
-          onClick={handleReject}
-          className="bg-red-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-600 transition duration-300"
+          onClick={() => handleStatusChange(user._id, user.status == "Pending" ? "Reject" : user.status == "Suspend" ? "Approve" : "Suspend")}
+          className={`${user.status == "Suspend" ? "bg-green-500" : "bg-red-500"} text-white py-2 px-4 rounded-lg shadow-md ${user.status == "Suspend" ? "hover:bg-green-600 " : "hover:bg-red-600 "} transition duration-300`}
         >
-          {user.status == "Pending" ? "Reject" : "Suspend"}
+          {user.status == "Pending" ? "Reject" : user.status == "Suspend" ? "Approve" : "Suspend"}
         </button>
       </div>
     </Card>

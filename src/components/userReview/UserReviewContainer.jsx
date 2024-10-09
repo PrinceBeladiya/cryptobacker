@@ -1,24 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import UserReview from './UserReview';
 import { useParams } from 'react-router-dom';
-import { getUser } from '../../context';
+import { getUser, changeUserStatus } from '../../context';
 
 const UserReviewContainer = () => {
-  const {userCode} = useParams();
+  const { userCode } = useParams();
   const [User, setUser] = useState(null);
 
-  const handleApprove = () => {
-    alert('Campaign approved');
+  const handleStatusChange = async (userId, newStatus) => {
+    const confirmChange = window.confirm(`Are you sure you want to change the user's status to ${newStatus}?`);
+
+    // Step 2: If the user confirmed, proceed with the API call
+    if (confirmChange) {
+      try {
+        const result = await changeUserStatus(userId, newStatus);
+        console.log(result);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
   };
 
-  const handleReject = () => {
-    alert('Campaign rejected');
-  };
-  
   useEffect(() => {
     getUser(userCode)
       .then(res => {
-        console.log("New Data :- ", res); 
+        console.log("New Data :- ", res);
         setUser(res.data);
       })
       .catch(error => console.error("Error fetching User details:", error));
@@ -28,17 +34,16 @@ const UserReviewContainer = () => {
     const urlObj = new URL(url); // Create a URL object to parse the URL
     return urlObj.pathname.substring(1); // Remove the leading '/'
   };
-  
+
 
   if (!User) {
     return <div>Loading...</div>;
   }
 
   return (
-    <UserReview 
+    <UserReview
       user={User}
-      handleApprove={handleApprove}
-      handleReject={handleReject}
+      handleStatusChange={handleStatusChange}
       extractFilePath={extractFilePath}
     />
   );

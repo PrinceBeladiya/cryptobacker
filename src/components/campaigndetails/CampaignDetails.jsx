@@ -57,9 +57,17 @@ const CampaignDetails = ({
               <div className="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
                 <div className="flex items-center space-x-4">
                   {
-                    campaign && campaign.status == 0 ? (
+                    campaign && (campaign.status == 0 || campaign.status == 2) ? (
                       <p>
-                        Campaign is still Pending for verification.
+                        Campaign is still
+                        <span
+                          className={`mx-2 px-2 py-1 text-xs font-medium rounded-full ${campaign.status == 1 ? 'bg-green-200 text-green-800' :
+                            (campaign.status == 0 || campaign.status == 2) ? 'bg-red-200 text-red-800' : ''
+                            }`}
+                        >
+                          {campaign.status === 0 ? " Pending " : campaign.status === 1 ? "Approve" : "Suspend"}
+                        </span>
+                        for verification.
                       </p>
                     ) : (
                       <>
@@ -87,7 +95,13 @@ const CampaignDetails = ({
               </div>
             ) : (
               <p>
-                Your account still pending.
+                Owner Account
+                <span
+                  className={`mx-2 px-2 py-1 text-xs font-medium rounded-full ${(userStatus == "Pending" || userStatus == "Suspend") ? 'bg-red-200 text-red-800' : ''}`}
+                >
+                  {userStatus}
+                </span>
+                for verification.
               </p>
             )}
 

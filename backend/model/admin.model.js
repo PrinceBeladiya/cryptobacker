@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
@@ -19,9 +19,6 @@ const userSchema = new mongoose.Schema({
     unique: true,
     default: "",
   },
-  DOB: {
-    type: Date,
-  },
   password: {
     type: String,
     trim: true,
@@ -30,28 +27,25 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     trim: true,
-    default: "User"
+    default: "Admin"
   },
-  file: {
-    type: String,
-    default: null
+  adminType: {
+    type: Number,
+    trim: true,
+    default: 0,
+    enum: [0, 1, 2, 3]
   },
-  status: {
-    type: String,
-    default: "Pending",
-    enum: ['Pending', 'Approve', 'Suspend']
-  },
-  modifiedBy: {
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admin', // Or 'User' depending on who is allowed to make modifications
+    ref: 'Admin',
     default: null
-  },
+  }
 }, {
   timestamps: true,
   versionKey: false
 })
 
-userSchema.pre("save", async function (next) {
+adminSchema.pre("save", async function (next) {
   const user = this;
 
   if (!user.isModified("password")) {
@@ -69,6 +63,6 @@ userSchema.pre("save", async function (next) {
 })
 
 
-const UserModel = mongoose.model("users", userSchema)
+const AdminModel = mongoose.model("admins", adminSchema)
 
-module.exports = UserModel;
+module.exports = AdminModel;

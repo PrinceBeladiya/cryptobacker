@@ -58,9 +58,9 @@ const Login = ({
                       </label>
                     </div>
                   </div>
-                  <a href="#" className="text-sm font-medium text-blue-600 hover:underline">
+                  <Link to="/forgotPassword" className="text-sm font-medium text-blue-600 hover:underline">
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
                 <button
                   type="submit"

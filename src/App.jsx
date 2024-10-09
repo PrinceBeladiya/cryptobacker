@@ -1,7 +1,7 @@
 import { Toaster } from 'react-hot-toast';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { LayoutContainer, NotFoundContainer } from './shared';
-import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer, ContactUsContainer, WithDrawContainer, AdminDashboardContainer, VerifyCampaignContainer, CampaignReviewContainer, VerifyUserContainer, UserReviewContainer, ManageCampaignContainer, ManageCampaignReviewContainer } from "./components";
+import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer, ContactUsContainer, WithDrawContainer, AdminDashboardContainer, VerifyCampaignContainer, CampaignReviewContainer, VerifyUserContainer, UserReviewContainer, ManageCampaignContainer, ManageCampaignReviewContainer, AdminLoginContainer, AdminRegisterContainer, AddAdminContainer, ManageWithdrawContainer } from "./components";
 
 function App() {
 
@@ -47,8 +47,16 @@ function App() {
           element: <WithDrawContainer/>
         },
         {
+          path: 'manages-withdraw',
+          element: <ManageWithdrawContainer />
+        },
+        {
           path: 'admin-dashboard',
           element: <AdminDashboardContainer/>
+        },
+        {
+          path: 'add-admins',
+          element: <AddAdminContainer />
         },
         {
           path: 'verify-campaign',
@@ -59,6 +67,14 @@ function App() {
               element: <CampaignReviewContainer />,
             },
           ],
+        },
+        {
+          path: 'admin',
+          element: <AdminLoginContainer />,
+        },
+        {
+          path: 'admin-register',
+          element: <AdminRegisterContainer />,
         },
         {
           path: 'verify-user',

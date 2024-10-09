@@ -1,19 +1,13 @@
-const User = require("../model/user.model")
+const Admin = require("../model/admin.model")
 const bcrypt = require("bcrypt");
 const { buildToken } = require("../utils/token");
-const { unlink } = require('node:fs');
+const { sendSubAdminEmail } = require("../utils/mailer")
 
 exports.signup = async (req, res) => {
-
   try {
-    const path = req.file.path;
-    const { name, mobile, email, DOB, password } = req.body;
+    const { name, mobile, email, password } = req.body;
 
-    if (!name || !mobile || !email || !DOB || !password || !req.file) {
-      unlink(path, (err) => {
-        if (err) throw err;
-      });
-
+    if (!name || !mobile || !email || !password) {
       return res.status(400).send({
         status: false,
         message: "Invalid Details"
@@ -23,52 +17,25 @@ exports.signup = async (req, res) => {
     if (name.length > 0 && (/^[a-z ,.'-]+$/i).test(name)) {
       if (mobile.length === 10 && (/^\d{10}$/).test(mobile)) {
         if (email.length > 0 && (/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i).test(email)) {
-          if (DOB.length > 0 && (/^(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/).test(DOB)) {
-            if (!((/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/).test(password))) {
-              unlink(path, (err) => {
-                if (err) throw err;
-              });
-
-              return res.status(400).send({
-                status: false,
-                message: "Password not valid. It should contain length of 6-16 characters and 1 special character along with 1 number."
-              })
-            }
-          } else {
-            unlink(path, (err) => {
-              if (err) throw err;
-            });
-
+          if (!((/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/).test(password))) {
             return res.status(400).send({
               status: false,
-              message: "Date Format is not proper."
+              message: "Password not valid. It should contain length of 6-16 characters and 1 special character along with 1 number."
             })
           }
         } else {
-          unlink(path, (err) => {
-            if (err) throw err;
-          });
-
           return res.status(400).send({
             status: false,
             message: "Email id is not valid"
           })
         }
       } else {
-        unlink(path, (err) => {
-          if (err) throw err;
-        });
-
         return res.status(400).send({
           status: false,
           message: "Mobile number should be 10 digits"
         })
       }
     } else {
-      unlink(path, (err) => {
-        if (err) throw err;
-      });
-
       return res.status(400).send({
         status: false,
         message: "Name should be in alphabets"
@@ -76,7 +43,7 @@ exports.signup = async (req, res) => {
     }
 
     // validation complete and valid
-    const userExist = await User.exists({
+    const userExist = await Admin.exists({
       $or: [
         {
           email: email.trim()
@@ -88,39 +55,30 @@ exports.signup = async (req, res) => {
     })
 
     if (userExist) {
-      unlink(path, (err) => {
-        if (err) throw err;
-      });
-
       return res.status(400).send({
         status: false,
         message: "Email or Mobile no. already registered"
       })
     }
 
-    const user = new User({
+    const user = new Admin({
       name,
       mobile,
       email,
-      DOB,
-      password,
-      file: process.env.URL + req.file.path,
+      password
     });
 
     await user.save();
 
     return res.status(200).send({
       status: true,
-      message: "User registered successfully",
+      message: "Admin registered successfully",
       data: user
     });
 
   } catch (err) {
     if (req.file && req.file.path) {
       console.log("Error : ", err)
-      unlink(req.file.path, (err) => {
-        if (err) throw err;
-      });
     }
 
     return res.status(500).send({
@@ -130,7 +88,95 @@ exports.signup = async (req, res) => {
   }
 }
 
-exports.getUser = async (req, res) => {
+exports.addSubAdmin = async (req, res) => {
+  try {
+    // Check if the user is authenticated
+    if (!req.user) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      });
+    }
+
+    // Fetch the authenticated user's details
+    const user = await Admin.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(400).send({
+        status: false,
+        message: "Admin Does Not Exist."
+      });
+    }
+
+    // Check if the user is a superadmin
+    if (user.adminType !== 0) {
+      return res.status(403).send({
+        status: false,
+        message: "Access Denied. Only Superadmin can add sub-admins."
+      });
+    }
+
+    // Check if all required details are provided
+    const { name, email, mobile, password, role } = req.body;
+    if (!name || !email || !mobile || !password || typeof role === 'undefined') {
+      return res.status(400).send({
+        status: false,
+        message: "Please provide all required fields (name, email, mobile, adminType)."
+      });
+    }
+
+    const existingAdmin = await Admin.findOne({
+      $or: [
+        {
+          email: email.trim()
+        },
+        {
+          mobile: mobile.trim()
+        },
+      ]
+    });
+    if (existingAdmin) {
+      return res.status(400).send({
+        status: false,
+        message: "Admin with this email or mobile no. already exists."
+      });
+    }
+
+    // Create a new sub-admin
+    const newSubAdmin = new Admin({
+      name,
+      email,
+      mobile,
+      password,
+      adminType: role,
+      createdBy: user._id // Optionally, track who created the sub-admin
+    });
+
+    // Save the new sub-admin to the database
+    await newSubAdmin.save();
+
+    await sendSubAdminEmail({
+      name,
+      email,
+      mobile,
+      password,
+      adminType: Number(role)
+    })
+
+    return res.status(201).send({
+      status: true,
+      message: "Sub-Admin added successfully",
+      data: newSubAdmin
+    });
+  } catch (err) {
+    console.log("Error: ", err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+};
+
+exports.getAdmin = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(400).send({
@@ -139,17 +185,17 @@ exports.getUser = async (req, res) => {
       })
     }
 
-    const user = await User.findById(req.user._id).select("-password")
+    const user = await Admin.findById(req.user._id).select("-password")
     if (!user) {
       return res.status(400).send({
         status: false,
-        message: "User Does Not Exists."
+        message: "Admin Does Not Exists."
       });
     }
 
     return res.status(200).send({
       status: true,
-      message: "User Details fetched successfully",
+      message: "Admin Details fetched successfully",
       data: user
     });
 
@@ -162,7 +208,7 @@ exports.getUser = async (req, res) => {
   }
 }
 
-exports.getUserById = async (req, res) => {
+exports.getAdminById = async (req, res) => {
   try {
     const { ID } = req.body;
 
@@ -173,17 +219,17 @@ exports.getUserById = async (req, res) => {
       })
     }
 
-    const user = await User.findById(ID).select("-password")
+    const user = await Admin.findById(ID).select("-password")
     if (!user) {
       return res.status(400).send({
         status: false,
-        message: "User Does Not Exists."
+        message: "Admin Does Not Exists."
       });
     }
 
     return res.status(200).send({
       status: true,
-      message: "User Details fetched successfully",
+      message: "Admin Details fetched successfully",
       data: user
     });
 
@@ -196,43 +242,7 @@ exports.getUserById = async (req, res) => {
   }
 }
 
-exports.changeUserStatus = async (req, res) => {
-  try {
-    const { userId, status } = req.body;
-    const adminId = req.user._id; // Assume this is coming from middleware that verifies the admin/user
-
-    // Find the user by ID
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        status: false,
-        message: 'User not found',
-      });
-    }
-
-    // Update the user's status and record who modified it
-    user.status = status;
-    user.modifiedBy = adminId;
-
-    // Save the updated user document
-    await user.save();
-
-    return res.status(200).json({
-      status: true,
-      message: `User status updated successfully to ${status} by admin with ID ${adminId}`,
-      data: user,
-    });
-
-  } catch (error) {
-    console.error("Error updating user status:", error);
-    return res.status(500).json({
-      status: false,
-      message: 'Internal Server Error',
-    });
-  }
-};
-
-exports.getAllUsers = async (req, res) => {
+exports.getAllAdmins = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(400).send({
@@ -241,17 +251,17 @@ exports.getAllUsers = async (req, res) => {
       })
     }
 
-    const users = await User.find().select("-password")
+    const users = await Admin.find().select("-password")
     if (!users) {
       return res.status(400).send({
         status: false,
-        message: "User can't fetched."
+        message: "Admin can't fetched."
       });
     }
 
     return res.status(200).send({
       status: true,
-      message: "Users Details fetched successfully",
+      message: "Admin Details fetched successfully",
       data: users
     });
 
@@ -275,7 +285,7 @@ exports.login = async (req, res) => {
       })
     }
 
-    const user = await User.findOne({
+    const user = await Admin.findOne({
       email: email.trim()
     })
 
@@ -299,7 +309,7 @@ exports.login = async (req, res) => {
 
     return res.status(200).send({
       status: true,
-      message: "User Authorized",
+      message: "Admin Authorized",
       token: token
     });
   } catch (err) {

@@ -20,10 +20,10 @@ export const addAdmin = async () => {
     const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
 
     const txResponse = await contract.addAdmin("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
-     // Wait for the transaction to be mined
-     const receipt = await txResponse.wait();
+    // Wait for the transaction to be mined
+    const receipt = await txResponse.wait();
 
-     return receipt;
+    return receipt;
   } catch (error) {
     console.error("Error updating campaign status:", error);
     throw error;
@@ -83,7 +83,7 @@ export const getAllCampaignDetails = async () => {
     return response.data.data; // Return the data here
   } catch (error) {
     console.error("Error getting campaign donation:", error);
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       toast.error(error.message.split(" (")[0] || "An error occurred");
     } else {
       toast.error("An error occurred");
@@ -174,11 +174,11 @@ export const createCampaign = async (form) => {
         return res.data.data;
       }).catch(async (err) => {
         toast.error(err.response.data.message);
-        
+
         throw err;
       })
     }).catch((err) => {
-      if(err?.message?.split(" (")[0]) {
+      if (err?.message?.split(" (")[0]) {
         toast.error(err.message.split(" (")[0]);
       } else {
         toast.error(err.response.data.message);
@@ -204,7 +204,7 @@ export const getCampaignDetails = async (campaignCode) => {
     )
     return res.data.data;
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error :", error);
@@ -239,7 +239,7 @@ export const getCampaignDonation = async (campaignCode) => {
 
     return donationData;
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error getting campaign donation:", error);
@@ -258,12 +258,12 @@ export const getTotalOfCampaigns = async () => {
     console.log("data : " + data);
     return ethers.formatEther(data);
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error getting total campaigns:", error);
     }
-  
+
     throw error;
   }
 };
@@ -300,12 +300,12 @@ export const getCampaigns = async () => {
 
     return formattedCampaigns;
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error getting campaigns:", error);
     }
-    
+
     throw error;
   }
 };
@@ -349,12 +349,12 @@ export const getContractBalance = async () => {
     const data = await contract.getContractBalance();
     return ethers.formatEther(data);
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error getting contract balance:", error);
     }
-    
+
     throw error;
   }
 };
@@ -368,12 +368,12 @@ export const getContractUSDCBalance = async () => {
     const data = await contract.getContractUSDCBalance();
     return ethers.formatUnits(data, 6);
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error getting contract USDC balance:", error);
     }
-    
+
     throw error;
   }
 };
@@ -387,12 +387,12 @@ export const getUserCampaigns = async () => {
 
     return allCampaigns.filter((campaign) => campaign.owner === userAddress);
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error getting user campaigns:", error);
     }
-    
+
     throw error;
   }
 };
@@ -449,7 +449,7 @@ export const donateToCampaign = async (data) => {
       timestamp
     };
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error donating to campaign:", error);
@@ -473,12 +473,12 @@ export const deleteCampaign = async (campaignCode) => {
     await tx.wait();
     return true;
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error deleting campaign:", error);
     }
-    
+
     toast.error('Error deleting campaign');
     throw error;
   }
@@ -542,12 +542,12 @@ export const getWithdraws = async () => {
 
     return res.data;
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error deleting campaign:", error);
     }
-    
+
     toast.error('Error deleting campaign');
     throw error;
   }
@@ -586,6 +586,59 @@ export const getUser = async (ID) => {
     throw error;
   }
 }
+
+export const changeUserStatus = async (userId, status) => {
+  try {
+    const response = await axios.post('http://localhost:3001/user/changeStatus', {
+      userId: userId,
+      status: status,
+    },
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      });
+
+    if (response.data.status) {
+      toast.success(`User status updated to ${status}`);
+    } else {
+      toast.error('Failed to update user status');
+    }
+
+    getAllUsers();
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    toast.error('Error updating user status');
+    throw error;
+  }
+};
+
+export const addSubAdmin = async (subAdminData) => {
+  try {
+    const res = await axios.post("http://localhost:3001/admin/addAdmin", subAdminData,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      }
+    );
+
+    if (res.data.status) {
+      toast.success('Sub-Admin added successfully');
+    } else {
+      toast.error(res.data.message);
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error("Error adding sub-admin:", error);
+    toast.error(error.response.data.message);
+    throw error;
+  }
+}
+
 export const getUserDonations = async () => {
   try {
     const provider = await getProvider();
@@ -607,12 +660,12 @@ export const getUserDonations = async () => {
 
     return donationData;
   } catch (error) {
-    if(error?.message?.split(" (")[0]) {
+    if (error?.message?.split(" (")[0]) {
       console.error("Error :", error.message.split(" (")[0]);
     } else {
       console.error("Error getting campaign donation:", error);
     }
-    
+
     throw error;
   }
 };
