@@ -6,7 +6,7 @@ import { FolderOpen } from 'lucide-react';
 const UserDashboard = ({
   chartRef,
   userCampaigns,
-  activity,
+  campaigns,
   handleclick,
   toggleDropdown,
   isOpen,
@@ -21,7 +21,7 @@ const UserDashboard = ({
       {userStatus && userStatus == "Approve" ? (
         <>
           {
-            userCampaigns.length === 0
+            campaigns.length === 0
               ?
               <div className="flex items-center justify-center -mt-3 h-screen">
                 <Card className="w-full max-w-md shadow-lg bg-blue-50">
@@ -38,7 +38,7 @@ const UserDashboard = ({
               <div>
                 {console.log(chartRef.current)}
                 <div className='flex pt-5 w-full overflow-hidden bg-gray-50'>
-                  <div className="p-4 ml-2 mb-6 bg-white border w-1/2 border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 sm:p-6">
+                  <div className="p-4 mb-6 bg-white border w-full border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 sm:p-6" style={{marginLeft : '16px', marginRight: '16px'}}>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex-shrink-0">
                         <span className="text-xl font-bold leading-none text-gray-900 sm:text-2xl dark:text-white">{currentWeekDonation} ETH</span>
@@ -53,14 +53,6 @@ const UserDashboard = ({
                     </div>
                     <div id="main-chart" ref={chartRef}></div>
                     <div className="flex items-center justify-between pt-3 mt-4 border-t border-gray-200 sm:pt-6 dark:border-gray-700">
-                      <div>
-                        <button className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 rounded-lg hover:text-gray-900 dark:text-gray-400 dark:hover:text-white" type="button">
-                          Last 7 days
-                          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                          </svg>
-                        </button>
-                      </div>
                       <div className="flex-shrink-0">
                         <a href="#" className="inline-flex items-center p-2 text-xs font-medium uppercase rounded-lg text-primary-700 sm:text-sm hover:bg-gray-100 dark:text-primary-500 dark:hover:bg-gray-700">
                           Donation Report
@@ -70,22 +62,6 @@ const UserDashboard = ({
                         </a>
                       </div>
                     </div>
-                  </div>
-                  <div className="w-1/2 ml-2 mr-2 p-4 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800 xl:mb-0">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Latest Activity</h3>
-                      <a href="#" className="inline-flex items-center p-2 text-sm font-medium rounded-lg text-primary-700 hover:bg-gray-100 dark:text-primary-500 dark:hover:bg-gray-700">
-                        View all
-                      </a>
-                    </div>
-                    <ol className="relative border-l border-gray-200 dark:border-gray-700">
-                      <li className="mb-10 ml-4 relative">
-                        <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 border border-white -left-[14px]"></div>
-                        <time className="ml-6 mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">April 2023</time>
-                        <h3 className="ml-6 text-lg font-semibold text-gray-900 dark:text-white">Application UI design in Figma</h3>
-                        <p className="ml-6 mb-4 text-base font-normal text-gray-500 dark:text-gray-400">Get access to over 20+ pages including a dashboard layout, charts, kanban board, calendar, and pre-order E-commerce &amp; Marketing pages.</p>
-                      </li>
-                    </ol>
                   </div>
                 </div>
                 <div className="p-4 mx-4 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800">

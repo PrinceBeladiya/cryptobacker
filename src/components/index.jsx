@@ -3,7 +3,7 @@ import RegisterContainer from "./register/RegisterContainer";
 import LoginContainer from "./login/LoginContainer";
 import CampaignListContainer from "./campaignList/CampaignListContainer";
 import CreateCampaignContainer from "./createCampaign/CreateCampaignContainer";
-import UserDashBoardContainer from "./userdashboard/UserDashBoardContainer";
+import UserDashBoardContainer from "./userDashboard/UserDashboardContainer";
 import CampaignDetailsContainer from "./campaigndetails/CampaignDetailsContainer";
 import ContactUsContainer from "./contactus/ContactUsContainer";
 import WithDrawContainer from "./withdraw/WithDrawContainer";
@@ -18,6 +18,7 @@ import AdminLoginContainer from "./adminLogin/AdminLoginContainer";
 import AdminRegisterContainer from "./adminRegister/AdminRegisterContainer";
 import AddAdminContainer from "./addAdmins/AddAdminsContainer";
 import ManageWithdrawContainer from "./manageWithdraws/ManageWithdrawsContainer";
+import AboutusContainer from "./aboutus/AboutusContainer";
 
 export {
   LandingContainer,
@@ -39,5 +40,6 @@ export {
   AdminLoginContainer,
   AdminRegisterContainer,
   AddAdminContainer,
-  ManageWithdrawContainer
+  ManageWithdrawContainer,
+  AboutusContainer
 };

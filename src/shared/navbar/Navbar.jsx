@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { NavLink, Link } from "react-router-dom";
 import { logo } from "../../assets/images";
-
 const Navbar = ({
   userName,
   userEmail,
@@ -61,11 +60,11 @@ const Navbar = ({
                           <li>
                             <button id="withdraw" onClick={handleclick} className="block w-full text-left  px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Withdraw</button>
                           </li>
+                          <li>
+                            <NavLink to="/" onClick={handleLogOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</NavLink>
+                          </li>
                         </>
                         }
-                        <li>
-                          <NavLink to="/" onClick={handleLogOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</NavLink>
-                        </li>
                       </ul>
                     </div>
                   )}
@@ -108,7 +107,7 @@ const Navbar = ({
                       </li>
                       <li>
                         <NavLink
-                          to="/about"
+                          to="/aboutus"
                           className={({ isActive }) =>
                             isActive ? "block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0" : "block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0"
                           }

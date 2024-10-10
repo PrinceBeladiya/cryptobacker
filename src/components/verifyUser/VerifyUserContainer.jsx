@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import VerifyUser from './VerifyUser'
 import { useState, useEffect } from 'react';
 import { getAllUsers } from '../../context';
@@ -8,12 +8,20 @@ import { Outlet } from 'react-router-dom';
 
 const VerifyUserContainer = () => {
   const dispatch = useDispatch();
-  const [categories, setCategories] = useState([
-    { id: 'Approved', name: 'Approved', count: 56, checked: false },
-    { id: 'Pending', name: 'Pending', count: 56, checked: false },  
-  ]);
   const [sortedUsers, setSortedUsers] = useState([]);
   const [Users, setUsers] = useState([]);
+
+  const countFilterLength = useCallback((status) => {
+    if (status === 'Approved') {
+      return Users.filter((campaign) => campaign.status === 'Approve').length;
+    } else 
+      return Users.filter((campaign) => campaign.status !== 'Approve').length;
+  },[Users]);
+
+  const [categories, setCategories] = useState([
+    { id: 'Approved', name: 'Approved', count: 0, checked: false },
+    { id: 'Pending', name: 'Pending', count: 0, checked: false },  
+  ]);
 
 
   const handleCheckboxChange = (id) => {
@@ -68,7 +76,14 @@ const VerifyUserContainer = () => {
     }
   };
   
-  
+  useEffect(() => {
+    setCategories((prevCategories) =>
+      prevCategories.map((category) => ({
+        ...category,
+        count: countFilterLength(category.id),
+      }))
+    );
+  }, [Users, countFilterLength]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {

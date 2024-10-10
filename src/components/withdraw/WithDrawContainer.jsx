@@ -24,16 +24,19 @@ const WithDrawContainer = () => {
   useEffect(() => {
     getUserCampaigns().then((res) => {
       setCampaign(res);
+      console.log("withdrawHistory :- ",withdrawHistory);
+      
     })
 
     getWithdraws().then((res) => {
+      console.log(res);
       setWithdrawHistory(res.data);
     })
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     try {
       const data = {
         ...formData,
@@ -43,10 +46,9 @@ const WithDrawContainer = () => {
       }
 
       const res = await createWithdrawRequest(data);
-      console.log(res);
-
       getWithdraws().then((res) => {
         setWithdrawHistory(res.data);
+        setIsLoading(false);
       })
       
       // Filter withdraw history for the selected campaign and sum the withdrawAmount

@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Outlet, useNavigate } from "react-router-dom"
 import { FooterContainer, NavbarContainer, SideBarContainer } from "../"
-import { AdminDashboardContainer } from "../../components"
-
 
 const Layout = ({isAdmin,navigate}) => {
   return (
@@ -20,7 +18,7 @@ const Layout = ({isAdmin,navigate}) => {
       <NavbarContainer />
     <div className="flex flex-1">
       <SideBarContainer />
-      <main className="flex-1 p-4 bg-gray-50" style={{ marginLeft: '270px', marginRight: '15px', marginTop: '64px'}}>
+      <main className="flex-1" style={{ marginLeft: '270px', marginRight: '15px', marginTop: '85px', marginBottom: '20px'}}>
         <Outlet/>
       </main>
     </div>

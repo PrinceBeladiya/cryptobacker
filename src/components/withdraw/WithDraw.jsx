@@ -130,7 +130,7 @@ const WithDraw = ({
               </div>
 
               {/* Submit Button */}
-              <div className="w-full">
+              <div className="w-full" style={{marginTop: '30px'}}>
                 <Button
                   type="submit"
                   className="w-full text-white"
@@ -163,58 +163,54 @@ const WithDraw = ({
             </form>
           </Card>
 
-          <div className="w-1/2">
-            <Card className="w-full p-4 bg-white shadow-md rounded-md">
-              <div className="text-center mb-6">
-                <h5 className="text-2xl font-bold tracking-tight text-gray-900">
-                  WithDraw History
-                </h5>
-              </div>
-              <div className="space-y-4">
-                {console.log(withdrawHistory)}
-                {withdrawHistory && withdrawHistory.length > 0 ? (
-                  <ul className="pl-5 space-y-3">
-                    {withdrawHistory && withdrawHistory.map((transaction, index) => (
-                      <li
-                        key={index}
-                        className="p-4 border border-gray-200 rounded-lg"
-                      >
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-bold text-gray-700">
-                            {transaction.title}
-                          </span>
-                          <span className="text-gray-500">{new Date(transaction.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">
-                            Amount: ${Number(transaction.withdrawAmount)}
-                          </span>
-                          <span
-                            className={`text-sm ${transaction.status == 'Approved'
-                              ? 'text-green-600'
-                              : transaction.status == 'Pending'
-                                ? 'text-yellow-600'
-                                : 'text-red-600'
-                              }`}
-                          >
-                            {transaction.status}
-                          </span>
-                        </div>
-                        <div className='mt-2'>
-                          <span>
-                            Campaign: {transaction.campaign}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-500 text-center">
-                    No transaction history found.
-                  </p>
-                )}
-              </div>
-            </Card>
+          <div className="flex border border-gray-200 dark:border-gray-700 dark:bg-gray-800 flex-col w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6">
+            <div className="text-center mb-6">
+              <h5 className="text-2xl font-bold text-black">
+                Withdraw History
+              </h5>
+            </div>
+            <div style={{height: '525px'}} className={`${withdrawHistory && withdrawHistory.length > 3 ? 'overflow-y-scroll' : ''}`}>
+              {withdrawHistory && withdrawHistory.length > 0 ? (
+                <ul className="space-y-4 mx-2">
+                  {withdrawHistory.map((transaction, index) => (
+                    <li
+                      key={index}
+                      className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-bold text-gray-800">
+                          {transaction.title}
+                        </span>
+                        <span className="text-sm text-gray-500">{new Date(transaction.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-700">
+                          Amount: <span className="font-semibold">{Number(transaction.withdrawAmount)} ETH</span>
+                        </span>
+                        <span
+                          className={`text-sm font-medium px-2 py-1 rounded ${
+                            transaction.status === 'Approved'
+                              ? 'bg-green-100 text-green-800'
+                              : transaction.status === 'Pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {transaction.status}
+                        </span>
+                      </div>
+                      <div className='mt-2 text-sm text-gray-600'>
+                        Campaign: {transaction.campaign}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 text-center py-8">
+                  No transaction history found.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       ) : (

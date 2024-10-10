@@ -157,9 +157,10 @@ const CampaignDetails = ({
             </div>
           ) : (
             <div className="bg-white rounded-lg p-6 max-w-6xl mx-auto shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold">Donation History</h3>
-              </div>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-semibold">Donation History</h3>
+            </div>
+            {donors.length > 0 ? (
               <div className={`${donors.length > 3 ? 'overflow-y-scroll h-96' : ''}`}>
                 <table className="w-full table-auto">
                   <thead>
@@ -171,15 +172,13 @@ const CampaignDetails = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {donors && donors.length > 0 && donors.map((order, index) => (
+                    {donors.map((order, index) => (
                       <tr key={index} className="text-sm text-gray-800 hover:bg-gray-50 border-b last:border-none">
                         <td className="py-4 px-4">Payment From {order.donorName}</td>
                         <td className="py-4 px-4">{order.timestamp}</td>
                         <td className="py-4 px-4">{Number(order.amountETH) / 10 ** 18} ETH</td>
                         <td className="py-4 px-4">
-                          <span
-                            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full text-green-600 bg-green-100`}
-                          >
+                          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full text-green-600 bg-green-100">
                             Completed
                           </span>
                         </td>
@@ -188,7 +187,16 @@ const CampaignDetails = ({
                   </tbody>
                 </table>
               </div>
-            </div>
+            ) : (
+              <div className="text-center py-12">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No transactions found</h3>
+                <p className="mt-1 text-sm text-gray-500">Get started by making your first donation.</p>
+              </div>
+            )}
+    </div>
           )}
 
           <div className="flex col-span-1 gap-5 mt-10">

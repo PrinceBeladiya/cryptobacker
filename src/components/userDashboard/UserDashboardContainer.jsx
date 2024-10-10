@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 
 const UserDashBoardContainer = () => {
   const chartRef = useRef(null);
-  const [userCampaigns, setUserCampaigns] = useState([]);
   const [currentWeekDonation, setCurrentWeekDonation] = useState(0);
   const [growth, setGrowth] = useState(0);
   const [chartData, setChartData] = useState(null);
@@ -15,6 +14,7 @@ const UserDashBoardContainer = () => {
 
   const { userStatus } = useSelector((state) => state.user);
   const [sortedCampaigns, setSortedCampaigns] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
 
   const [isOpen, setIsOpen] = useState(false);
   const countCategoriesLength = useMemo(() => (name) => {
@@ -54,11 +54,10 @@ const UserDashBoardContainer = () => {
 
     if (selectedCategories.length > 0) {
       const filteredCampaigns = campaigns.filter(campaign =>
-        selectedCategories.includes(campaign.category)
-      );
+        selectedCategories.includes(campaign.category));
       setSortedCampaigns(filteredCampaigns);
     } else {
-      setSortedCampaigns(filteredCampaigns);
+      setSortedCampaigns(campaigns);
     }
   };
 
@@ -143,17 +142,18 @@ const UserDashBoardContainer = () => {
     setError(null);
     try {
       const campaignsRes = await getUserCampaigns();
-      setUserCampaigns(campaignsRes);
+      setCampaigns(campaignsRes); // Store original campaigns
+      setSortedCampaigns(campaignsRes); // Set filtered campaigns
 
       const donationsRes = await getUserDonations();
       const processedData = processUserDonations(donationsRes);
-      
+
       setCurrentWeekDonation(processedData.currentWeekDonations);
       setGrowth(processedData.growthLoss.toFixed(2));
       setChartData(processedData);
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      setError("Failed to fetch user data. Please try again later.");
+      console.error('Error fetching user data:', error);
+      setError('Failed to fetch user data. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -300,7 +300,8 @@ const UserDashBoardContainer = () => {
   return (
     <UserDashboard
       chartRef={chartRef}
-      userCampaigns={userCampaigns}
+      userCampaigns={sortedCampaigns}
+      campaigns={campaigns}
       handleclick={handleclick}
       toggleDropdown={toggleDropdown}
       isOpen={isOpen}
