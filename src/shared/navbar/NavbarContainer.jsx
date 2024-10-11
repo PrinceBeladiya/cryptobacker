@@ -24,6 +24,33 @@ const NavbarContainer = () => {
     setDropdownOpen(false);
   }
 
+  const linkVariants = {
+    hover: { scale: 1.05, transition: { duration: 0.2 } }
+  };
+
+  const dropdownVariants = {
+    hidden: { 
+      opacity: 0,
+      y: -10,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
+        duration: 0.2
+      }
+    },
+    visible: { 
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
+        duration: 0.2
+      }
+    }
+  };
+
   const handleclick = (e) => {
     const event = e.target.id;
     
@@ -58,7 +85,9 @@ const NavbarContainer = () => {
       isDropdownOpen={isDropdownOpen}
       toggleDropdown={toggleDropdown}
       handleclick={handleclick}
+      dropdownVariants={dropdownVariants}
       isAdmin={userRole == "Admin"}
+      linkVariants={linkVariants}
     />
   )
 }
