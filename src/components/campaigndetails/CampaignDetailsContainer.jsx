@@ -21,7 +21,7 @@ const CampaignDetailsContainer = () => {
   const [filePaths, setFilePaths] = useState([]);
 
   const { userName, userEmail, userStatus } = useSelector((state) => state.user)
-
+  const progressPercentage = (Number(totalDonation) / 10 ** 18 / Number(campaign.target)) * 100;
   const getUserCampaignDetails = async () => {
     getSpecificCampaign(campaignCode).then((res) => {
       setCampaign(res[0])
@@ -135,6 +135,7 @@ const CampaignDetailsContainer = () => {
         isLoading={isLoading}
         averageDonation={Number(0) / 10 ** 18}
         userStatus={userStatus}
+        progressPercentage={progressPercentage}
       />
     </div>
   )

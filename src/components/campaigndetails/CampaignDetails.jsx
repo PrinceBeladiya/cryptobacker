@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import { CircularProgressbar } from 'react-circular-progressbar';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { Button } from 'flowbite-react';
+import { motion } from 'framer-motion';
 const CampaignDetails = ({
   handleClick,
   amount,
@@ -16,7 +16,8 @@ const CampaignDetails = ({
   averageDonation,
   filePaths,
   isLoading,
-  userStatus
+  userStatus,
+  progressPercentage
 }) => {
   return (
     <section className="py-8 bg-white md:py-16 antialiased">
@@ -196,55 +197,74 @@ const CampaignDetails = ({
                 <p className="mt-1 text-sm text-gray-500">Get started by making your first donation.</p>
               </div>
             )}
-    </div>
+          </div>
           )}
 
-          <div className="flex col-span-1 gap-5 mt-10">
-            <div className="max-w-md bg-white border border-gray-200 p-6 rounded-lg shadow-sm h-72 mt-10">
-              <h2 className="text-lg font-semibold text-gray-900">Donation Insights</h2>
-              <div className="mt-4">
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-900">
-                    Total Donors: <span className="font-semibold">{totalDonors}</span>
-                  </p>
+        <div className="flex flex-col md:flex-row gap-4" style={{height: '320px', marginTop: '100px'}}>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex-1 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-4 rounded-lg shadow-md flex flex-col justify-center"
+              >
+                <h2 className="text-lg font-semibold text-indigo-800 mb-3 text-center">Donation Insights</h2>
+                <div className="space-y-2">
+                  {[
+                    { label: 'Total Donors', value: totalDonors, icon: '👥' },
+                    { label: 'Total Raised', value: `${totalRaised} ETH`, icon: '💰' },
+                    { label: 'Average Donation', value: `${averageDonation} ETH`, icon: '📊' },
+                    { label: 'Highest Donation', value: `${Number(topDonor.amountETH) / 10 ** 18} ETH`, icon: '🏆' }
+                  ].map((item, index) => (
+                    <div key={index} className="flex justify-between items-center bg-white p-2 rounded-md shadow-sm">
+                      <div className="flex items-center">
+                        <span className="text-lg mr-2">{item.icon}</span>
+                        <p className="text-xs font-medium text-gray-600">{item.label}</p>
+                      </div>
+                      <p className="text-sm font-semibold text-indigo-600">{item.value}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-900">
-                    Total Raised: <span className="font-semibold">{totalRaised} ETH</span>
-                  </p>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="flex-1 bg-gradient-to-br from-blue-50 to-blue-50 border border-blue-100 p-4 rounded-lg shadow-md flex flex-col justify-center"
+              >
+                <h2 className="text-lg font-semibold text-blue-800 mb-6 text-center">Campaign Progress</h2>
+                <div className="flex justify-center items-center">
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    className="w-32 h-32"
+                  >
+                    <CircularProgressbar
+                      value={progressPercentage}
+                      text={`${progressPercentage.toFixed(0)}%`}
+                      styles={buildStyles({
+                        pathColor: `rgba(79, 70, 229, ${Math.max(progressPercentage / 100, 0.6)})`,
+                        textColor: '#4F46E5',
+                        trailColor: '#E0E7FF',
+                        backgroundColor: '#4F46E5',
+                        textSize: '20px',
+                        pathTransitionDuration: 0.5,
+                      })}
+                    />
+                  </motion.div>
                 </div>
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-900">
-                    Average Donation: <span className="font-semibold">{averageDonation} ETH</span>
-                  </p>
-                </div>
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-900">
-                    Highest Donation: <span className="font-semibold">{Number(topDonor.amountETH) / 10 ** 18} ETH</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="max-w-md bg-white border border-gray-200 p-6 rounded-lg shadow-sm h-72 mt-10">
-              <h2 className="text-lg font-semibold text-gray-900">Campaign Progress</h2>
-              <div className="flex justify-center mt-6">
-                <div className="w-24 h-24">
-                  <CircularProgressbar
-                    value={(totalRaised / Number(campaign.target)) * 100}
-                    text={`${((totalRaised / Number(campaign.target)) * 100).toFixed(2)}%`}
-                    styles={{
-                      path: { stroke: '#4a5568' },
-                      text: { fill: '#4a5568', fontSize: '12px' },
-                      trail: { stroke: '#cbd5e0' }
-                    }}
-                  />
-                </div>
-              </div>
-              <p className="mt-4 text-sm font-medium text-gray-900 text-center">
-                {((totalRaised / Number(campaign.target)) * 100).toFixed(2)}% of {Number(campaign.target)} ETH goal reached
-              </p>
-            </div>
-          </div>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-3 text-sm font-medium text-indigo-800 text-center"
+                >
+                  {progressPercentage.toFixed(2)}% of {Number(campaign.target)} ETH goal reached
+                </motion.p>
+              </motion.div>
+        </div>
+
         </div>
       </div>
     </section>
