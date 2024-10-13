@@ -51,6 +51,10 @@ const NavbarContainer = () => {
     }
   };
 
+  const closeDropDown = () => {
+    setDropdownOpen(false);
+  }
+
   const handleclick = (e) => {
     const event = e.target.id;
     
@@ -88,6 +92,7 @@ const NavbarContainer = () => {
       dropdownVariants={dropdownVariants}
       isAdmin={userRole == "Admin"}
       linkVariants={linkVariants}
+      closeDropDown={closeDropDown}
     />
   )
 }

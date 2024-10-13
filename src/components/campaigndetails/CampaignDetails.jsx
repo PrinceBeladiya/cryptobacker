@@ -157,12 +157,12 @@ const CampaignDetails = ({
               </ul>
             </div>
           ) : (
-            <div className="bg-white rounded-lg p-6 max-w-6xl mx-auto shadow-sm">
+            <div className="bg-white rounded-lg p-6 max-w-6xl mx-auto shadow-sm" style={{marginTop: '15px', marginLeft: '30px'}}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold">Donation History</h3>
             </div>
             {donors.length > 0 ? (
-              <div className={`${donors.length > 3 ? 'overflow-y-scroll h-96' : ''}`}>
+              <div className={`${donors.length > 2 ? 'overflow-y-scroll h-48' : ''}`}>
                 <table className="w-full table-auto">
                   <thead>
                     <tr className="text-sm text-gray-500 border-b">
@@ -200,7 +200,7 @@ const CampaignDetails = ({
           </div>
           )}
 
-        <div className="flex flex-col md:flex-row gap-4" style={{height: '320px', marginTop: '100px'}}>
+        <div className="flex flex-col md:flex-row gap-4" style={{height: '320px', marginTop: '25px'}}>
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

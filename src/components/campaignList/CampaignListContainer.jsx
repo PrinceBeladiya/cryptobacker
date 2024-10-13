@@ -5,13 +5,11 @@ import { addCampaign } from '../../redux/reducer/Campaign';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CampaignListContainer = () => {
+  const dispatch = useDispatch();
   const [sortedCampaigns, setSortedCampaigns] = useState([]);
   const { campaigns } = useSelector((state) => state.campaigns);
   const [isOpen, setIsOpen] = useState(false);
-  const dispatch = useDispatch();
-  const countCategoriesLength = useMemo(() => (name) => {
-    return sortedCampaigns.filter((campaign) => campaign.category === name).length;
-  }, [sortedCampaigns]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState([
     { id: 'health', name: 'Health & Medical', count: 0, checked: false },
     { id: 'education', name: 'Education', count: 0, checked: false },
@@ -21,6 +19,16 @@ const CampaignListContainer = () => {
     { id: 'animal', name: 'Animals & Pets', count: 0, checked: false },
     { id: 'projects', name: 'Creative Projects', count: 0, checked: false },
   ]);
+
+  const filteredCampaigns = sortedCampaigns.filter(campaign =>
+    campaign.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const countCategoriesLength = useMemo(() => (name) => {
+    return sortedCampaigns.filter((campaign) => campaign.category === name).length;
+  }, [campaigns]);
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
 
   const updateCategoryCounts = () => {
     setCategories(prevCategories => 
@@ -53,33 +61,6 @@ const CampaignListContainer = () => {
       setSortedCampaigns(campaigns);
     }
   };
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  // const getCampaignDetails = async () => {
-  //   try {
-
-  //     const blockchainCampaigns = await getCampaigns();
-  //     console.log("BLOCKCHAIN CAMPAIGNS:", blockchainCampaigns);
-
-  //     const mongoCampaigns = await getAllCampaignDetails();
-  //     console.log("MONGODB CAMPAIGNS:", mongoCampaigns);
-
-  //     const mergedCampaigns = blockchainCampaigns.map(blockchainCampaign => {
-  //       const mongoCampaign = mongoCampaigns.find(mongo => mongo.campaignCode === blockchainCampaign.campaignCode);
-
-  //       return {
-  //         ...blockchainCampaign,
-  //         filePaths: mongoCampaign ? mongoCampaign.filePaths : [],
-  //       };
-  //     });
-
-  //     dispatch(addCampaign(mergedCampaigns));
-  //     setSortedCampaigns(mergedCampaigns);
-  //   } catch (error) {
-  //     console.error("Error fetching campaign details:", error);
-  //   }
-  // };
 
   const getCampaignDetails = async () => {
     try {
@@ -116,7 +97,7 @@ const CampaignListContainer = () => {
 
   useEffect(() => {
     updateCategoryCounts();
-  }, [sortedCampaigns, countCategoriesLength]);
+  }, [countCategoriesLength]);
 
   return (
     <CampaignList
@@ -125,6 +106,9 @@ const CampaignListContainer = () => {
       isOpen={isOpen}
       categories={categories}
       toggleDropdown={toggleDropdown}
+      searchTerm={searchTerm}
+      filteredCampaigns={filteredCampaigns}
+      setSearchTerm={setSearchTerm}
     />
   );
 };

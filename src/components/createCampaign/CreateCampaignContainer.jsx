@@ -20,6 +20,24 @@ const CreateCampaignContainer = () => {
     campaingn_report: undefined,
   });
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -27,14 +45,16 @@ const CreateCampaignContainer = () => {
     try {
 
       if (formData.title.length > 0 && formData.description.trim().length > 0 && formData.select_category != 'NA') {
-        if (isAlphabets(formData.title) && Number(formData.target) > 0 && isFutureDate(formData.deadline)) {
+        if (Number(formData.target) > 0 && isFutureDate(formData.deadline)) {
           setisLoading(true);
           formData['name'] = userName;
 
           await createCampaign(formData);
           setisLoading(false);
           const data = await getCampaigns();
-          console.log(data);
+          if(data){
+            navigate('/campaign-list')
+          }
         }
         else {
           setisLoading(false);
@@ -49,8 +69,6 @@ const CreateCampaignContainer = () => {
       console.log(err);
       setisLoading(false);
     }
-
-    navigate("/campaign-list");
   }
 
   const handlechange = (e) => {
@@ -76,6 +94,8 @@ const CreateCampaignContainer = () => {
       handlechange={handlechange}
       isLoading={isLoading}
       userStatus={userStatus}
+      containerVariants={containerVariants}
+      itemVariants={itemVariants}
     />
   )
 }

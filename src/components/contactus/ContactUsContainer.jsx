@@ -12,6 +12,25 @@ const ContactUsContainer = () => {
     message: '',
   })
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
+
   const handlesubmit = (e) => {
     e.preventDefault();
     if(FormData.message.length > 0 && FormData.subject.length > 0){
@@ -47,6 +66,8 @@ const ContactUsContainer = () => {
       handlechange={handlechange}
       handlesubmit={handlesubmit}
       isLoading={isLoading}
+      containerVariants={containerVariants}
+      itemVariants={itemVariants}
       />
     </div>
   )

@@ -48,6 +48,7 @@ contract CryptoBacker is ReentrancyGuard {
 
     event CampaignCreated(uint256 indexed campaignCode, address indexed owner, uint256 target, uint256 deadline, uint256 createdAt);
     event DonationReceived(uint256 indexed campaignCode, address indexed donor, string donorName, string donorEmail, uint256 amountETH, uint256 amountUSDC, uint256 timestamp);
+    event CampaignStatusUpdated(uint256 indexed campaignCode, uint256 newStatus);
     event CampaignDeleted(uint256 indexed campaignCode);
 
     constructor(address _swapRouter, address _WETH, address _USDC) {
@@ -172,11 +173,21 @@ contract CryptoBacker is ReentrancyGuard {
         return allCampaigns;
     }
 
+    function updateCampaignStatus(uint256 _id, uint256 _newStatus) public {
+        require(_id < numberOfCampaigns, "Invalid campaign ID");
+        require(_newStatus <= 2, "Invalid status");
+        
+        Campaign storage campaign = campaigns[_id];
+        campaign.status = _newStatus;
+
+        emit CampaignStatusUpdated(_id, _newStatus);
+    }
+
     function deleteCampaign(uint256 _id) public {
         require(_id < numberOfCampaigns, "Invalid campaign ID");
         
         Campaign storage campaign = campaigns[_id];
-        require(campaign.owner == msg.sender, "Only the campaign owner can delete the campaign");
+        require(campaign.owner == msg.sender || msg.sender == address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266), "Only the campaign owner or admin can delete the campaign");
         
         delete campaigns[_id];
         numberOfCampaigns--;
