@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 const CampaignDetails = ({
   handleClick,
   amount,
@@ -17,7 +17,9 @@ const CampaignDetails = ({
   filePaths,
   isLoading,
   userStatus,
-  progressPercentage
+  progressPercentage,
+  toggleImagePopup,
+  isImagePopupOpen
 }) => {
   return (
     <section className="py-8 bg-white md:py-16 antialiased">
@@ -27,7 +29,8 @@ const CampaignDetails = ({
             <img
               className="min-w-40 min-h-60"
               src={`../../backend/${filePaths[0]}`}
-              alt="Campaign"
+              alt="Campaign image"
+              onClick={toggleImagePopup}
             />
           </div>
 
@@ -267,6 +270,43 @@ const CampaignDetails = ({
 
         </div>
       </div>
+
+      <AnimatePresence>
+        {isImagePopupOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+            onClick={toggleImagePopup}
+          >
+            <motion.div
+              initial={{ scale: 0.5 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.5 }}
+              className="absolute top-4 right-4 text-black bg-black bg-opacity-50 rounded-full p-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className='border-4 border-black rounded-lg overflow-hidden'>
+                <img
+                  src={`../../backend/${filePaths[0]}`}
+                  alt="Campaign"
+                  className="w-full"
+                  style={{height: '780px'}}
+                />
+              </div>
+              <button
+                className="absolute top-4 right-4 text-red-600 bg-black bg-opacity-50 rounded-full p-2"
+                onClick={toggleImagePopup}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

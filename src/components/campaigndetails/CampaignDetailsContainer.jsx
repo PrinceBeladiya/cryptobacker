@@ -19,9 +19,10 @@ const CampaignDetailsContainer = () => {
   const [topDonor, setTopDonor] = useState({});
   const [totalDonation, setTotalDonation] = useState(0);
   const [filePaths, setFilePaths] = useState([]);
-
+  const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
   const { userName, userEmail, userStatus } = useSelector((state) => state.user)
   const progressPercentage = (Number(totalDonation) / 10 ** 18 / Number(campaign.target)) * 100;
+  
   const getUserCampaignDetails = async () => {
     getSpecificCampaign(campaignCode).then((res) => {
       setCampaign(res[0])
@@ -78,6 +79,10 @@ const CampaignDetailsContainer = () => {
       setTotalDonation(sum);
     });
   }
+
+  const toggleImagePopup = () => {
+    setIsImagePopupOpen(!isImagePopupOpen);
+  };
 
   useEffect(() => {
     getUserCampaignDetails();
@@ -136,6 +141,8 @@ const CampaignDetailsContainer = () => {
         averageDonation={Number(0) / 10 ** 18}
         userStatus={userStatus}
         progressPercentage={progressPercentage}
+        isImagePopupOpen={isImagePopupOpen}
+        toggleImagePopup={toggleImagePopup}
       />
     </div>
   )

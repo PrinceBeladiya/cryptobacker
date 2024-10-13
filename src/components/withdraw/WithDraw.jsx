@@ -182,7 +182,7 @@ const WithDraw = ({
                         />
                       </svg>
                     ) : (
-                      'Submit'
+                      'Send Request For Withdraw'
                     )}
                   </Button>
                 </motion.div>
