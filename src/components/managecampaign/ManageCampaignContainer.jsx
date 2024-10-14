@@ -13,9 +13,7 @@ const ManageCampaignContainer = () => {
   const dispatch = useDispatch();
 
   const countFilterLength = useCallback((status) => {
-    if (status === 'Pending') {
-      return campaigns.filter((campaign) => campaign.status === 0).length;
-    } else if (status === 'Approved') {
+   if (status === 'Approved') {
       return campaigns.filter((campaign) => campaign.status === 1).length;
     } else {
       return campaigns.filter((campaign) => campaign.status === 2).length;
@@ -23,7 +21,6 @@ const ManageCampaignContainer = () => {
   }, [campaigns]);
 
   const [categories, setCategories] = useState([
-    { id: 0, name: 'Pending', count: 0, checked: false },
     { id: 1, name: 'Approved', count: 0, checked: false },
     { id: 2, name: 'Suspended', count: 0, checked: false },
   ]);
@@ -83,9 +80,10 @@ const ManageCampaignContainer = () => {
   const getCampaignDetails = async () => {
     try {
       const res = await getCampaigns();
-      dispatch(addCampaign(res));
-      if (Array.isArray(res)) { 
-        setFilteredCampaigns(res);
+      const filteredCampaigns = res.filter(campaign => campaign.status === 1 || campaign.status === 2);
+      dispatch(addCampaign(filteredCampaigns));
+      if (Array.isArray(filteredCampaigns)) { 
+        setFilteredCampaigns(filteredCampaigns);
       } else {
         console.error("Error: Response is not an array", res);
       }

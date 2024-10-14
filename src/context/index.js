@@ -54,6 +54,35 @@ export const updateCampaignStatus = async (campaignCode, newStatus) => {
   }
 };
 
+export const setCampaignReviewer = async (campaignCode) => {
+  // Frontend validation
+  if (campaignCode === undefined || isNaN(Number(campaignCode))) {
+    toast.error("Invalid Campaign Code. Please enter a valid number.");
+    return;
+  }
+
+  try {
+    const data = await axios.post("http://localhost:3001/campaign/setCampaignHandler", { campaignCode: campaignCode },
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      });
+
+    if (data.status === 200) {
+      // Handle success, you can display a success message or update the UI accordingly
+      toast.success(data.data.message);
+      return data.data;
+    } else {
+      // Handle error, display error message to the user
+      toast.error(data.data.message || "Something went wrong");
+    }
+  } catch (error) {
+    console.error("Error in API call:", error);
+    alert("Error: " + error.message);
+  }
+};
+
 const getSigner = async (provider) => {
   const accounts = await provider.send("eth_requestAccounts", []);
   return await provider.getSigner(accounts[0]);
@@ -600,13 +629,9 @@ export const changeUserStatus = async (userId, status) => {
       });
 
     if (response.data.status) {
-      toast.success(`User status updated to ${status}`);
-    } else {
-      toast.error('Failed to update user status');
+      return response.data.status
     }
-
     getAllUsers();
-
     return response.data;
   } catch (error) {
     console.error("Error updating user status:", error);

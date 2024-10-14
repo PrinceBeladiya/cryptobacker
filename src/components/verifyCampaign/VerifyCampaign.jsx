@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'flowbite-react';
 import { Link } from 'react-router-dom';
 
-const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChange, handlePageChange, currentPage, totalPages, currentItems, pageNumbers }) => {
+const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChange, handlePageChange, currentPage, totalPages, currentItems, pageNumbers, handlereview }) => {
   return (
     <Card>
       <div className="p-4 bg-white dark:bg-gray-800">
@@ -104,8 +104,8 @@ const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
                       </td>
                       <td className="py-3 px-6">
                         <Link
-                          to={`/verify-campaign/${campaign.campaignCode}`}
                           className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                          onClick={() => handlereview(campaign.campaignCode)}
                         >
                           Review
                         </Link>

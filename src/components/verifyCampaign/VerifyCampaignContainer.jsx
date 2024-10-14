@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import VerifyCampaign from './VerifyCampaign';
-import { getCampaigns } from '../../context';
+import { getCampaigns, setCampaignReviewer, getAllCampaignDetails } from '../../context';
 import { addCampaign } from '../../redux/reducer/Campaign';
+import toast from 'react-hot-toast';
 
 const VerifyCampaignContainer = () => {
   const { campaigns } = useSelector((state) => state.campaigns);
   
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { userID } = useSelector((state) => state.user)
+  
   const [sortedCampaigns, setSortedCampaigns] = useState([]);
+  const [mongoCampaign, setmongoCampaign] = useState([]);
 
   const countCategoriesLength = useMemo(() => (name) => {
     return sortedCampaigns.filter((campaign) => campaign.category === name).length;
@@ -65,7 +70,15 @@ const VerifyCampaignContainer = () => {
   const getCampaignDetails = async () => {
     try {
       const res = await getCampaigns();
-      dispatch(addCampaign(res));
+      const mongores = await getAllCampaignDetails();
+      setmongoCampaign(mongores);
+      const unreviewedCampaign = mongores.filter(campaign => campaign.reviewedBy === null);
+      console.log("unreviewedCampaign :- ",unreviewedCampaign);
+      
+      const resCampaign = res.filter(item => unreviewedCampaign.some(sortedItem =>  sortedItem.campaignCode === item.campaignCode)) ;
+      console.log("resCampaign :- ",resCampaign);
+      
+      dispatch(addCampaign(resCampaign));
       if (Array.isArray(res)) {
         const filteredCampaigns = res.filter(obj => obj.status === 0);
         setSortedCampaigns(filteredCampaigns);
@@ -82,6 +95,34 @@ const VerifyCampaignContainer = () => {
       setCurrentPage(page);
     }
   };
+
+  const handlereview = (campaignCode) => {
+    const campaign = mongoCampaign.find(campaign => campaign.campaignCode === campaignCode);
+  
+    if (!campaign) {
+      toast.error('Campaign not found');
+      return;
+    }
+  
+    if (campaign.reviewedBy === null || campaign.reviewedBy === userID) {
+      const confirmApprove = window.confirm("Are you sure you want to manage this campaign?");
+      if (confirmApprove) {
+        setCampaignReviewer(campaignCode)
+          .then(res => {
+            if (res.status === true) {
+              navigate(`/verify-campaign/${campaignCode}`);
+            }
+          })
+          .catch(err => {
+            console.error("Error managing campaign:", err);
+          });
+      }
+    } else {
+      toast.error('Campaign already reviewed by someone else.');
+    }
+  };
+  
+  
 
   useEffect(() => {
     getCampaignDetails();
@@ -115,6 +156,7 @@ const VerifyCampaignContainer = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         currentItems={currentItems}
+        handlereview={handlereview}
         pageNumbers={pageNumbers}
       />
       <div className='mt-7'>

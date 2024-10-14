@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import VerifyUser from './VerifyUser'
 import { useState, useEffect } from 'react';
 import { getAllUsers } from '../../context';
-import { addCampaign } from '../../redux/reducer/Campaign';
+import { addUsers } from '../../redux/reducer/Users';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 
@@ -10,6 +10,11 @@ const VerifyUserContainer = () => {
   const dispatch = useDispatch();
   const [sortedUsers, setSortedUsers] = useState([]);
   const [Users, setUsers] = useState([]);
+  const { userID } = useSelector(state => state.user);
+  const { users } = useSelector(state => state.users);
+
+  console.log("users :- ",users);
+  
 
   const countFilterLength = useCallback((status) => {
     if (status === 'Approved') {
@@ -66,8 +71,10 @@ const VerifyUserContainer = () => {
       const data = await getAllUsers();
       if (data && Array.isArray(data.data)) {
         const filteredUsers = data.data;
-        setSortedUsers(filteredUsers);
-        setUsers(filteredUsers);
+        const unreviewedData = filteredUsers.filter(user => user.modifiedBy === null || user.modifiedBy === userID);
+        dispatch(addUsers(unreviewedData));
+        setSortedUsers(unreviewedData);
+        setUsers(unreviewedData);
       } else {
         console.error("Error: Response is not an array", data);
       }
@@ -76,6 +83,10 @@ const VerifyUserContainer = () => {
     }
   };
   
+  useEffect(() => {
+    setSortedUsers(users);
+  }, [users]);
+
   useEffect(() => {
     setCategories((prevCategories) =>
       prevCategories.map((category) => ({

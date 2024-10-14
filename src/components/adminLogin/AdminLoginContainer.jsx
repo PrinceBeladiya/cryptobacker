@@ -35,7 +35,7 @@ const AdminLoginContainer = () => {
 
         dispatch(setToken(res?.data.token))
         toast.success("User sign-in successfully.", 'success');
-        navigate("/");
+        navigate("/admin-dashboard");
       } else {
         toast("Something Went Wrong", 'warn');
       }
