@@ -47,6 +47,11 @@ const campaignSchema = new mongoose.Schema({
     default: "",
     required: true,
   },
+  reviewedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin',
+    default: null
+  },
   filePaths: [String]
 }, {
   timestamps: true,

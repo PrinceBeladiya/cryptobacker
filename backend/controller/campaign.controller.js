@@ -92,6 +92,49 @@ exports.createCampaign = async (req, res) => {
   }
 }
 
+exports.setCampaignHandler = async (req, res) => {
+  try {
+    const { campaignCode } = req.body;
+
+    if (campaignCode === undefined || !req.user._id) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      });
+    }
+
+    // Find the campaign by campaignCode
+    const campaign = await Campaign.findOne({
+      campaignCode: Number(campaignCode)
+    });
+
+    if (!campaign) {
+      return res.status(404).send({
+        status: false,
+        message: "Campaign not found with campaign_code : " + campaignCode
+      });
+    }
+
+    // Set the reviewBy field to the user's ID
+    campaign.reviewedBy = req.user._id;
+
+    // Save the updated campaign
+    await campaign.save();
+
+    return res.status(200).send({
+      status: true,
+      message: "Campaign reviewer assigned successfully",
+      data: campaign
+    });
+  } catch (err) {
+    console.log("Error : ", err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+};
+
 exports.deleteCampaign = async (req, res) => {
   try {
     const { campaignCode } = req.body;

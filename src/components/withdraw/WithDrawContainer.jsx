@@ -47,13 +47,14 @@ const WithDrawContainer = () => {
 
       const res = await createWithdrawRequest(data);
       getWithdraws().then((res) => {
+        console.log(res.data);
         setWithdrawHistory(res.data);
         setIsLoading(false);
       })
       
       // Filter withdraw history for the selected campaign and sum the withdrawAmount
       const totalWithdrawnAmount = withdrawHistory
-        .filter((withdraw) => withdraw.campaignCode === selectedCampaign.campaignCode) // Adjust the field names accordingly
+        .filter((withdraw) => withdraw.status === "Pending" && withdraw.campaignCode === selectedCampaign.campaignCode) // Adjust the field names accordingly
         .reduce((total, withdraw) => {
           return total + parseFloat(withdraw.withdrawAmount); // Convert to float in case it's a string
         }, 0);
@@ -86,7 +87,7 @@ const WithDrawContainer = () => {
 
         // Filter withdraw history for the selected campaign and sum the withdrawAmount
         const totalWithdrawnAmount = withdrawHistory
-          .filter((withdraw) => withdraw.campaignCode === selected_campaign.campaignCode) // Adjust the field names accordingly
+          .filter((withdraw) => withdraw.status === "Pending" && withdraw.campaignCode === selected_campaign.campaignCode) // Adjust the field names accordingly
           .reduce((total, withdraw) => {
             return total + parseFloat(withdraw.withdrawAmount); // Convert to float in case it's a string
           }, 0);

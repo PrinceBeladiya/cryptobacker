@@ -12,6 +12,7 @@ router.post('/createCampaign', auth(['User']), async (req, res, next) => {
   });
 });
 
+router.post('/setCampaignHandler', auth(['Admin']), campaignController.setCampaignHandler);
 router.delete('/deleteCampaign', auth(['User', 'Admin']), campaignController.deleteCampaign)
 router.post('/getCampaign', auth(['User', 'Admin']), campaignController.getCampaign)
 router.get('/getAllCampaign', auth(['User', 'Admin']), campaignController.getAllCampaign)
