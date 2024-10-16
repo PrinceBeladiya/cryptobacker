@@ -27,6 +27,8 @@ contract CryptoBacker is ReentrancyGuard {
         uint256 status;
         uint256 createdAt;
         Donation[] donations;
+        uint256 withdrawnAmount;
+        bool feePaid;
     }
 
     struct Donation {
@@ -38,18 +40,29 @@ contract CryptoBacker is ReentrancyGuard {
         uint256 timestamp;
     }
 
+    struct Withdrawal {
+        address recipient;
+        uint256 amount;
+        uint256 campaignCode;
+        uint256 timestamp;
+    }
+
     ISwapRouter public immutable swapRouter;
     address public immutable WETH;
     address public immutable USDC;
     uint24 public constant FEE_TIER = 3000;
+    uint256 public constant PLATFORM_FEE = 5; // 5% platform fee
 
     mapping(uint256 => Campaign) public campaigns;
     uint256 public numberOfCampaigns = 0;
+    Withdrawal[] public withdrawals;
 
     event CampaignCreated(uint256 indexed campaignCode, address indexed owner, uint256 target, uint256 deadline, uint256 createdAt);
     event DonationReceived(uint256 indexed campaignCode, address indexed donor, string donorName, string donorEmail, uint256 amountETH, uint256 amountUSDC, uint256 timestamp);
     event CampaignStatusUpdated(uint256 indexed campaignCode, uint256 newStatus);
     event CampaignDeleted(uint256 indexed campaignCode);
+    event WithdrawalMade(uint256 indexed campaignCode, address recipient, uint256 amount, uint256 timestamp);
+    event PlatformFeePaid(uint256 indexed campaignCode, uint256 feeAmount);
 
     constructor(address _swapRouter, address _WETH, address _USDC) {
         swapRouter = ISwapRouter(_swapRouter);
@@ -63,6 +76,10 @@ contract CryptoBacker is ReentrancyGuard {
 
     function getContractUSDCBalance() public view returns (uint256) {
         return IERC20(USDC).balanceOf(address(this));
+    }
+
+    function getUSDCBalance(address _address) public view returns (uint256) {
+        return IERC20(USDC).balanceOf(_address);
     }
 
     function swapExactInputSingle(uint256 amountIn) private returns (uint256 amountOut) {
@@ -227,5 +244,85 @@ contract CryptoBacker is ReentrancyGuard {
         }
         
         return userDonations;
+    }
+
+     function withdrawableAmount(uint256 _campaignCode) public view returns (uint256) {
+        require(_campaignCode < numberOfCampaigns, "Invalid campaign code");
+        Campaign storage campaign = campaigns[_campaignCode];
+        require(block.timestamp > campaign.deadline, "Campaign is not over yet");
+
+        uint256 totalAmount = campaign.amountCollectedUSDC;
+        uint256 remainingAmount = totalAmount - campaign.withdrawnAmount;
+
+        if (!campaign.feePaid) {
+            uint256 fee = (totalAmount * PLATFORM_FEE) / 100;
+            remainingAmount -= fee;
+        }
+
+        return remainingAmount;
+    }
+
+    function withdraw(uint256 _campaignCode, uint256 _amount) public nonReentrant {
+        require(_campaignCode < numberOfCampaigns, "Invalid campaign code");
+        Campaign storage campaign = campaigns[_campaignCode];
+        require(block.timestamp > campsaaign.deadline, "Campaign is not over yet");
+        require(msg.sender == campaign.owner, "Only campaign owner can withdraw");
+
+        uint256 availableAmount = withdrawableAmount(_campaignCode);
+        require(_amount <= availableAmount, "Insufficient funds");
+
+        if (!campaign.feePaid) {
+            uint256 totalAmount = campaign.amountCollectedUSDC;
+            uint256 fee = (totalAmount * PLATFORM_FEE) / 100;
+            IERC20(USDC).transfer(address(this), fee);
+            campaign.feePaid = true;
+            emit PlatformFeePaid(_campaignCode, fee);
+        }
+
+        campaign.withdrawnAmount += _amount;
+        IERC20(USDC).transfer(campaign.owner, _amount);
+
+        withdrawals.push(Withdrawal({
+            recipient: campaign.owner,
+            amount: _amount,
+            campaignCode: _campaignCode,
+            timestamp: block.timestamp
+        }));
+
+        emit WithdrawalMade(_campaignCode, campaign.owner, _amount, block.timestamp);
+    }
+
+    function withdrawAll(uint256 _campaignCode) public nonReentrant {
+        require(_campaignCode < numberOfCampaigns, "Invalid campaign code");
+        Campaign storage campaign = campaigns[_campaignCode];
+        require(block.timestamp > campaign.deadline, "Campaign is not over yet");
+        require(msg.sender == campaign.owner, "Only campaign owner can withdraw");
+
+        uint256 availableAmount = withdrawableAmount(_campaignCode);
+        require(availableAmount > 0, "No funds available to withdraw");
+
+        if (!campaign.feePaid) {
+            uint256 totalAmount = campaign.amountCollectedUSDC;
+            uint256 fee = (totalAmount * PLATFORM_FEE) / 100;
+            IERC20(USDC).transfer(address(this), fee);
+            campaign.feePaid = true;
+            emit PlatformFeePaid(_campaignCode, fee);
+        }
+
+        campaign.withdrawnAmount += availableAmount;
+        IERC20(USDC).transfer(campaign.owner, availableAmount);
+
+        withdrawals.push(Withdrawal({
+            recipient: campaign.owner,
+            amount: availableAmount,
+            campaignCode: _campaignCode,
+            timestamp: block.timestamp
+        }));
+
+        emit WithdrawalMade(_campaignCode, campaign.owner, availableAmount, block.timestamp);
+    }
+
+    function getWithdrawals() public view returns (Withdrawal[] memory) {
+        return withdrawals;
     }
 }

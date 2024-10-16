@@ -740,3 +740,81 @@ export const getUserDonations = async () => {
     throw error;
   }
 };
+
+export const getUSDCBalance = async () => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const userAddress = await signer.getAddress();
+    const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
+
+    const amount = await contract.getUSDCBalance(userAddress);
+    return ethers.formatUnits(amount, 6);
+  } catch (error) {
+    console.error("Error getting withdrawable amount:", error.message);
+    throw error;
+  }
+};
+
+export const getWithdrawableAmount = async (campaignId) => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
+
+    const amount = await contract.withdrawableAmount(campaignId);
+    return ethers.formatUnits(amount, 6);
+  } catch (error) {
+    console.error("Error getting withdrawable amount:", error.message);
+    throw error;
+  }
+};
+
+export const withdrawFromCampaign = async (campaignId, amount) => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
+
+    const tx = await contract.withdraw(campaignId, ethers.parseUnits(amount.toString(), 6));
+    await tx.wait();
+    return tx.hash;
+  } catch (error) {
+    console.error("Error withdrawing from campaign:", error.message);
+    throw error;
+  }
+};
+
+export const withdrawAllFromCampaign = async (campaignId) => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
+
+    const tx = await contract.withdrawAll(campaignId);
+    await tx.wait();
+    return tx.hash;
+  } catch (error) {
+    console.error("Error withdrawing all from campaign:", error.message);
+    throw error;
+  }
+};
+
+export const getWithdrawals = async () => {
+  try {
+    const provider = await getProvider();
+    const signer = await getSigner(provider);
+    const contract = getContract(CryptoBackerContractAddress, CryptoBacker.abi, signer);
+
+    const withdrawals = await contract.getWithdrawals();
+    return withdrawals.map(withdrawal => ({
+      recipient: withdrawal.recipient,
+      amount: ethers.formatUnits(withdrawal.amount, 6),
+      campaignCode: Number(withdrawal.campaignCode),
+      timestamp: new Date(Number(withdrawal.timestamp) * 1000)
+    }));
+  } catch (error) {
+    console.error("Error getting withdrawals:", error.message);
+    throw error;
+  }
+};
