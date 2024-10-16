@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Users, FileText, DollarSign, TrendingUp, Search } from 'lucide-react';
+import { getContractBalance, getContractUSDCBalance } from '../../context';
 
 const SummaryCard = React.memo(({ title, value, icon: Icon, color }) => (
   <motion.div
@@ -34,7 +35,7 @@ const SummaryCard = React.memo(({ title, value, icon: Icon, color }) => (
   </motion.div>
 ));
 
-const AdminDashboard = ({tabs, campaignsData, usersData, activeTab, tabBounds, tabRefs, setActiveTab, handleReview, handleUserClick ,filteredUsers, filteredCampaigns, searchTerm, setSearchTerm}) => {
+const AdminDashboard = ({tabs, campaignsData, usersData, activeTab, TotalBalance, tabRefs, setActiveTab, handleReview, handleUserClick ,filteredUsers, filteredCampaigns, searchTerm, setSearchTerm}) => {  
   const renderPlaceholder = useCallback((message) => (
     <div className="flex items-center justify-center p-4 bg-gray-100 rounded-lg">
       <AlertCircle className="text-gray-400 mr-2" size={20} />
@@ -69,7 +70,7 @@ const AdminDashboard = ({tabs, campaignsData, usersData, activeTab, tabBounds, t
         <SummaryCard title="Total Users" value={usersData ? usersData.length : 0} icon={Users} color="bg-blue-500" />
         <SummaryCard title="Active Campaigns" value={campaignsData ? campaignsData.filter(c => c.status === 1).length : 0} icon={FileText} color="bg-green-500" />
         <SummaryCard title="Pending Campaigns" value={campaignsData ? campaignsData.filter(c => c.status !== 1).length : 0} icon={TrendingUp} color="bg-yellow-500" />
-        <SummaryCard title="Total Revenue" value="$10,234" icon={DollarSign} color="bg-purple-500" />
+        <SummaryCard title="Total USDC Balance" value={TotalBalance} icon={DollarSign} color="bg-purple-500" />
       </div>
 
       {/* Main Content */}

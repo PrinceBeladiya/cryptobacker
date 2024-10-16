@@ -582,6 +582,52 @@ export const getWithdraws = async () => {
   }
 };
 
+export const getAllWithdraws = async () => {
+  try {
+    const res = await axios.get("http://localhost:3001/withdraws/getAllWithdrawRequest",
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    if (error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error deleting campaign:", error);
+    }
+
+    toast.error('Error deleting campaign');
+    throw error;
+  }
+};
+
+export const getWithdrawRequestByID = async (ID) => {
+  try {
+    const res = await axios.get(`http://localhost:3001/withdraws/getWithdrawById/${ID}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    if (error?.message?.split(" (")[0]) {
+      console.error("Error :", error.message.split(" (")[0]);
+    } else {
+      console.error("Error deleting campaign:", error);
+    }
+
+    toast.error('Error deleting campaign');
+    throw error;
+  }
+};
+
 export const getAllUsers = async () => {
   try {
     const res = await axios.get("http://localhost:3001/user/getAllUser",

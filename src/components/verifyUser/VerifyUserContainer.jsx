@@ -1,69 +1,72 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import VerifyUser from './VerifyUser'
 import { useState, useEffect } from 'react';
 import { getAllUsers } from '../../context';
 import { addUsers } from '../../redux/reducer/Users';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const VerifyUserContainer = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [sortedUsers, setSortedUsers] = useState([]);
   const [Users, setUsers] = useState([]);
   const { userID } = useSelector(state => state.user);
   const { users } = useSelector(state => state.users);
 
-  console.log("users :- ",users);
-  
+  console.log("users :- ", users);
 
   const countFilterLength = useCallback((status) => {
     if (status === 'Approved') {
       return Users.filter((campaign) => campaign.status === 'Approve').length;
     } else 
       return Users.filter((campaign) => campaign.status !== 'Approve').length;
-  },[Users]);
+  }, [Users]);
 
   const [categories, setCategories] = useState([
     { id: 'Approved', name: 'Approved', count: 0, checked: false },
     { id: 'Pending', name: 'Pending', count: 0, checked: false },  
   ]);
 
-
-  const handleCheckboxChange = (id) => {
-    const updatedCategories = categories.map(category =>
-      category.id === id ? { ...category, checked: !category.checked } : category
-    );
-    setCategories(updatedCategories);
-  
-    const selectedCategories = updatedCategories
-      .filter(category => category.checked)
-      .map(category => category.id);
-  
-    if (selectedCategories.length > 0) {
-      const filteredUsers = sortedUsers.filter(user =>
-        selectedCategories.includes(user.status)
-      );
-      setSortedUsers(filteredUsers);
-    } else {
-      setSortedUsers(Users);
-    }
-  };
-  
-
   const [isOpen, setIsOpen] = useState(false);
   const toggleDropdown = () => setIsOpen(!isOpen);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(sortedUsers.length / 4);
-   // Calculate the items to display on the current page
-   const startIndex = (currentPage - 1) * 4;
-   const endIndex = startIndex + 4;
-   const currentItems = sortedUsers.slice(startIndex, endIndex);
- 
-   // Create an array of page numbers to display
-   const pageNumbers = [];
+  const [searchValue, setSearchValue] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
-   for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
+  const filteredUsers = useMemo(() => {
+    return Users.filter(user => {
+      const matchesSearch = user._id.toLowerCase().includes(searchValue.toLowerCase());
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(user.status);
+      return matchesSearch && matchesCategory;
+    });
+  }, [Users, searchValue, selectedCategories]);
+
+  const totalPages = Math.ceil(filteredUsers.length / 4);
+  const startIndex = (currentPage - 1) * 4;
+  const endIndex = startIndex + 4;
+  const currentItems = filteredUsers.slice(startIndex, endIndex);
+
+  const pageNumbers = [...Array(totalPages).keys()].map(i => i + 1);
+
+  const handleCheckboxChange = (id) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(catId => catId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+    setCurrentPage(1);
+  };
+
+  const handlereview = (userid) => {
+    const confirm = window.confirm("Are you sure you want to manage the User ?");
+    console.log("userID :- ",userid);
+    
+    if(confirm) {
+      navigate(`/verify-user/${userid}`);
+    }
   }
 
   const getUserDetails = async () => {
@@ -73,7 +76,6 @@ const VerifyUserContainer = () => {
         const filteredUsers = data.data;
         const unreviewedData = filteredUsers.filter(user => user.modifiedBy === null || user.modifiedBy === userID);
         dispatch(addUsers(unreviewedData));
-        setSortedUsers(unreviewedData);
         setUsers(unreviewedData);
       } else {
         console.error("Error: Response is not an array", data);
@@ -82,9 +84,9 @@ const VerifyUserContainer = () => {
       console.error("Error:", error);
     }
   };
-  
+
   useEffect(() => {
-    setSortedUsers(users);
+    getUserDetails();
   }, [users]);
 
   useEffect(() => {
@@ -102,38 +104,26 @@ const VerifyUserContainer = () => {
     }
   };
 
-  const [searchValue, setSearchValue] = useState('');
-
-  const onSearchByUserID = (query) => {
-    setSearchValue(query);
-    const filtered = currentItems.filter(user =>
-      user._id.toLowerCase().includes(query.toLowerCase())
-    );
-    setSortedUsers(filtered);
-  };
-
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
-    onSearchByUserID(e.target.value);
+    setCurrentPage(1);
   };
 
-  useEffect(() => {
-    getUserDetails();
-  },[])
   return (
     <div>
       <VerifyUser 
-      categories={categories}
-      isOpen={isOpen}
-      toggleDropdown={toggleDropdown}
-      handleCheckboxChange={handleCheckboxChange}
-      handlePageChange={handlePageChange}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      currentItems={currentItems}
-      pageNumbers={pageNumbers}
-      searchValue={searchValue}
-      handleSearchChange={handleSearchChange}
+        categories={categories}
+        isOpen={isOpen}
+        toggleDropdown={toggleDropdown}
+        handleCheckboxChange={handleCheckboxChange}
+        handlePageChange={handlePageChange}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        currentItems={currentItems}
+        pageNumbers={pageNumbers}
+        searchValue={searchValue}
+        handleSearchChange={handleSearchChange}
+        handlereview={handlereview}
       />
       <div className='mt-7'>
         <Outlet/>

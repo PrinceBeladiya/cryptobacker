@@ -92,10 +92,20 @@ const CampaignDetailsContainer = () => {
 
   // updateCampaignStatus(campaignCode, 1);
 
-  const handleclick = (e) => {
+  const handleclick = async (e) => {
     if (e.target.id == "pay") {
       setisLoading(true);
+      const data = await getSpecificCampaign(campaignCode);
+      const RecievedAmount = data[0].amountCollectedETH/10**18;
+      const Target = data[0].target;
+      const RemainAmount = Target - RecievedAmount;
+      console.log("RemainAmount :- ",RemainAmount);
       if (amount > 0 && !isNaN(amount)) {
+        if(amount > RemainAmount) {
+          toast.error(`Amount Should be Less than or Equal ${RemainAmount}`);
+          setisLoading(false);
+          return;
+        }
         donateToCampaign({
           campaignCode,
           amount,

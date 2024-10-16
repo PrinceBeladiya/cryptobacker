@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import AdminDashBoard from './AdminDashBoard';
-import { getAllCampaignDetails, getCampaigns, getAllUsers } from '../../context';
+import { getAllCampaignDetails, getCampaigns, getAllUsers, getContractUSDCBalance } from '../../context';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCampaign } from '../../redux/reducer/Campaign';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ const AdminDashboardContainer = () => {
   const [mongoCampaign, setMongoCampaign] = useState([]);
   const [campaignsData, setCampaignsData] = useState([]);
   const [usersData,setusersData] = useState([]);
+  const [balance,setbalance] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
@@ -65,6 +66,20 @@ const AdminDashboardContainer = () => {
     }
   };
 
+  const formatBalance = (balance) => {
+    if (balance >= 1e6) {
+      return (balance / 1e6).toFixed(2) + 'M';  // For millions
+    } else if (balance >= 1e9) {
+      return (balance / 1e9).toFixed(2) + 'B';  // For billions
+    }
+    return balance.toFixed(2);  // Otherwise, show full with 2 decimal places
+  };
+
+  const getTotalbalance = async () => {
+    const balance = await getContractUSDCBalance();
+    setbalance(formatBalance(balance));
+  }
+
   const handleReview = (status, campaignCode) => {
     console.log("Clicked");
 
@@ -111,6 +126,7 @@ const AdminDashboardContainer = () => {
   useEffect(() => {
     getCampaignDetails();
     getUserDetails();
+    getTotalbalance();
   }, []); // Runs only once when the component mounts
 
   return (
@@ -129,6 +145,7 @@ const AdminDashboardContainer = () => {
       filteredCampaigns={filteredCampaigns}
       setSearchTerm={setSearchTerm}
       searchTerm={searchTerm}
+      TotalBalance={balance}
     />
   );
 };

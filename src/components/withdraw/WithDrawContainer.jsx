@@ -3,6 +3,7 @@ import WithDraw from './WithDraw';
 import { createWithdrawRequest, getUserCampaigns, getWithdraws } from '../../context';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
+import { Outlet } from 'react-router-dom';
 
 const WithDrawContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -127,6 +128,9 @@ const WithDrawContainer = () => {
         campaign={campaign}
         userStatus={userStatus}
       />
+      <div className='mt-7'>
+        <Outlet />
+      </div>
     </div>
   );
 };

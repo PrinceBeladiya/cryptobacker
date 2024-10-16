@@ -19,6 +19,7 @@ import AdminRegisterContainer from "./adminRegister/AdminRegisterContainer";
 import AddAdminContainer from "./addAdmins/AddAdminsContainer";
 import ManageWithdrawContainer from "./manageWithdraws/ManageWithdrawsContainer";
 import AboutusContainer from "./aboutus/AboutusContainer";
+import WithDrawReviewContainer from "./withdrawReview/WithDrawReviewContainer";
 
 export {
   LandingContainer,
@@ -41,5 +42,6 @@ export {
   AdminRegisterContainer,
   AddAdminContainer,
   ManageWithdrawContainer,
-  AboutusContainer
+  AboutusContainer,
+  WithDrawReviewContainer
 };

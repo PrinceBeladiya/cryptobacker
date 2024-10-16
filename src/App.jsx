@@ -1,7 +1,7 @@
 import { Toaster } from 'react-hot-toast';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { LayoutContainer, NotFoundContainer } from './shared';
-import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer, ContactUsContainer, WithDrawContainer, AdminDashboardContainer, VerifyCampaignContainer, CampaignReviewContainer, VerifyUserContainer, UserReviewContainer, ManageCampaignContainer, ManageCampaignReviewContainer, AdminLoginContainer, AdminRegisterContainer, AddAdminContainer, ManageWithdrawContainer, AboutusContainer } from "./components";
+import { LandingContainer, RegisterContainer, LoginContainer, CampaignListContainer, CreateCampaignContainer, UserDashBoardContainer, CampaignDetailsContainer, ContactUsContainer, WithDrawContainer, AdminDashboardContainer, VerifyCampaignContainer, CampaignReviewContainer, VerifyUserContainer, UserReviewContainer, ManageCampaignContainer, ManageCampaignReviewContainer, AdminLoginContainer, AdminRegisterContainer, AddAdminContainer, ManageWithdrawContainer, AboutusContainer, WithDrawReviewContainer } from "./components";
 
 function App() {
 
@@ -51,8 +51,14 @@ function App() {
           element: <WithDrawContainer/>
         },
         {
-          path: 'manages-withdraw',
-          element: <ManageWithdrawContainer />
+          path: 'manage-withdraw', // Update here to singular
+          element: <ManageWithdrawContainer />,
+          children: [
+            {
+              path: ':withdrawid',
+              element: <WithDrawReviewContainer />
+            }
+          ]
         },
         {
           path: 'admin-dashboard',

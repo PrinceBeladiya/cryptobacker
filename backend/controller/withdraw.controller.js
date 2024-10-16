@@ -71,6 +71,8 @@ exports.createWithdrawRequest = async (req, res) => {
   }
 }
 
+
+
 exports.getWithdrawRequest = async (req, res) => {
   try {
     const { campaignOwner } = req.body;
@@ -84,6 +86,73 @@ exports.getWithdrawRequest = async (req, res) => {
     const withdrawExist = await Withdraw.find({
       campaignOwner: campaignOwner
     });
+
+    if (withdrawExist) {
+      return res.status(200).send({
+        status: true,
+        message: "Withdraw Request Fetched.",
+        data: withdrawExist
+      })
+    }
+
+    return res.status(400).send({
+      status: false,
+      message: "There is no withdraw request for " + campaignOwner
+    })
+  } catch (err) {
+    console.log("Error : ", err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
+exports.getAllWithdrawRequest = async (req, res) => {
+  try {
+
+    if (!req.user._id) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const withdrawExist = await Withdraw.find({});
+
+    if (withdrawExist) {
+      return res.status(200).send({
+        status: true,
+        message: "Withdraw Request Fetched.",
+        data: withdrawExist
+      })
+    }
+
+    return res.status(400).send({
+      status: false,
+      message: "There is no withdraw request for " + campaignOwner
+    })
+  } catch (err) {
+    console.log("Error : ", err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
+exports.getWithdrawRequestByID = async (req, res) => {
+  try {
+    const { ID } = req.params;
+
+    if (!req.user._id || !ID) {
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Details"
+      })
+    }
+
+    const withdrawExist = await Withdraw.findById(ID);
 
     if (withdrawExist) {
       return res.status(200).send({

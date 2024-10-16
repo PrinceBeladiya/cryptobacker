@@ -1,15 +1,25 @@
 import React from 'react';
 import { Card } from 'flowbite-react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChange, handlePageChange, currentPage, totalPages, currentItems, pageNumbers, handlereview }) => {
   return (
     <Card>
       <div className="p-4 bg-white dark:bg-gray-800">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Verify Campaigns</h1>
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl font-semibold text-gray-900 dark:text-white"
+          >
+            Verify Campaigns
+          </motion.h1>
           <div className="relative">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={toggleDropdown}
               type="button"
               className="flex items-center justify-center rounded-lg border border-gray-200 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700"
@@ -31,7 +41,9 @@ const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
                 ></path>
               </svg>
               Filters
-              <svg
+              <motion.svg
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
                 className="h-4 w-4 ml-2"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
@@ -41,32 +53,45 @@ const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
                 viewBox="0 0 24 24"
               >
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7"></path>
-              </svg>
-            </button>
-            {isOpen && (
-              <div className="absolute z-10 right-0 mt-2 w-56 p-3 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600">
-                <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-gray-100">Category</h6>
-                <ul className="space-y-2 text-sm">
-                  {categories.map((category) => (
-                    <li key={category.id} className="flex items-center">
-                      <input
-                        id={category.id}
-                        type="checkbox"
-                        checked={category.checked}
-                        onChange={() => handleCheckboxChange(category.id)}
-                        className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500"
-                      />
-                      <label
-                        htmlFor={category.id}
-                        className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+              </motion.svg>
+            </motion.button>
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute z-10 right-0 mt-2 w-56 p-3 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600"
+                >
+                  <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-gray-100">Category</h6>
+                  <ul className="space-y-2 text-sm">
+                    {categories.map((category) => (
+                      <motion.li 
+                        key={category.id} 
+                        className="flex items-center"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        {category.name} ({category.count})
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                        <input
+                          id={category.id}
+                          type="checkbox"
+                          checked={category.checked}
+                          onChange={() => handleCheckboxChange(category.id)}
+                          className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500"
+                        />
+                        <label
+                          htmlFor={category.id}
+                          className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                        >
+                          {category.name} ({category.count})
+                        </label>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -84,34 +109,46 @@ const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
                   </tr>
                 </thead>
                 <tbody className="text-gray-800 dark:text-gray-200">
-                  {currentItems.map((campaign) => (
-                    <tr key={campaign.campaignCode} className="border-b border-gray-200 dark:border-gray-700">
-                      <td className="py-3 px-6">{campaign.title}</td>
-                      <td className="py-3 px-6">{campaign.name}</td>
-                      <td className="py-3 px-6">
-                        {new Date(campaign.createdAt).toLocaleDateString('en-GB')}
-                      </td>
-                      <td className="py-3 px-6">
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            campaign.status === 0
-                              ? 'bg-yellow-200 text-yellow-800'
-                              : 'bg-green-200 text-green-800'
-                          }`}
-                        >
-                          {campaign.status === 0 ? 'Pending' : 'Approved'}
-                        </span>
-                      </td>
-                      <td className="py-3 px-6">
-                        <Link
-                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                          onClick={() => handlereview(campaign.campaignCode)}
-                        >
-                          Review
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
+                  <AnimatePresence>
+                    {currentItems.map((campaign, index) => (
+                      <motion.tr 
+                        key={campaign.campaignCode} 
+                        className="border-b border-gray-200 dark:border-gray-700"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                      >
+                        <td className="py-3 px-6">{campaign.title}</td>
+                        <td className="py-3 px-6">{campaign.name}</td>
+                        <td className="py-3 px-6">
+                          {new Date(campaign.createdAt).toLocaleDateString('en-GB')}
+                        </td>
+                        <td className="py-3 px-6">
+                          <motion.span
+                            whileHover={{ scale: 1.05 }}
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              campaign.status === 0
+                                ? 'bg-yellow-200 text-yellow-800'
+                                : 'bg-green-200 text-green-800'
+                            }`}
+                          >
+                            {campaign.status === 0 ? 'Pending' : 'Approved'}
+                          </motion.span>
+                        </td>
+                        <td className="py-3 px-6">
+                          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <Link
+                              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                              onClick={() => handlereview(campaign.campaignCode)}
+                            >
+                              Review
+                            </Link>
+                          </motion.div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
                 </tbody>
               </table>
             </div>
@@ -120,7 +157,9 @@ const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
               <nav aria-label="Page navigation example">
                 <ul className="flex items-center -space-x-px h-8 text-sm">
                   <li>
-                    <a
+                    <motion.a
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       href="#"
                       onClick={() => handlePageChange(currentPage - 1)}
                       className={`flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white ${currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''}`}
@@ -141,21 +180,25 @@ const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
                           d="M5 1 1 5l4 4"
                         />
                       </svg>
-                    </a>
+                    </motion.a>
                   </li>
                   {pageNumbers.map((page) => (
                     <li key={page}>
-                      <a
+                      <motion.a
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
                         href="#"
                         onClick={() => handlePageChange(page)}
                         className={`flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white ${currentPage === page ? 'bg-blue-50 text-blue-600 border-blue-300 dark:bg-gray-700 dark:text-white' : ''}`}
                       >
                         {page}
-                      </a>
+                      </motion.a>
                     </li>
                   ))}
                   <li>
-                    <a
+                    <motion.a
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       href="#"
                       onClick={() => handlePageChange(currentPage + 1)}
                       className={`flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white ${currentPage === totalPages ? 'cursor-not-allowed opacity-50' : ''}`}
@@ -176,20 +219,47 @@ const VerifyCampaign = ({ toggleDropdown, isOpen, categories, handleCheckboxChan
                           d="m1 9 4-4-4-4"
                         />
                       </svg>
-                    </a>
+                    </motion.a>
                   </li>
                 </ul>
               </nav>
             </div>
           </>
         ) : (
-          <div className="text-center py-10">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center py-10"
+          >
+            <motion.svg 
+              animate={{ opacity: 1 }}
+              transition={{ duration: 2, repeat: 1, ease: "linear" }}
+              className="mx-auto h-12 w-12 text-gray-400" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor" 
+              aria-hidden="true"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No campaigns available</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">There are currently no campaigns to verify.</p>
-          </div>
+            </motion.svg>
+            <motion.h3 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+            >
+              No campaigns available
+            </motion.h3>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="mt-1 text-sm text-gray-500 dark:text-gray-400"
+            >
+              There are currently no campaigns to verify.
+            </motion.p>
+          </motion.div>
         )}
       </div>
     </Card>
