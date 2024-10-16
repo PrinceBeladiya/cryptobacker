@@ -56,7 +56,7 @@ const ManageWithdraw = ({
                   </td>
                   <td className="py-3 px-6">
                     <Link
-                      to={`/manage-withdraw/${withdraw._id}`}
+                      to={`/manages-withdraw/${withdraw._id}`}
                       className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                     >
                       Review

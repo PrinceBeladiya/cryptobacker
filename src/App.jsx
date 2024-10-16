@@ -51,7 +51,7 @@ function App() {
           element: <WithDrawContainer/>
         },
         {
-          path: 'manage-withdraw', // Update here to singular
+          path: 'manages-withdraw', // Update here to singular
           element: <ManageWithdrawContainer />,
           children: [
             {
