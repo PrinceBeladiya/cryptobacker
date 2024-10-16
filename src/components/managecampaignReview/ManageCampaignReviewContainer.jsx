@@ -5,6 +5,7 @@ import { getCampaignDetails, getSpecificCampaign, updateCampaignStatus, getCampa
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { addCampaign } from '../../redux/reducer/Campaign';
+import { sendMail } from '../../context/index';
 
 const ManageCampaignReviewContainer = () => {
   const { campaignCode } = useParams();
@@ -61,6 +62,8 @@ const ManageCampaignReviewContainer = () => {
   };
 
   const handleReject = () => {
+    console.log("campaign")
+    console.log(campaign)
     setShowRejectReason(true);
   };
 

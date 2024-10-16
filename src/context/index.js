@@ -818,3 +818,27 @@ export const getWithdrawals = async () => {
     throw error;
   }
 };
+
+export const sendMail = async (data) => {
+  try {
+    const res = await axios.post("http://localhost:3001/admin/sendMail", {
+      data
+    },
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      }
+    );
+  
+    if (res.data.status) {
+      toast.success(res.data.message);
+    } else {
+      toast.error(res.data.message);
+    }
+  } catch(err) {
+    console.error("Error adding sub-admin:", err);
+    toast.error("Can't Send Mail.");
+    throw err;
+  }
+}

@@ -21,8 +21,6 @@ const ManageWithdrawsContainer = () => {
     setSearchValue(newSearchValue);
   };
 
-  getWithdrawRequestByID('670fa81702e049b3367191c4').then(res => console.log(res));
-
   const getWithdrawDetails = async () => {
     try {
       const res = await getAllWithdraws();

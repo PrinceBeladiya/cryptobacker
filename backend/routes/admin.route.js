@@ -9,5 +9,6 @@ router.get('/getAdmin', auth(["Admin"]), adminController.getAdmin)
 router.post('/addAdmin', auth(["Admin"]), adminController.addSubAdmin)
 router.post('/getAdminById', adminController.getAdminById)
 router.get('/getAllAdmins', adminController.getAllAdmins)
+router.post('/sendMail', auth(["Admin"]), adminController.sendMail)
 
 module.exports = router;

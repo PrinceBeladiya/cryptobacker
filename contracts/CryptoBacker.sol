@@ -249,7 +249,6 @@ contract CryptoBacker is ReentrancyGuard {
      function withdrawableAmount(uint256 _campaignCode) public view returns (uint256) {
         require(_campaignCode < numberOfCampaigns, "Invalid campaign code");
         Campaign storage campaign = campaigns[_campaignCode];
-        require(block.timestamp > campaign.deadline, "Campaign is not over yet");
 
         uint256 totalAmount = campaign.amountCollectedUSDC;
         uint256 remainingAmount = totalAmount - campaign.withdrawnAmount;
@@ -265,7 +264,6 @@ contract CryptoBacker is ReentrancyGuard {
     function withdraw(uint256 _campaignCode, uint256 _amount) public nonReentrant {
         require(_campaignCode < numberOfCampaigns, "Invalid campaign code");
         Campaign storage campaign = campaigns[_campaignCode];
-        require(block.timestamp > campsaaign.deadline, "Campaign is not over yet");
         require(msg.sender == campaign.owner, "Only campaign owner can withdraw");
 
         uint256 availableAmount = withdrawableAmount(_campaignCode);
@@ -295,7 +293,6 @@ contract CryptoBacker is ReentrancyGuard {
     function withdrawAll(uint256 _campaignCode) public nonReentrant {
         require(_campaignCode < numberOfCampaigns, "Invalid campaign code");
         Campaign storage campaign = campaigns[_campaignCode];
-        require(block.timestamp > campaign.deadline, "Campaign is not over yet");
         require(msg.sender == campaign.owner, "Only campaign owner can withdraw");
 
         uint256 availableAmount = withdrawableAmount(_campaignCode);

@@ -1,7 +1,7 @@
 const Admin = require("../model/admin.model")
 const bcrypt = require("bcrypt");
 const { buildToken } = require("../utils/token");
-const { sendSubAdminEmail } = require("../utils/mailer")
+const { sendSubAdminEmail, sendCampaignStatusEmail } = require("../utils/mailer")
 
 exports.signup = async (req, res) => {
   try {
@@ -84,6 +84,37 @@ exports.signup = async (req, res) => {
     return res.status(500).send({
       status: false,
       message: err.message || "Internal Server Error.",
+    });
+  }
+}
+
+exports.sendMail = async (req, res) => {
+  try {
+    const { ownerName, ownerEmail, campaignTitle, status, reason } = req.body;
+    if (!ownerName || !ownerEmail || !campaignTitle || !status || !reason) {
+      return res.status(400).send({
+        status: false,
+        message: "Please provide all required fields."
+      });
+    }
+
+    await sendCampaignStatusEmail({
+      ownerName,
+      ownerEmail,
+      campaignTitle,
+      status,
+      reason
+    });
+
+    return res.status(201).send({
+      status: true,
+      message: "Mail Forwarded Successfully.",
+    });
+  } catch(err) {
+    console.log(err);
+    return res.status(500).send({
+      status: false,
+      message: err.message || "Mail Forward Failed.",
     });
   }
 }
@@ -175,6 +206,8 @@ exports.addSubAdmin = async (req, res) => {
     });
   }
 };
+
+
 
 exports.getAdmin = async (req, res) => {
   try {
@@ -320,3 +353,4 @@ exports.login = async (req, res) => {
     });
   }
 }
+
