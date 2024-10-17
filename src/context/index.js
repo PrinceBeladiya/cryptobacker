@@ -662,6 +662,30 @@ export const getUser = async (ID) => {
   }
 }
 
+export const updateWithdrawRequestStatus = async (withdrawID, status) => {
+  try {
+    const response = await axios.put('http://localhost:3001/withdraws/updateStatus', {
+      withdrawID: withdrawID,
+      status: status
+    },
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,
+        }
+      });
+
+    if (response.data.status) {
+      return response.data.status
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    toast.error('Error updating user status');
+    throw error;
+  }
+};
+
 export const changeUserStatus = async (userId, status) => {
   try {
     const response = await axios.post('http://localhost:3001/user/changeStatus', {
@@ -828,13 +852,13 @@ export const sendMail = async (data) => {
         }
       }
     );
-  
+
     if (res.data.status) {
       toast.success(res.data.message);
     } else {
       toast.error(res.data.message);
     }
-  } catch(err) {
+  } catch (err) {
     console.error("Error adding sub-admin:", err);
     toast.error("Can't Send Mail.");
     throw err;

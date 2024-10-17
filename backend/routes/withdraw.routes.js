@@ -8,5 +8,6 @@ router.post('/createWithdrawRequest', auth(['User']), multerConfig.singleFileUpl
 router.post('/getWithdrawRequest', auth(['User', 'Admin']), withdrawController.getWithdrawRequest)
 router.get('/getAllWithdrawRequest', auth(['Admin']), withdrawController.getAllWithdrawRequest)
 router.get('/getWithdrawById/:ID', auth(['Admin']), withdrawController.getWithdrawRequestByID)
+router.put('/updateStatus', auth(['Admin']), withdrawController.updateRequestStatus)
 
 module.exports = router;

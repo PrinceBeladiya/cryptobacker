@@ -38,7 +38,12 @@ const withdrawSchema = new mongoose.Schema({
     type: String,
     default: "Pending",
     enum: ['Pending', 'Approved', 'Rejected']
-  }
+  },
+  reviewedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Admin',
+    default: null
+  },
 }, {
   timestamps: true,
   versionKey: false

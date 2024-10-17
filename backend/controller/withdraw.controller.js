@@ -71,7 +71,48 @@ exports.createWithdrawRequest = async (req, res) => {
   }
 }
 
+exports.updateRequestStatus = async (req, res) => {
+  try {
+    const { withdrawID, status } = req.body;
+    const adminId = req.user._id; // Assume this is coming from middleware that verifies the admin/user
 
+    if(!withdrawID || !status || !adminId) {
+      return res.status(404).json({
+        status: false,
+        message: 'Invalid Details',
+      });
+    }
+
+    // Find the user by ID
+    const withdraw = await Withdraw.findById(withdrawID);
+    if (!withdraw) {
+      return res.status(404).json({
+        status: false,
+        message: 'Withdraw Request not found',
+      });
+    }
+
+    // Update the withdraw request's status and record who modified it
+    withdraw.status = status;
+    withdraw.reviewedBy = adminId;
+
+    // Save the updated withdraw document
+    await withdraw.save();
+
+    return res.status(200).json({
+      status: true,
+      message: `Withdraw Request status updated successfully to ${status} by admin with ID ${adminId}`,
+      data: withdraw,
+    });
+
+  } catch (error) {
+    console.error("Error updating withdraw status:", error);
+    return res.status(500).json({
+      status: false,
+      message: 'Internal Server Error',
+    });
+  }
+};
 
 exports.getWithdrawRequest = async (req, res) => {
   try {

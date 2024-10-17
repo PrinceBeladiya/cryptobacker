@@ -3,7 +3,7 @@
 import { Link } from "react-router-dom";
 import { Card } from "flowbite-react";
 import { FolderOpen } from 'lucide-react';
-import { getContractBalance, getContractUSDCBalance, getUSDCBalance, getWithdrawableAmount, getWithdrawals, withdrawFromCampaign } from "../../context";
+import { getContractBalance, getContractUSDCBalance, getUSDCBalance, getWithdrawableAmount, getWithdrawals, updateWithdrawRequestStatus, withdrawFromCampaign } from "../../context";
 const UserDashboard = ({
   chartRef,
   userCampaigns,
@@ -18,12 +18,13 @@ const UserDashboard = ({
   userStatus
 }) => {
   const handleClick = async() => {
+    updateWithdrawRequestStatus("6710cfc21bb8845e45299690", "Approve");
     console.log("Balanace : ", await getContractBalance()); // get contract balance
     console.log("Balanace : ", await getContractUSDCBalance()); // get contract usdc balance
     console.log("Balanace : ", await getWithdrawableAmount(0)); // get withable amount from the campaign
     console.log("USDC Balanace : ", await getUSDCBalance()); // get usdc balance of the user
     console.log("Withdraws : ", await getWithdrawals()); // get withdrawals data
-    console.log("RES :- ",await withdrawFromCampaign(0, 100))
+    // withdrawFromCampaign(0, 100)
   }
   return (
     <>
