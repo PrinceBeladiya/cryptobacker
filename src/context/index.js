@@ -821,9 +821,7 @@ export const getWithdrawals = async () => {
 
 export const sendMail = async (data) => {
   try {
-    const res = await axios.post("http://localhost:3001/admin/sendMail", {
-      data
-    },
+    const res = await axios.post("http://localhost:3001/admin/sendMail", data,
       {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("JWT_Token")}`,

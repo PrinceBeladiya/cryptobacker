@@ -7,11 +7,11 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import ManageWithdraw from './ManageWithdraw';
 
 const ManageWithdrawsContainer = () => {
-  const { campaigns } = useSelector((state) => state.campaigns);
+  const { withdraws } = useSelector((state) => state.withdraws);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [filteredwithdraws, setFilteredwithdraws] = useState([]);
-  const [withdraws, setwithdraws] = useState([]);
+  const [withdrawslist, setwithdrawslist] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
@@ -26,7 +26,7 @@ const ManageWithdrawsContainer = () => {
       const res = await getAllWithdraws();
       dispatch(addWithdraws(res.data));
       if (Array.isArray(res.data)) { 
-        setwithdraws(res.data);
+        setwithdrawslist(res.data);
       } else {
         console.error("Error: Response is not an array", res.data);
       }
@@ -71,7 +71,7 @@ const ManageWithdrawsContainer = () => {
 
   useEffect(() => {
     getWithdrawDetails();
-  }, []);
+  }, [withdraws]);
 
   return (
     <div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CampaignReview from './CampaignReview';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCampaignDetails, getCampaigns, updateCampaignStatus } from '../../context';
+import { getCampaignDetails, getCampaigns, updateCampaignStatus, getUser } from '../../context';
 import toast from 'react-hot-toast';
 import { addCampaign } from '../../redux/reducer/Campaign';
 import { useDispatch } from 'react-redux';
@@ -65,6 +65,8 @@ const CampaignReviewContainer = () => {
   };
 
   const submitRejectReason = async () => {
+    const campaign1 = await getCampaignDetails(campaignCode); // owner
+    const userDetails = await getUser(campaign1.owner);
     if (!rejectReason.trim()) {
       return;
     }
@@ -79,8 +81,26 @@ const CampaignReviewContainer = () => {
       getCampaigns().then((res) => {
         dispatch(addCampaign(res));
       })
-      setCampaign(res);
-      setrejectionloader(false);
+      setCampaign(res); 
+      const data = {
+        ownerName: userDetails.data.name,
+        ownerEmail: userDetails.data.email,
+        campaignTitle: campaign.title,
+        status: 'Rejected Campaingn',
+        reason: rejectReason
+      };
+      
+      sendMail(data)
+      .then(res => {
+        setrejectionloader(false); 
+        setShowRejectReason(false);
+        setRejectReason('');
+      })
+      .catch(res => {
+        setrejectionloader(false); 
+        setShowRejectReason(false);
+        setRejectReason('');
+      })
       toast.success("Campaign rejected successfully!",'warn');
       navigate('/verify-campaign');
       })

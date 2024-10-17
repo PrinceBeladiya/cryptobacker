@@ -53,7 +53,7 @@ const ManageCampaignReview = ({
             </tr>
             <tr className="border-t border-gray-200">
               <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Collected</th>
-              <td className="px-2 py-2 text-gray-800">{campaign.amountCollected || 0} ETH</td>
+              <td className="px-2 py-2 text-gray-800">{campaign.amountCollectedETH / 10**18 || 0} ETH</td>
             </tr>
             <tr className="border-t border-gray-200">
               <th className="px-2 py-2 font-medium text-gray-600 border-r border-gray-300">Category</th>

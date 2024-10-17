@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { useState, useEffect, useMemo } from 'react';
-import { getCampaigns } from '../../context';
+import { getAllCampaignDetails, getCampaigns } from '../../context';
 import { addCampaign } from '../../redux/reducer/Campaign';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
@@ -8,6 +8,7 @@ import ManageCampaign from './ManageCampaign';
 
 const ManageCampaignContainer = () => {
   const { campaigns } = useSelector((state) => state.campaigns);
+  const { userID } = useSelector((state) => state.user);
   console.log("campaigns :- ",campaigns);
   
   const dispatch = useDispatch();
@@ -80,7 +81,10 @@ const ManageCampaignContainer = () => {
   const getCampaignDetails = async () => {
     try {
       const res = await getCampaigns();
-      const filteredCampaigns = res.filter(campaign => campaign.status === 1 || campaign.status === 2);
+      const mongores = await getAllCampaignDetails();
+      const unreviewedCampaign = mongores.filter(campaign => campaign.reviewedBy === null || campaign.reviewedBy === userID);
+      const resCampaign = res.filter(item => unreviewedCampaign.some(sortedItem =>  sortedItem.campaignCode === item.campaignCode));
+      const filteredCampaigns = resCampaign.filter(campaign => (campaign.status === 1 || campaign.status === 2));
       dispatch(addCampaign(filteredCampaigns));
       if (Array.isArray(filteredCampaigns)) { 
         setFilteredCampaigns(filteredCampaigns);

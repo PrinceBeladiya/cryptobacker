@@ -113,7 +113,7 @@ const WithDraw = ({
                   {
                     form.campaign !== 'NA' && (
                       <p className="mt-2 text-sm text-green-600">
-                        Available Amount: {availableAmount} ETH
+                        Available Amount: {availableAmount} USDC
                       </p>
                     )
                   }
@@ -126,7 +126,7 @@ const WithDraw = ({
                   <TextInput
                     id="amount"
                     type="number"
-                    placeholder="ETH"
+                    placeholder="USDC"
                     value={form.amount}
                     onChange={handleChange}
                     min={1}
@@ -220,7 +220,7 @@ const WithDraw = ({
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-700">
-                            Amount: <span className="font-semibold">{Number(transaction.withdrawAmount)} ETH</span>
+                            Amount: <span className="font-semibold">{Number(transaction.withdrawAmount)} USDC</span>
                           </span>
                           <span
                             className={`text-sm font-medium px-2 py-1 rounded ${

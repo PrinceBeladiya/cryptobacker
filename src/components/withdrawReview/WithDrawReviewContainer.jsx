@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getWithdrawRequestByID, withdrawFromCampaign } from '../../context'; // Ensure the function is imported correctly
+import { getAllUsers, getAllWithdraws, getCampaignDetails, getSpecificCampaign, getUser, getWithdrawRequestByID, getWithdraws, sendMail, withdrawFromCampaign } from '../../context'; // Ensure the function is imported correctly
 import WithDrawReview from './WithDrawReview';
 import toast from 'react-hot-toast';
+import { addWithdraws } from '../../redux/reducer/Withdraws'
+import { useDispatch } from 'react-redux';
 
 const WithDrawReviewContainer = () => {
   const { withdrawid } = useParams(); // Extracting the withdrawal ID from the URL
@@ -13,6 +15,7 @@ const WithDrawReviewContainer = () => {
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // Fetch the withdrawal data by ID
@@ -40,11 +43,54 @@ const WithDrawReviewContainer = () => {
   };
 
   const handleapprove = (campaignCode, withdrawAmount) => {
-    // withdrawFromCampaign()
+    console.log('Clicked');
+    
+    setbuttonloader(true);
+    withdrawFromCampaign(campaignCode, withdrawAmount)
+    .then((res) => {
+      getAllWithdraws()
+      .then((res) => {
+        dispatch(addWithdraws(res.data));
+        console.log(res);
+        toast.success('Fund Transfer Successfully');
+        navigate('/manages-withdraw');
+        setbuttonloader(false);
+      })
+    })
+    .catch((err) => {
+      toast.error('Fund Not Transfered');
+      setbuttonloader(false);
+    })
   }
 
   const handlereject = () => {
     setShowRejectReason(true);
+  }
+
+  const submitRejectReason = async(campaignCode) => {
+    setrejectionloader(true);
+
+    const campaign = await getCampaignDetails(campaignCode); // owner
+    const userDetails = await getUser(campaign.owner); 
+    const data = {
+      ownerName: userDetails.data.name,
+      ownerEmail: userDetails.data.email,
+      campaignTitle: campaign.title,
+      status: 'Rejected WithDraw Request',
+      reason: rejectReason
+    };
+    
+    sendMail(data)
+    .then(res => {
+      setrejectionloader(false); 
+      setShowRejectReason(false);
+      setRejectReason('');
+    })
+    .catch(res => {
+      setrejectionloader(false); 
+      setShowRejectReason(false);
+      setRejectReason('');
+    })
   }
 
   if (loading) {
@@ -66,6 +112,7 @@ const WithDrawReviewContainer = () => {
       rejectReason={rejectReason}
       setRejectReason={setRejectReason}
       buttonloader={buttonloader}
+      submitRejectReason={submitRejectReason}
     />
   );
 };

@@ -7,7 +7,7 @@ import { Outlet } from 'react-router-dom';
 
 const WithDrawContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [availableAmount, setAvailableAmount] = useState(1000);
+  const [availableAmount, setAvailableAmount] = useState(0);
   const [campaign, setCampaign] = useState();
   const [selectCampaignCode, setSelectCampaignCode] = useState(-1);
   const [withdrawHistory, setWithdrawHistory] = useState();
@@ -16,7 +16,7 @@ const WithDrawContainer = () => {
     name: '',
     amount: '',
     campaign: 'NA',
-    report: null, // Initialize with null instead of undefined
+    report: null,
     title: '',
   });
 
@@ -25,14 +25,11 @@ const WithDrawContainer = () => {
   useEffect(() => {
     getUserCampaigns().then((res) => {
       setCampaign(res);
-      console.log("withdrawHistory :- ",withdrawHistory);
-      
-    })
+    });
 
     getWithdraws().then((res) => {
-      console.log(res);
       setWithdrawHistory(res.data);
-    })
+    });
   }, []);
 
   const handleSubmit = async (e) => {
@@ -44,62 +41,46 @@ const WithDrawContainer = () => {
         campaign: selectedCampaign.title,
         campaignCode: selectedCampaign.campaignCode,
         campaignOwner: selectedCampaign.owner
-      }
+      };
 
       const res = await createWithdrawRequest(data);
       getWithdraws().then((res) => {
-        console.log(res.data);
         setWithdrawHistory(res.data);
         setIsLoading(false);
-      })
+      });
       
-      // Filter withdraw history for the selected campaign and sum the withdrawAmount
-      const totalWithdrawnAmount = withdrawHistory
-        .filter((withdraw) => withdraw.status === "Pending" && withdraw.campaignCode === selectedCampaign.campaignCode) // Adjust the field names accordingly
-        .reduce((total, withdraw) => {
-          return total + parseFloat(withdraw.withdrawAmount); // Convert to float in case it's a string
-        }, 0);
-
-      // Log the filtered withdraw history and total withdrawn amount for debugging
-      console.log("Filtered Withdraw History for Selected Campaign:", withdrawHistory.filter((withdraw) => withdraw.campaignId === selected_campaign.id));
-      console.log("Total Withdrawn Amount for Selected Campaign:", totalWithdrawnAmount);
-
-      // Set the available amount state
-      const availableBalance = (Number(selectedCampaign.amountCollectedETH) / 10 ** 18) - Number(totalWithdrawnAmount);
-      setAvailableAmount(availableBalance);
+      updateAvailableAmount(selectedCampaign);
     } catch (err) {
       console.log(err);
       toast.error(err.response.data.message);
     }
   };
 
+  const updateAvailableAmount = (campaign) => {
+    if (!campaign || !withdrawHistory) return;
+
+    const totalWithdrawnAmount = withdrawHistory
+      .filter((withdraw) => withdraw.status === "Pending" && withdraw.campaignCode === campaign.campaignCode)
+      .reduce((total, withdraw) => total + parseFloat(withdraw.withdrawAmount), 0);
+
+    const availableBalance = campaign.amountCollectedUSDC - totalWithdrawnAmount;
+    setAvailableAmount(availableBalance);
+  };
+
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
 
     if (name === 'campaign') {
-      const selected_campaign = campaign.find(c => Number(c.campaignCode) === Number(value)); // Find the selected campaign
+      const selected_campaign = campaign.find(c => Number(c.campaignCode) === Number(value));
       setSelectCampaignCode(value);
       setFormData(prevState => ({
         ...prevState,
         campaign: value,
       }));
+      
       if (selected_campaign) {
         setSelectedCampaign(selected_campaign);
-
-        // Filter withdraw history for the selected campaign and sum the withdrawAmount
-        const totalWithdrawnAmount = withdrawHistory
-          .filter((withdraw) => withdraw.status === "Pending" && withdraw.campaignCode === selected_campaign.campaignCode) // Adjust the field names accordingly
-          .reduce((total, withdraw) => {
-            return total + parseFloat(withdraw.withdrawAmount); // Convert to float in case it's a string
-          }, 0);
-
-        // Log the filtered withdraw history and total withdrawn amount for debugging
-        console.log("Filtered Withdraw History for Selected Campaign:", withdrawHistory.filter((withdraw) => withdraw.campaignId === selected_campaign.id));
-        console.log("Total Withdrawn Amount for Selected Campaign:", totalWithdrawnAmount);
-
-        // Set the available amount state
-        const availableBalance = (Number(selected_campaign.amountCollectedETH) / 10 ** 18) - Number(totalWithdrawnAmount);
-        setAvailableAmount(availableBalance);
+        updateAvailableAmount(selected_campaign);
       }
     }
 

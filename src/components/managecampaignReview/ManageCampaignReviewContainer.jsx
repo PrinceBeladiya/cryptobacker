@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ManageCampaignReview from './ManageCampaignReview'
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCampaignDetails, getSpecificCampaign, updateCampaignStatus, getCampaigns, deleteCampaign } from '../../context';
+import { getCampaignDetails, getSpecificCampaign, updateCampaignStatus, getCampaigns, deleteCampaign, getUser } from '../../context';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { addCampaign } from '../../redux/reducer/Campaign';
@@ -92,13 +92,32 @@ const ManageCampaignReviewContainer = () => {
       return;
     }
 
+      const campaign1 = await getCampaignDetails(campaignCode);
+      const userDetails = await getUser(campaign1.owner);
+       
     if (campaign.status === 1) {
         updateCampaignStatus(campaignCode, 2).then((res) => {
         getCampaigns().then((res) => {
           dispatch(addCampaign(res));
         })
+        const data = {
+          ownerName: userDetails.data.name,
+          ownerEmail: userDetails.data.email,
+          campaignTitle: campaign.title,
+          status: 'Campaign Suspended',
+          reason: rejectReason
+        };
+        sendMail(data)
+        .then(res => {
+          
+        })
+        .catch(res => {
+          
+        })
         setCampaign(res);
-        setRejectionLoader(false);
+        setRejectionLoader(false); 
+        setShowRejectReason(false);
+        setRejectReason('');
         toast.success("Campaign suspended successfully!");
         navigate('/manage-campaign');
         })
@@ -112,8 +131,24 @@ const ManageCampaignReviewContainer = () => {
           getCampaigns().then((res) => {
             dispatch(addCampaign(res));
           })
+          const data = {
+            ownerName: userDetails.data.name,
+            ownerEmail: userDetails.data.email,
+            campaignTitle: campaign.title,
+            status: 'Campaign Deleted',
+            reason: rejectReason
+          };
+          sendMail(data)
+          .then(res => {
+            
+          })
+          .catch(res => {
+            
+          })
           setCampaign(res);
-          setRejectionLoader(false);
+          setRejectionLoader(false); 
+          setShowRejectReason(false);
+          setRejectReason('');
           toast.success("Campaign deleted successfully!");
           navigate('/manage-campaign');
           })

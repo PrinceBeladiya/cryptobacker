@@ -264,7 +264,6 @@ contract CryptoBacker is ReentrancyGuard {
     function withdraw(uint256 _campaignCode, uint256 _amount) public nonReentrant {
         require(_campaignCode < numberOfCampaigns, "Invalid campaign code");
         Campaign storage campaign = campaigns[_campaignCode];
-        require(msg.sender == campaign.owner, "Only campaign owner can withdraw");
 
         uint256 availableAmount = withdrawableAmount(_campaignCode);
         require(_amount <= availableAmount, "Insufficient funds");

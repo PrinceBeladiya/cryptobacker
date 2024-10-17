@@ -1,9 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Card } from 'flowbite-react';
 
-const WithDrawReview = ({ withdraw, extractFilePath, handlereject, handleapprove, showRejectReason, rejectionloader, rejectReason, setRejectReason, buttonloader }) => {
-  console.log("withdraw :- ",withdraw);
-  
+const WithDrawReview = ({ withdraw, extractFilePath, handlereject, handleapprove, showRejectReason, rejectionloader, rejectReason, setRejectReason, buttonloader, submitRejectReason }) => {
   return (
     <Card className="bg-white shadow-lg rounded-lg">
       <div className="p-6 border-b border-gray-200">
@@ -64,7 +62,7 @@ const WithDrawReview = ({ withdraw, extractFilePath, handlereject, handleapprove
       <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
           <button
             className="bg-green-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300"
-            onClick={() => {handleapprove(campaignCode, withdrawAmount)}}
+            onClick={() => {handleapprove(withdraw.campaignCode, withdraw.withdrawAmount)}}
             disabled={buttonloader}
           >
             {buttonloader ? <svg aria-hidden="true" role="status" className="inline w-4 h-4 ml-3 mb-1 me-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -93,8 +91,8 @@ const WithDrawReview = ({ withdraw, extractFilePath, handlereject, handleapprove
           ></textarea>
           <div className="flex justify-end mt-4">
             <button
-              // onClick={submitRejectReason}
-              // disabled={rejectionloader}
+              onClick={() => {submitRejectReason(withdraw.campaignCode)}}
+              disabled={rejectionloader}
               className="bg-red-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-600 transition duration-300"
             >
               {rejectionloader ? <svg aria-hidden="true" role="status" className="inline w-4 h-4 ml-3 mb-1 me-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

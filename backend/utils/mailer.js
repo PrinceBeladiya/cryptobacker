@@ -161,7 +161,7 @@ const sendCampaignStatusEmail = async (campaignData) => {
 
   // Define the mail options
   const mailOptions = {
-    from: '22it605@bvmengineering.ac.in',
+    from: '22it603@bvmengineering.ac.in',
     to: ownerEmail,
     subject: `Your Campaign "${campaignTitle}" Has Been ${status.charAt(0).toUpperCase() + status.slice(1)}`,
     html: htmlContent,
