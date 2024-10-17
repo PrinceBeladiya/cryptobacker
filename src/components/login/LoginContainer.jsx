@@ -9,6 +9,7 @@ import axios from "axios";
 const LoginContainer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isLoading,setisLoading] = useState(false);
 
   const [form, setForm] = useState({
     email: '',
@@ -26,20 +27,22 @@ const LoginContainer = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    
+    setisLoading(true);
     axios.post(`http://localhost:3001/user/login`, {
       ...form
     }).then((res) => {
       if(res?.data.token.length > 0) {
         localStorage.setItem("JWT_Token", res?.data.token);
-        
         dispatch(setToken(res?.data.token))
         toast.success("User sign-in successfully.", 'success');
+        setisLoading(false);
         navigate("/");
       } else {
+        setisLoading(false);
         toast("Something Went Wrong", 'warn');  
       }
     }).catch((err) => {
+      setisLoading(false);
       console.log("error - ", err.message ? err.message : err?.response.data.message)
       toast.error(err.message ? err.message : err?.response.data.message);
     })
@@ -50,6 +53,7 @@ const LoginContainer = () => {
       form={form}
       handleChange={handleChange}
       handleFormSubmit={handleFormSubmit}
+      isLoading={isLoading}
     />
   )
 }

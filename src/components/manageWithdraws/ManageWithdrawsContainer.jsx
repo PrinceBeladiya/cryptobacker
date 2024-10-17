@@ -24,11 +24,12 @@ const ManageWithdrawsContainer = () => {
   const getWithdrawDetails = async () => {
     try {
       const res = await getAllWithdraws();
-      dispatch(addWithdraws(res.data));
-      if (Array.isArray(res.data)) { 
-        setwithdrawslist(res.data);
+      const filterdres = res.data.filter(withdraw => withdraw.reviewedBy === null);
+      dispatch(addWithdraws(filterdres));
+      if (Array.isArray(filterdres)) { 
+        setwithdrawslist(filterdres);
       } else {
-        console.error("Error: Response is not an array", res.data);
+        console.error("Error: Response is not an array", filterdres);
       }
     } catch (error) {
       console.error("Error:", error);

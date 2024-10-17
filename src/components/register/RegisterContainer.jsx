@@ -6,6 +6,7 @@ import axios from "axios";
 
 const RegisterContainer = () => {
   const navigate = useNavigate();
+  const [isLoading,setisLoading] = useState(false);
   // Set initial form state
   const [form, setForm] = useState({
     name: '',
@@ -29,7 +30,7 @@ const RegisterContainer = () => {
   // Handle form submit
   const handleFormSubmit = (e) => {
     e.preventDefault();
-
+    setisLoading(true);
     var formData = new FormData();
     for (let ele in form) {
       formData.append(ele, form[ele])
@@ -41,10 +42,11 @@ const RegisterContainer = () => {
       }
     ).then((res) => {
       toast.success(res.data.message);
-
+      setisLoading(false);
       navigate("/login")
     }).catch((err) => {
       toast.error(err.response.data.message);
+      setisLoading(false);
     })
   };
 
@@ -66,6 +68,7 @@ const RegisterContainer = () => {
       form={form}
       handleChange={handleChange}
       handleFormSubmit={handleFormSubmit}
+      isLoading={isLoading}
     />
   )
 }

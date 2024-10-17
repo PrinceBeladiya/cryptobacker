@@ -1,107 +1,139 @@
-/* eslint-disable react/prop-types */
-import { FileInput } from "flowbite-react"
-import { Link } from "react-router-dom"
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  TextInput, 
+  Label, 
+  FileInput, 
+  Button, 
+  Card,
+  Spinner 
+} from 'flowbite-react';
+import { 
+  HiUser, 
+  HiMail, 
+  HiLockClosed, 
+  HiPhone, 
+  HiCalendar, 
+  HiUpload 
+} from 'react-icons/hi';
 
-const Register = ({
-  handleChange,
-  handleFormSubmit,
-  form
-}) => {
+const Register = ({ handleChange, handleFormSubmit, form, isLoading }) => {
   return (
-    <div className="flex justify-center mt-10 mb-10">
-      <div className="w-full max-w-lg p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8">
-        <h1 className="mb-2 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-          Sign Up to your account
-        </h1>
-        <form className="space-y-4 md:space-y-6" onSubmit={handleFormSubmit}>
+    <div className="flex justify-center items-center min-h-screen bg-white   py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
+        <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
+          Create your account
+        </h2>
+        <form className="flex flex-col gap-4" onSubmit={handleFormSubmit}>
           <div>
-            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Your Name</label>
-            <input
-              type="text"
-              name="name"
+            <div className="mb-2 block">
+              <Label htmlFor="name" value="Your Name" />
+            </div>
+            <TextInput
               id="name"
+              name="name"
+              type="text"
+              icon={HiUser}
+              placeholder="John Doe"
+              required
               value={form.name}
               onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-              placeholder="Dox Smith"
-              required
             />
           </div>
           <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Your Email</label>
-            <input
-              type="email"
-              name="email"
+            <div className="mb-2 block">
+              <Label htmlFor="email" value="Your Email" />
+            </div>
+            <TextInput
               id="email"
+              name="email"
+              type="email"
+              icon={HiMail}
+              placeholder="name@flowbite.com"
+              required
               value={form.email}
               onChange={handleChange}
-              placeholder="name@company.com"
-              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-              required
             />
           </div>
           <div>
-            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Password</label>
-            <input
-              type="password"
-              name="password"
+            <div className="mb-2 block">
+              <Label htmlFor="password" value="Your Password" />
+            </div>
+            <TextInput
               id="password"
+              name="password"
+              type="password"
+              icon={HiLockClosed}
+              placeholder="••••••••"
+              required
               value={form.password}
               onChange={handleChange}
-              placeholder="••••••••"
-              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-              required
             />
           </div>
           <div>
-            <label htmlFor="mobile" className="block mb-2 text-sm font-medium text-gray-900">Your Mobile</label>
-            <input
-              type="text"
-              name="mobile"
+            <div className="mb-2 block">
+              <Label htmlFor="mobile" value="Your Mobile" />
+            </div>
+            <TextInput
               id="mobile"
+              name="mobile"
+              type="tel"
+              icon={HiPhone}
+              placeholder="1234567890"
+              required
               value={form.mobile}
               onChange={handleChange}
-              placeholder="1234567899"
-              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-              required
             />
           </div>
           <div>
-            <label htmlFor="dob" className="block mb-2 text-sm font-medium text-gray-900">Date Of Birth</label>
-            <input
-              type="date"
-              name="DOB"
+            <div className="mb-2 block">
+              <Label htmlFor="dob" value="Date of Birth" />
+            </div>
+            <TextInput
               id="dob"
+              name="DOB"
+              type="date"
+              icon={HiCalendar}
+              required
               value={form.dob}
               onChange={handleChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5"
-              required
             />
           </div>
           <div>
-            <label htmlFor="file_input" className="block mb-2 text-sm font-medium text-gray-900">Upload file</label>
+            <div className="mb-2 block">
+              <Label htmlFor="file_input" value="Upload Identity Proof" />
+            </div>
             <FileInput
-              aria-describedby="file_input_help"
-              onChange={handleChange}
               id="file_input"
-              type="file"
               name="file"
+              helperText="A proof picture is useful to validate your identity (PNG, JPG or GIF)"
+              onChange={handleChange}
             />
-            <p className="mt-1 text-sm text-gray-500" id="file_input_help">A proof picture is useful to validate your identity</p>
           </div>
-          <button
-            type="submit"
-            className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          <Button 
+            type="submit" 
+            className="mt-4 bg-blue-600"
+            disabled={isLoading}
           >
-            Sign Up
-          </button>
-          <p className="text-sm font-light text-gray-500">
-            Already have an account? <Link to='/login' className="font-medium text-blue-600 hover:underline">Sign In</Link>
-          </p>
+            {isLoading ? (
+              <>
+                <Spinner size="sm" light={true} className="mr-2" />
+                Loading...
+              </>
+            ) : (
+              'Sign Up'
+            )}
+          </Button>
         </form>
-      </div>
+        <p className="mt-4 text-sm text-center text-gray-500">
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium text-blue-600 hover:underline">
+            Sign In
+          </Link>
+        </p>
+      </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

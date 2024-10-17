@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getAllUsers, getAllWithdraws, getCampaignDetails, getSpecificCampaign, getUser, getWithdrawRequestByID, getWithdraws, sendMail, withdrawFromCampaign } from '../../context'; // Ensure the function is imported correctly
+import { getAllUsers, getAllWithdraws, getCampaignDetails, getSpecificCampaign, getUser, getWithdrawRequestByID, getWithdraws, sendMail, updateWithdrawRequestStatus, withdrawFromCampaign } from '../../context'; // Ensure the function is imported correctly
 import WithDrawReview from './WithDrawReview';
 import toast from 'react-hot-toast';
 import { addWithdraws } from '../../redux/reducer/Withdraws'
@@ -51,10 +51,13 @@ const WithDrawReviewContainer = () => {
       getAllWithdraws()
       .then((res) => {
         dispatch(addWithdraws(res.data));
-        console.log(res);
-        toast.success('Fund Transfer Successfully');
-        navigate('/manages-withdraw');
-        setbuttonloader(false);
+        updateWithdrawRequestStatus(withdrawid,"Approved")
+        .then(res => {
+          console.log(res);
+          toast.success('Fund Transfer Successfully');
+          navigate('/manages-withdraw');
+          setbuttonloader(false);
+        })
       })
     })
     .catch((err) => {

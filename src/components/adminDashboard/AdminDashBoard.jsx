@@ -35,7 +35,9 @@ const SummaryCard = React.memo(({ title, value, icon: Icon, color }) => (
   </motion.div>
 ));
 
-const AdminDashboard = ({tabs, campaignsData, usersData, activeTab, TotalBalance, tabRefs, setActiveTab, handleReview, handleUserClick ,filteredUsers, filteredCampaigns, searchTerm, setSearchTerm}) => {  
+const AdminDashboard = ({tabs, campaignsData, usersData, activeTab, TotalBalance, tabRefs, setActiveTab, handleReview, handleUserClick ,filteredUsers, filteredCampaigns, searchTerm, setSearchTerm, withdrawData}) => {  
+  console.log("withdrawals :- ",withdrawData);
+  
   const renderPlaceholder = useCallback((message) => (
     <div className="flex items-center justify-center p-4 bg-gray-100 rounded-lg">
       <AlertCircle className="text-gray-400 mr-2" size={20} />
@@ -103,7 +105,7 @@ const AdminDashboard = ({tabs, campaignsData, usersData, activeTab, TotalBalance
           <div className="relative mr-8 w-64">
             <input
               type="text"
-              placeholder={activeTab === 'campaigns' ? "Search by Campaign Name" : "Search by User ID"}
+              placeholder={activeTab === 'campaigns' ? "Search by Campaign Name" : activeTab === 'users' ? "Search by User ID" : "Search by Withdraw ID"}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -241,6 +243,55 @@ const AdminDashboard = ({tabs, campaignsData, usersData, activeTab, TotalBalance
                 ) : renderPlaceholder("No matching users found")}
               </>
             )}
+
+            {activeTab === 'withdrawals' && (
+              <>
+                <h2 className="text-xl font-semibold mb-4 text-gray-800">Withdrawals</h2>
+                {withdrawData.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {withdrawData.map((withdraw, index) => (
+                          <motion.tr 
+                            key={withdraw._id} 
+                            className="hover:bg-gray-50"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                            >
+                            {renderTableCell(withdraw._id)}
+                            {renderTableCell(withdraw.campaign)}
+                            {renderTableCell(withdraw.name)}
+                            {renderTableCell(withdraw.withdrawAmount)}
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {withdraw.status ? (
+                                <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                  withdraw.status === "Approved"
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {withdraw.status === "Approved" ? 'Approve' : 'Pending'}
+                                </span>
+                              ) : renderPlaceholder("Status unknown")}
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : renderPlaceholder("No matching users found")}
+              </>
+            )}
+            
           </motion.div>
         </AnimatePresence>
       </motion.div>

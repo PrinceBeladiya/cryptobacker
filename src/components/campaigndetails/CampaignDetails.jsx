@@ -19,11 +19,29 @@ const CampaignDetails = ({
   userStatus,
   progressPercentage,
   toggleImagePopup,
-  isImagePopupOpen
+  isImagePopupOpen,
+  isCampaignOver,
+  campaignEndReason
 }) => {
   return (
     <section className="py-8 bg-white md:py-16 antialiased">
       <div className="max-w-screen-xl px-4 mx-auto 2xl:px-0">
+      {isCampaignOver && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 p-4 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-lg shadow-lg text-white text-center"
+          >
+            <h2 className="text-2xl font-bold mb-2">Campaign Ended</h2>
+            <p className="text-lg">
+              This campaign has ended due to: <span className="font-semibold">{campaignEndReason}</span>
+            </p>
+            <p className="mt-2 text-sm opacity-80">
+              Thank you to all supporters for their contributions!
+            </p>
+          </motion.div>
+        )}
         <div className="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
           <div className="shrink-0 max-w-md lg:max-w-lg mx-auto">
             <img
@@ -57,7 +75,7 @@ const CampaignDetails = ({
                 style={{ width: `${Math.min((totalRaised / Number(campaign.target)) * 100, 100)}%` }}
               ></div>
             </div>
-            {userStatus && userStatus == "Approve" ? (
+            {!isCampaignOver && userStatus && userStatus == "Approve" ? (
               <div className="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
                 <div className="flex items-center space-x-4">
                   {
@@ -97,7 +115,7 @@ const CampaignDetails = ({
                   }
                 </div>
               </div>
-            ) : (
+            ) : !isCampaignOver && (
               <p>
                 Owner Account
                 <span

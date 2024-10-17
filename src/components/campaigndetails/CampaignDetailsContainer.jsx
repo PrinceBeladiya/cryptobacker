@@ -15,6 +15,8 @@ const CampaignDetailsContainer = () => {
 
   const [campaign, setCampaign] = useState([]);
   const [donors, setdonors] = useState([]);
+  const [isCampaignOver,setisCampaignOver] = useState([]);
+  const [campaignEndReason, setCampaignEndReason] = useState('');
   const [aggregatedDonations, setAggregatedDonations] = useState([]);
   const [topDonor, setTopDonor] = useState({});
   const [totalDonation, setTotalDonation] = useState(0);
@@ -24,65 +26,76 @@ const CampaignDetailsContainer = () => {
   const progressPercentage = (Number(totalDonation) / 10 ** 18 / Number(campaign.target)) * 100;
   
   const getUserCampaignDetails = async () => {
-    getSpecificCampaign(campaignCode).then((res) => {
-      setCampaign(res[0])
-    });
+    try {
+      const campaignData = await getSpecificCampaign(campaignCode);
+      setCampaign(campaignData[0]);
 
-    const data = await getCampaignDetails(campaignCode);
-    setFilePaths(data.filePaths);
+      const data = await getCampaignDetails(campaignCode);
+      setFilePaths(data.filePaths);
 
-    getCampaignDonation(campaignCode).then((res) => {
-      // Aggregate donations by donor for admin view
-      const aggregatedDonations = res.reduce((acc, donation) => {
+      const donationData = await getCampaignDonation(campaignCode);
+      
+      // Aggregate donations
+      const aggregated = donationData.reduce((acc, donation) => {
         const donor = donation.donor;
-
-        // If donor already exists in the accumulator, add to their totals
         if (acc[donor]) {
           acc[donor].amountETH += BigInt(donation.amountETH);
           acc[donor].amountUSDC += BigInt(donation.amountUSDC);
         } else {
-          // If donor doesn't exist, create a new entry
           acc[donor] = {
             amountETH: BigInt(donation.amountETH),
             amountUSDC: BigInt(donation.amountUSDC),
             donorName: donation.donorName,
             donorEmail: donation.donorEmail,
             donor: donor,
-            timestamp: donation.timestamp // Optional: You can decide how to handle the timestamp
+            timestamp: donation.timestamp
           };
         }
         return acc;
       }, {});
 
-      // Convert the aggregated donations object back into an array
-      const aggregatedDonationsArray = Object.values(aggregatedDonations);
+      const aggregatedArray = Object.values(aggregated);
+      setAggregatedDonations(aggregatedArray);
 
-      // Now set the state with the aggregated donations
-      setAggregatedDonations(aggregatedDonationsArray);
+      // Calculate top donor
+      const topDonor = aggregatedArray.reduce((max, donor) => 
+        Number(donor.amountUSDC) > Number(max.amountUSDC) ? donor : max
+      , {amountUSDC: 0, amountETH: 0});
+      setTopDonor(topDonor);
 
-      let top_donor = {
-        amountUSDC: 0,
-        amountETH: 0
-      };
-      aggregatedDonationsArray.map((donation) => {
-        Number(donation.amountUSDC) > Number(top_donor.amountUSDC) ? top_donor = donation : ''
-      });
-      setTopDonor(top_donor);
+      setdonors(donationData);
 
-      // for user view
-      setdonors(res);
+      // Calculate total donation
+      const total = donationData.reduce((sum, donation) => sum + Number(donation.amountETH), 0);
+      setTotalDonation(total);
 
-      let sum = 0
-      res.map((donation) => {
-        sum += Number(donation.amountETH)
-      })
-      setTotalDonation(sum);
-    });
+      // Check if campaign is over
+      checkCampaignStatus(campaignData[0], total);
+
+    } catch (error) {
+      console.error("Error fetching campaign details:", error);
+      toast.error("Failed to load campaign details");
+    }
   }
 
   const toggleImagePopup = () => {
     setIsImagePopupOpen(!isImagePopupOpen);
   };
+
+  const checkCampaignStatus = (campaignData, totalDonation) => {
+    const currentDate = new Date();
+    const endDate = new Date(campaignData.deadline);
+    const isDatePassed = currentDate > endDate;
+    const isGoalReached = Number(totalDonation) >= Number(campaignData.target) * 10**18; // Convert target to wei
+
+    if (isDatePassed || isGoalReached) {
+      setisCampaignOver(true);
+      setCampaignEndReason(isDatePassed ? 'Date passed' : 'Goal reached');
+    } else {
+      setisCampaignOver(false);
+      setCampaignEndReason('');
+    }
+  }
 
   useEffect(() => {
     getUserCampaignDetails();
@@ -153,6 +166,8 @@ const CampaignDetailsContainer = () => {
         progressPercentage={progressPercentage}
         isImagePopupOpen={isImagePopupOpen}
         toggleImagePopup={toggleImagePopup}
+        isCampaignOver={isCampaignOver}
+        campaignEndReason={campaignEndReason}
       />
     </div>
   )

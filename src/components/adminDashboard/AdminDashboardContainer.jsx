@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import AdminDashBoard from './AdminDashBoard';
-import { getAllCampaignDetails, getCampaigns, getAllUsers, getContractUSDCBalance } from '../../context';
+import { getAllCampaignDetails, getCampaigns, getAllUsers, getContractUSDCBalance, getAllWithdraws } from '../../context';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCampaign } from '../../redux/reducer/Campaign';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,7 @@ const AdminDashboardContainer = () => {
   const [mongoCampaign, setMongoCampaign] = useState([]);
   const [campaignsData, setCampaignsData] = useState([]);
   const [usersData,setusersData] = useState([]);
+  const [withdrawData,setWithDrawData] = useState([]);
   const [balance,setbalance] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const tabRefs = useRef([]);
@@ -67,13 +68,27 @@ const AdminDashboardContainer = () => {
   };
 
   const formatBalance = (balance) => {
-    if (balance >= 1e6) {
-      return (balance / 1e6).toFixed(2) + 'M';  // For millions
-    } else if (balance >= 1e9) {
+    if (balance >= 1e9) {
       return (balance / 1e9).toFixed(2) + 'B';  // For billions
+    } else if (balance >= 1e6) {
+      return (balance / 1e6).toFixed(2) + 'M';  // For millions
+    } else if (balance >= 1e3) {
+      return (balance / 1e3).toFixed(2) + 'K';  // For thousands
     }
     return balance.toFixed(2);  // Otherwise, show full with 2 decimal places
   };
+  
+
+  const getWithdrawlsDetails = async () => {
+    try {
+      const data = await getAllWithdraws();
+      const filtered = data.data.filter(withdraw => withdraw.reviewedBy === userID);
+      setWithDrawData(filtered);
+    } catch (error) {
+      console.error("Error fetching withdrawals:", error);
+    }
+  }
+  
 
   const getTotalbalance = async () => {
     const balance = await getContractUSDCBalance();
@@ -81,20 +96,19 @@ const AdminDashboardContainer = () => {
   }
 
   const handleReview = (status, campaignCode) => {
-    console.log("Clicked");
-
     if (status === 0) {
-      toast.success('You Will Be Redirected To the Verify Campaign...', 'success');
+      toast.success('You Will Be Redirected To the Verify Campaign...');
       setTimeout(() => {
-        navigate(`/verify-campaign/${campaignCode}`); // Use navigate from the component scope
+        navigate(`/verify-campaign/${campaignCode}`);
       }, 1800);
     } else {
-      toast.success('You Will Be Redirected To the Manage Campaign...', 'success');
+      toast.success('You Will Be Redirected To the Manage Campaign...');
       setTimeout(() => {
         navigate(`/manage-campaign/${campaignCode}`);
       }, 1800);
     }
   };
+  
 
   const filteredCampaigns = React.useMemo(() => 
     campaignsData?.filter(item => 
@@ -109,6 +123,13 @@ const AdminDashboardContainer = () => {
     ) ?? [],
     [usersData, searchTerm]
   );
+
+  const filteredWithdraw = React.useMemo(() => 
+    withdrawData?.filter(withdraw => 
+      withdraw._id.toLowerCase().includes(searchTerm.toLowerCase())
+    ) ?? [],
+    [withdrawData, searchTerm]
+  )
 
   const handleUserClick = (userid) => {
     toast.success('You Will Be Redirected To the Verify User...', 'success');
@@ -127,6 +148,7 @@ const AdminDashboardContainer = () => {
     getCampaignDetails();
     getUserDetails();
     getTotalbalance();
+    getWithdrawlsDetails();
   }, []); // Runs only once when the component mounts
 
   return (
@@ -134,7 +156,8 @@ const AdminDashboardContainer = () => {
       tabs={tabs}
       campaignsData={campaignsData}
       usersData={usersData}
-      withdrawalsData={withdrawalsData}
+      withdrawData={withdrawData}
+      withdrawalsData={filteredWithdraw}
       activeTab={activeTab}
       tabBounds={tabBounds}
       tabRefs={tabRefs}
